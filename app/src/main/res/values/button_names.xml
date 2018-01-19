@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="heading">
+        <item>@string/hbsmmu</item>
+        <item>@string/hbcps</item>
+        <item>@string/hdghs</item>
+        <item>@string/hmohf</item>
+        <item>@string/hbpsc</item>
+        <item>@string/hgazettes</item>
+        <item>@string/hbmdc</item>
+        <item>@string/hresult</item>
+    </array>
+    <array name="description">
+        <item>@string/bsmmu</item>
+        <item>@string/bcps</item>
+        <item>@string/dghs</item>
+        <item>@string/mohf</item>
+        <item>@string/bpsc</item>
+        <item>@string/gazettes</item>
+        <item>@string/bmdc</item>
+        <item>@string/result</item>
+    </array>
+    <array name="hints">
+        <item>@string/bsmmuHints</item>
+        <item>@string/bcpsHints</item>
+        <item>@string/dghsHints</item>
+        <item>@string/mohfwHints</item>
+        <item>@string/bpscHints</item>
+        <item>@string/gazetteHints</item>
+        <item>@string/bmdcHints</item>
+        <item>@string/resultsHints</item>
+    </array>
+    <!--buttons-->
+    <array name="bsmmuOptions">
+        <item>@string/homePage</item>
+        <item>@string/residency</item>
+        <item>@string/admissionEreregi</item>
+        <item>@string/notice</item>
+    </array>
+    <array name="bcpsOptions">
+        <item>@string/homePage</item>
+        <item>@string/onlineNotic</item>
+        <item>@string/guideline</item>
+        <item>@string/registrationFCPS</item>
+        <item>@string/rollResultFCPS</item>
+    </array>
+    <array name="dghsOptions">
+        <item>@string/homePage</item>
+        <item>@string/homePageNotice</item>
+        <item>@string/posting</item>
+        <item>@string/hrm</item>
+    </array>
+    <array name="mohfwOptions">
+        <item>@string/homePage</item>
+        <item>@string/deputation</item>
+    </array>
+    <array name="bpscOptions">
+        <item>@string/homePage</item>
+        <item>@string/bcsOnline</item>
+        <item>@string/bcsResult</item>
+        <item>@string/forms</item>
+        <item>@string/departmentalOnline</item>
+        <item>@string/departmentalResult</item>
+        <item>@string/seniorOnline</item>
+        <item>@string/seniorResult</item>
+
+    </array>
+    <array name="bmdcOptions">
+        <item>@string/homePage</item>
+        <item>@string/findDoctor</item>
+        <item>@string/bmdcDownloadbleForms</item>
+    </array>
+    <array name="resultsOption">
+        <item>@string/mbbs</item>
+        <item>@string/bds</item>
+    </array>
+    <array name="gazetteOptions">
+        <item>@string/seniorScaleOption</item>
+        <item>@string/departmentalOption</item>
+        <item>@string/serviceConfirmOption</item>
+    </array>
+    <array name="bpscFormsOptions">
+        <item>@string/seniorScaleOption</item>
+        <item>@string/serviceConfirmOption</item>
+    </array>
+</resources>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DocSites</string>
+
+    <!--button heading-->
+    <string name="hbsmmu">BSMMU</string>
+    <string name="hbmdc">BMDC</string>
+    <string name="hbcps">BCPS</string>
+    <string name="hdghs">DGHS</string>
+    <string name="hmohf">MOHFW</string>
+    <string name="hbpsc">BPSC</string>
+    <string name="hgazettes">Gazettes</string>
+    <string name="hresult">MBBS/BDS\nAdmission</string>
+
+    <!--button description-->
+    <string name="bsmmu">বঙ্গবন্ধু শেখ মুজিব মেডিকেল\nবিশ্ববিদ্যালয়</string>
+    <string name="mohf">স্বাস্থ্য ও পরিবার পরিকল্পনা\nমন্ত্রণালয়</string>
+    <string name="bpsc">বাংলাদেশ সরকারি কর্ম \nকমিশন</string>
+    <string name="gazettes">বাংলাদেশ সরকারি মুদ্রণালয়\n(বি.জি.প্রেস)</string>
+    <string name="dghs">স্বাস্থ্য অধিদপ্তর\n</string>
+    <string name="result">মেডিকেল ও ডেন্টাল\nভর্তি পরীক্ষার ফলাফল</string>
+    <string name="bcps">Bangladesh College of\nPhysicians and Surgeons</string>
+    <string name="bmdc">Bangladesh Medical and\nDental Council</string>
+
+    <!--alert message contents-->
+    <string name="msg1">তে কোন</string>
+    <string name="msg2">প্রকাশিত হয়নি</string>
+
+    <!--gazette item filter list-->
+    <string name="seniorGazette"><b>সিনিয়র স্কেল</b></string>
+    <string name="departmentalGazette"><b>ডিপার্টমেন্টাল</b></string>
+    <string name="service"><b>চাকুরি স্থায়ীকরণ</b></string>
+    <string name="filterDepartmental">অর্ধ-বার্ষিকী বিভাগীয়</string>
+    <string name="filterSeniorScale">সিনিয়র স্কেলে পদোন্নতি</string>
+    <string name="filterGazette">appointments, promotions, transfers</string>
+
+    <string name="homePage">Home page</string>
+    <!--bsmmuOptions-->
+    <string name="residency">Residency/Non Residency</string>
+    <string name="admissionEreregi">Admission and e-Registration</string>
+    <string name="notice">Notice</string>
+
+    <!--bcpsOptions-->
+    <string name="onlineNotic">Online Notice</string>
+    <string name="guideline">Guidelines and Downloadable forms</string>
+    <string name="registrationFCPS">Registration (FCPS Part-I Pass Trainees)</string>
+    <string name="rollResultFCPS">Results by Roll Number</string>
+    <string name="fcpsresult">Examination Only Final Result (PDF)\nPart-I, Part-II, MCPS</string>
+
+    <!--dghsOptions-->
+    <string name="homePageNotice">Home Page Notices and\nFoundation Training orders</string>
+    <string name="posting">বদলি/পদায়ন আদেশ</string>
+    <string name="hrm">HRM</string>
+
+    <!--mohfOptions-->
+    <string name="deputation">সংশোধিত ডেপুটেশন নীতিমালা ২০১৩\nবিভিন্ন কোর্সে বিদ্যমান আসন সংখ্যা\nদুর্গম উপজেলার তালিকা</string>
+
+    <!--bpscOptions-->
+    <string name="bcsOnline">বিসিএস পরীক্ষার অনলাইন রেজিস্ট্রেশন</string>
+    <string name="departmentalOnline">বিভাগীয় পরীক্ষার অনলাইন রেজিস্ট্রেশন</string>
+    <string name="seniorOnline">সিনিয়র স্কেল পরীক্ষার অনলাইন রেজিস্ট্রেশন</string>
+    <string name="bcsResult">বিসিএস পরীক্ষার নোটিশ ও ফলাফল</string>
+    <string name="departmentalResult">বিভাগীয় পরীক্ষার নোটিশ ও ফলাফল</string>
+    <string name="seniorResult">সিনিয়র স্কেল পরীক্ষার নোটিশ ও ফলাফল</string>
+    <string name="forms">ফর্মসমূহ\n(BPSC form-2, BPSC form-3)</string>
+
+    <!--bmdcOptions-->
+    <string name="findDoctor">Find Registered Doctors</string>
+    <string name="bmdcDownloadbleForms">Registreation forms:\nTemporary/Renewal</string>
+
+    <!--resultsOption-->
+    <string name="mbbs">Results of MBBS</string>
+    <string name="bds">Results of BDS</string>
+    <!--gazetteOptins-->
+    <string name="seniorScaleOption"><b>সিনিয়র স্কেল পরীক্ষার গেজেট</b></string>
+    <string name="departmentalOption"><b>ডিপার্টমেন্টাল পরীক্ষার গেজেট</b></string>
+    <string name="serviceConfirmOption"><b>চাকুরি স্থায়ীকরণ পরীক্ষার গেজেট</b></string>
+
+    <!--buttonHints-->
+    <string name="bsmmuHints">Residency, non-Residency,\nNotice</string>
+    <string name="bcpsHints">Guidelines, pdf forms\nFCPS, MCPS Results</string>
+    <string name="dghsHints">বদলি/পদায়ন, HRM,\nবুনিয়াদি প্রশিক্ষণ</string>
+    <string name="mohfwHints">ডেপুটেশন নীতিমালা ২০১৩\nবিভিন্ন কোর্সে আসন সংখ্যা</string>
+    <string name="bpscHints">BCS, Departmental exam,\nSenior Scale Exam</string>
+    <string name="gazetteHints">সিনিয়র স্কেল, ডিপার্টমেন্টাল,\nচাকুরি স্থায়ীকরণ</string>
+    <string name="bmdcHints">Find Registered Doctor\nRegistration/renewl forms</string>
+    <string name="resultsHints"></string>
+
+<!--jkjkjk-->
+    <string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>
+    <string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>
+    <string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>
+    <string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>
+
+    <string name="notification">Select the notifications you want daily</string>
+    <string name="residencySetting">"BSMMU: (For residents only) exam notice for phase A, phase B, results "</string>
+    <string name="noticeSetting">Residency Non residency (Diploma, M.Phil) admission notice, seat plan, result </string>
+    <string name="dghsSetting">Foundation training orders and other orders from DGHS</string>
+    <string name="resultBcsSetting">BCS exam: Results and other notice</string>
+    <string name="resultDeptSetting">Departmental exam: Results and other notice</string>
+    <string name="resultSeniorSetting">Senior Scale exam: Results and other notice</string>
+    <string name="regiDeptSetting">Departmental exam: Notify me when online registration starts</string>
+    <string name="regiSeniorSetting">Senior Scale exam: Notify me when online registration starts</string>
+
+    <string name="regidepttext">Registration for Departmental Exam has been started. Click to go for Registration</string>
+    <string name="regiseniortext">Registration for Senior Scale Exam has been started. Click to go for Registration</string>
+    <string name="about">App Developer:\n\n<b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>
+    </string>
+    <string name="settingDialog">\nChoose websites from which you want to get notifications daily\n</string>
+
+    <string name="browseralert">\nIn case:\n\n1. The page is empty \n\n2. You see no preview available\n\n** Press Reload button several times, it may solve the problem\n</string>
+    <string name="exit">\nMail me your problems, Ideas and suggestions for more links you want\n</string>
+</resources>

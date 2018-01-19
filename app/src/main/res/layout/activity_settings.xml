@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="7dp"
+    android:paddingRight="5dp"
+    android:paddingLeft="5dp"
+    android:orientation="vertical"
+    >
+    <TextView
+        android:background="@drawable/bcsdept"
+        android:textColor="#123456"
+        android:gravity="center"
+        android:textSize="25dp"
+        android:text="@string/notification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="30dp"/>
+    <LinearLayout
+        android:padding="0.5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <ScrollView
+        android:background="@drawable/bcsdept"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/residencySetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/residencySetting" />
+
+            <CheckBox
+                android:id="@+id/noticeSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/noticeSetting" />
+
+            <CheckBox
+                android:id="@+id/DGHSSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/dghsSetting" />
+
+            <CheckBox
+                android:id="@+id/bcsResultSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/resultBcsSetting" />
+
+            <CheckBox
+                android:id="@+id/regiDeptSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/regiDeptSetting" />
+
+            <CheckBox
+                android:id="@+id/deptResultSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/resultDeptSetting" />
+
+            <CheckBox
+                android:id="@+id/regiSeniorSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/regiSeniorSetting" />
+
+            <CheckBox
+                android:id="@+id/seniorResultSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/resultSeniorSetting" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="30dp"
+                android:textColor="#123456"
+                android:textSize="25dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

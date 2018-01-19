@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/reload"
+        android:title="Reload"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/stop"
+        android:title="Stop"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/copy"
+        android:title="Copy Link"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/exit"
+        android:title="Exit Browser"
+        app:showAsAction="never" />
+
+</menu>
