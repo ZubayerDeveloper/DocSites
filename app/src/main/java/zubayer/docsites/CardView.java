@@ -50,8 +50,6 @@ public class CardView extends Activity {
     AlertDialog.Builder builder;
     View m;
     Calendar calendar;
-//    EditText hour,min,sec;
-//    Button start,stop;
     private AdView mAdView;
     NotificationCompat.BigTextStyle myNotification;
     NotificationCompat.Builder notificationBuilder;
@@ -303,17 +301,17 @@ public class CardView extends Activity {
                                 break;
                             case 2:
                                 buttonTexts.clear();
-                                regiDept();
+                                resultBCS();
                                 Dialog.show();
                                 break;
                             case 3:
                                 buttonTexts.clear();
-                                regiSenior();
+                                bpscForms();
                                 Dialog.show();
                                 break;
                             case 4:
                                 buttonTexts.clear();
-                                resultBCS();
+                                regiDept();
                                 Dialog.show();
                                 break;
                             case 5:
@@ -323,12 +321,12 @@ public class CardView extends Activity {
                                 break;
                             case 6:
                                 buttonTexts.clear();
-                                resultSenior();
+                                regiSenior();
                                 Dialog.show();
                                 break;
                             case 7:
                                 buttonTexts.clear();
-                                bpscForms();
+                                resultSenior();
                                 Dialog.show();
                                 break;
                         }
@@ -676,7 +674,7 @@ public class CardView extends Activity {
                 SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
                 boolean b = prefs.getBoolean("yesno", false);
                 updateMessage = prefs.getString("updateMessage", null);
-                if (b == true) {
+                if (b) {
                     checkinternet = builder.create();
                     checkinternet.setButton("Update", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface da, int but) {

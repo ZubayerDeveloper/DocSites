@@ -74,7 +74,7 @@
     <!--gazetteOptins-->
     <string name="seniorScaleOption"><b>সিনিয়র স্কেল পরীক্ষার গেজেট</b></string>
     <string name="departmentalOption"><b>ডিপার্টমেন্টাল পরীক্ষার গেজেট</b></string>
-    <string name="serviceConfirmOption"><b>চাকুরি স্থায়ীকরণ পরীক্ষার গেজেট</b></string>
+    <string name="serviceConfirmOption"><b>চাকুরি স্থায়ীকরণের গেজেট</b></string>
 
     <!--buttonHints-->
     <string name="bsmmuHints">Residency, non-Residency,\nNotice</string>
@@ -107,7 +107,10 @@
     <string name="about">App Developer:\n\n<b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>
     </string>
     <string name="settingDialog">\nChoose websites from which you want to get notifications daily\n</string>
+    <string name="vloumeHeading">\লিস্ট থেকে গেজেট নির্বাচন করুন</string>
+    <string name="volumeNavigation">\পরবর্তী পৃষ্ঠা</string>
+    <string name="dialogueText">\গেজেট দেখার জন্য এখানে ক্লিক করুন</string>
 
-    <string name="browseralert">\nIn case:\n\n1. The page is empty \n\n2. You see no preview available\n\n** Press Reload button several times, it may solve the problem\n</string>
+    <string name="browseralert">\n\n1.If the page is empty \n\n2. if you see \"no preview available\"\n\n** Press \"Reload\" button several times, it may solve the problem\n</string>
     <string name="exit">\nMail me your problems, Ideas and suggestions for more links you want\n</string>
 </resources>

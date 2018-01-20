@@ -21,18 +21,6 @@
             android:layout_marginBottom="7dp"
             android:textColor="#62330E"
             android:textSize="30sp" />
-        <!--<EditText-->
-            <!--android:id="@+id/gazetteEdit"-->
-            <!--android:inputType="number"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_height="60dp"/>-->
-        <!--<Button-->
-            <!--android:id="@+id/search"-->
-            <!--android:text="Go"-->
-            <!--android:layout_width="0dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_height="wrap_content" />-->
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -40,6 +28,25 @@
 <TableLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TableRow>
+        <TextView
+            android:textSize="15dp"
+            android:gravity="center"
+            android:text="@string/vloumeHeading"
+            android:layout_width="0dp"
+            android:layout_weight="6"
+            android:layout_height="match_parent">
+        </TextView>
+        <TextView
+            android:textSize="15dp"
+            android:gravity="center"
+            android:text="@string/volumeNavigation"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="match_parent">
+
+        </TextView>
+    </TableRow>
     <TableRow>
         <ListView
             android:textAlignment="center"

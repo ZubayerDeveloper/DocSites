@@ -128,14 +128,12 @@ public class Browser extends Activity {
             }
         });
 
-
         website.setDownloadListener(new DownloadListener() {
 
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String mimetype,
                                         long contentLength) {
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-                //request.allowScanningByMediaScanner();
                 request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype));
                 final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
