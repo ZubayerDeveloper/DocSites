@@ -146,6 +146,9 @@ public class CardView extends Activity {
         if(density>=DisplayMetrics.DENSITY_XXHIGH) {
             gridView.setHorizontalSpacing(22);
             gridView.setVerticalSpacing(22);
+        }else if(density<DisplayMetrics.DENSITY_HIGH) {
+            gridView.setHorizontalSpacing(5);
+            gridView.setVerticalSpacing(5);
         }else {
             gridView.setHorizontalSpacing(10);
             gridView.setVerticalSpacing(10);
