@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -84,6 +85,18 @@ public class CardView extends Activity {
         Calligrapher font = new Calligrapher(this);
         font.setFont(this, "kalpurush.ttf", true);
         manager=(AlarmManager)getSystemService(Context.ALARM_SERVICE) ;
+        int density=getResources().getDisplayMetrics().densityDpi;
+        DisplayMetrics displayMetrics;
+        switch (density){
+            case DisplayMetrics.DENSITY_XXXHIGH: myToaster("XXXHigh density");
+            break;
+            case DisplayMetrics.DENSITY_XXHIGH: myToaster("XXHigh density");
+                break;
+            case DisplayMetrics.DENSITY_XHIGH: myToaster("XHigh density");
+                break;
+            case DisplayMetrics.DENSITY_HIGH:myToaster(" High Density");
+            break;
+        }
         try{
             manager.cancel(pendingIntent);
         }catch (Exception e){}
@@ -141,8 +154,13 @@ public class CardView extends Activity {
         gridView =(GridView)findViewById(R.id.grid);
         list.setAdapter(adapter);
         gridView.setAdapter(gridAdapter);
-        gridView.setHorizontalSpacing(22);
-        gridView.setVerticalSpacing(22);
+        if(density>=DisplayMetrics.DENSITY_XXHIGH) {
+            gridView.setHorizontalSpacing(22);
+            gridView.setVerticalSpacing(22);
+        }else {
+            gridView.setHorizontalSpacing(10);
+            gridView.setVerticalSpacing(10);
+        }
         progressBar=(ProgressBar)m.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
         builder = new AlertDialog.Builder(CardView.this);
