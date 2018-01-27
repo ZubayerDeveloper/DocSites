@@ -55,6 +55,7 @@ public class CardView extends Activity {
     NotificationCompat.Builder notificationBuilder;
     NotificationManager notificationManager;
     AlarmManager manager;
+    AlarmManager.AlarmClockInfo info;
     PendingIntent pendingIntent,instantPendingIntent;;
     ProgressBar progressBar;
     ListView list;
@@ -67,10 +68,11 @@ public class CardView extends Activity {
     bcpsParser bcps;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage,parseVersionCode,pdfFilter,driveViewer,dateHour,dateMin,dateSec;
-    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=10;
+    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=11;
     boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,bmdcClicked,resultsClicked,poped,checkpop;
     MenuItem menuitem;
     SharedPreferences preferences;
+    Intent newIntent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +83,6 @@ public class CardView extends Activity {
         mAdView.loadAd(adRequest);
         Calligrapher font = new Calligrapher(this);
         font.setFont(this, "kalpurush.ttf", true);
-
         manager=(AlarmManager)getSystemService(Context.ALARM_SERVICE) ;
         try{
             manager.cancel(pendingIntent);
@@ -91,7 +92,7 @@ public class CardView extends Activity {
                 calendar.set(Calendar.HOUR_OF_DAY,18);
                 calendar.set(Calendar.MINUTE,0);
                 calendar.set(Calendar.SECOND,1);
-                Intent newIntent=new Intent(CardView.this,NotificationReceiver.class);
+                newIntent=new Intent(CardView.this,NotificationReceiver.class);
                 newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 pendingIntent=PendingIntent.getBroadcast(CardView.this,0,newIntent,PendingIntent.FLAG_UPDATE_CURRENT);
                 manager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_HALF_DAY,pendingIntent);
@@ -218,7 +219,7 @@ public class CardView extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Dialog.setTitle(buttonTexts.get(position));
                 if(urls.isEmpty()) {
-                    if (bsmmuClicked == true) {
+                    if (bsmmuClicked) {
                         switch (position) {
                             case 0:
                                 bsmmuHome();
@@ -240,7 +241,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (bcpsClicked == true) {
+                    if (bcpsClicked) {
                         switch (position) {
                             case 0:
                                 bcpsHome();
@@ -261,7 +262,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (dghsClicked == true) {
+                    if (dghsClicked) {
                         switch (position) {
                             case 0:
                                 dghsHome();
@@ -281,7 +282,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (mohfwClicked == true) {
+                    if (mohfwClicked) {
                         switch (position) {
                             case 0:
                                 mohfwHome();
@@ -291,7 +292,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (bpscClicked == true) {
+                    if (bpscClicked) {
                         switch (position) {
                             case 0:
                                 bpscHpme();
@@ -331,7 +332,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (gazetteClicked == true) {
+                    if (gazetteClicked) {
                         switch (position) {
                             case 0:
                                 seniorGazette();
@@ -344,7 +345,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (bmdcClicked == true) {
+                    if (bmdcClicked) {
                         switch (position) {
                             case 0:
                                 bmdcHpme();
@@ -357,7 +358,7 @@ public class CardView extends Activity {
                                 break;
                         }
                     }
-                    if (resultsClicked == true) {
+                    if (resultsClicked) {
                         switch (position) {
                             case 0:
                                 mbbsResult();
@@ -387,7 +388,6 @@ public class CardView extends Activity {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED) {
                 return true;
             } else {
-
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
             }
@@ -405,7 +405,7 @@ public class CardView extends Activity {
             checkinternet.setCancelable(false);
             checkinternet.setButton("Allow permission", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    if (Build.VERSION.SDK_INT >= 23) {
+                    if (checkSstorage()) {
                         ActivityCompat.requestPermissions(CardView.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                     }
                 }
@@ -643,18 +643,16 @@ public class CardView extends Activity {
                     Integer parseint = Integer.parseInt(parseVersionCode);
                     if (parseint > versionCode) {
                         SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                        prefs.edit().putBoolean("yesno", true).commit();
-                        prefs.edit().putString("updateMessage", updateMessage).commit();
+                        prefs.edit().putBoolean("yesno", true).apply();
+                        prefs.edit().putString("updateMessage", updateMessage).apply();
                         checkUpdate();
                     } else if (parseint == versionCode) {
                         SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                        prefs.edit().putBoolean("yesno", false).commit();
-                        myToast("Your app is uptodate");
+                        prefs.edit().putBoolean("yesno", false).apply();
                         checkUpdate();
                     } else if (parseint < versionCode) {
                         SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                        prefs.edit().putBoolean("yesno", false).commit();
-                        myToast("Your app is up to date");
+                        prefs.edit().putBoolean("yesno", false).apply();
                         checkUpdate();
                     }
                 } else {
@@ -730,14 +728,16 @@ public class CardView extends Activity {
                 SharedPreferences settings = getSharedPreferences("setting", 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putBoolean("checked", item.isChecked());
-                editor.commit();
+                editor.apply();
             }
                 break;
             case R.id.rate: Intent i =new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites"));
                 startActivity(i);
                 break;
-            case R.id.check:manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
-//                manager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_HALF_DAY,pendingIntent);
+            case R.id.check:
+                pendingIntent=PendingIntent.getBroadcast(CardView.this,11,newIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+                manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
+                myToaster("Checking Notifications");
         }
         return super.onOptionsItemSelected(item);
 

@@ -9,7 +9,7 @@
     <string name="hdghs">DGHS</string>
     <string name="hmohf">MOHFW</string>
     <string name="hbpsc">BPSC</string>
-    <string name="hgazettes">Gazettes</string>
+    <string name="hgazettes">Gazette</string>
     <string name="hresult">MBBS/BDS\nAdmission</string>
 
     <!--button description-->
@@ -22,16 +22,13 @@
     <string name="bcps">Bangladesh College of\nPhysicians and Surgeons</string>
     <string name="bmdc">Bangladesh Medical and\nDental Council</string>
 
-    <!--alert message contents-->
-    <string name="msg1">তে কোন</string>
-    <string name="msg2">প্রকাশিত হয়নি</string>
 
     <!--gazette item filter list-->
     <string name="seniorGazette"><b>সিনিয়র স্কেল</b></string>
     <string name="departmentalGazette"><b>ডিপার্টমেন্টাল</b></string>
     <string name="service"><b>চাকুরি স্থায়ীকরণ</b></string>
     <string name="filterDepartmental">অর্ধ-বার্ষিকী বিভাগীয়</string>
-    <string name="filterSeniorScale">সিনিয়র স্কেলে পদোন্নতি</string>
+    <string name="filterSeniorScale">সিনিয়র স্কেল</string>
     <string name="filterGazette">appointments, promotions, transfers</string>
 
     <string name="homePage">Home page</string>

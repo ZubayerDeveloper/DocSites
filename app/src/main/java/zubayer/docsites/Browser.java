@@ -23,7 +23,7 @@ public class Browser extends Activity {
     ProgressBar progressbar;
     MenuItem item2;
     private AdView mAdView;
-    String driveViewer;
+    String driveViewer,pdfurl;
     ImageButton download;
     Button reload;
     AlertDialog checkinternet;
@@ -44,6 +44,7 @@ public class Browser extends Activity {
         progressbar.setProgress(0);
         website = (WebView) findViewById(R.id.WebView);
         driveViewer="https://docs.google.com/viewer?url=";
+        pdfurl="https://docs.google.com/gview?embedded=true&url=";
         urls=getIntent().getExtras().getString("value");
         website.setWebViewClient(new WebViewClient(){
             @Override
@@ -52,7 +53,13 @@ public class Browser extends Activity {
                    Intent intent = new Intent(Browser.this, Browser.class);
                    intent.putExtra("value", url);
                    startActivity(intent);
-               }else {
+               }
+//               else if(url.contains("download")){
+//                   Intent intent = new Intent(Browser.this, Browser.class);
+//                   intent.putExtra("value", url);
+//                   startActivity(intent);
+//               }
+               else  {
                    Intent intent = new Intent(Browser.this, Browser.class);
                    intent.putExtra("value", url);
                    startActivity(intent);
@@ -83,8 +90,7 @@ public class Browser extends Activity {
         //website.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
         website.getSettings().setLightTouchEnabled(true);
         website.getSettings().setLoadsImagesAutomatically(true);
-        //website.getSettings().setMediaPlaybackRequiresUserGesture(true);
-        //website.getSettings().setOffscreenPreRaster(true);
+//        website.getSettings().setMediaPlaybackRequiresUserGesture(true);
         website.getSettings().setPluginState(WebSettings.PluginState.ON);
         website.getSettings().setSaveFormData(true);
         website.getSettings().setSavePassword(true);
@@ -93,9 +99,9 @@ public class Browser extends Activity {
         website.getSettings().setLoadWithOverviewMode(true);
         website.getSettings().setAllowContentAccess(true);
         website.getSettings().setAllowFileAccess(true);
-        //website.getSettings().setAllowFileAccessFromFileURLs(true);
+        website.getSettings().setAllowFileAccessFromFileURLs(true);
         website.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-        //website.getSettings().setAllowUniversalAccessFromFileURLs(true);
+        website.getSettings().setAllowUniversalAccessFromFileURLs(true);
         website.getSettings().setAppCacheEnabled(true);
         website.getSettings().setBuiltInZoomControls(true);
         website.getSettings().setSupportMultipleWindows(false);
@@ -115,7 +121,13 @@ public class Browser extends Activity {
             download.setVisibility(View.VISIBLE);
             website.loadUrl(driveViewer+urls);
             loadProgressBar();
-        }else {
+        }
+//        else if(urls.contains("download")){
+//            download.setVisibility(View.VISIBLE);
+//            website.loadUrl(pdfurl+urls);
+//            loadProgressBar();
+//        }
+        else {
             download.setVisibility(View.GONE);
             website.loadUrl(urls);
             loadProgressBar();

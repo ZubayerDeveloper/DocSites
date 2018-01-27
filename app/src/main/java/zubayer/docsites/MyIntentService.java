@@ -1,20 +1,29 @@
 package zubayer.docsites;
 
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class JobScheduler extends IntentService {
+import java.util.Calendar;
+
+public class MyIntentService extends IntentService {
     String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,driveViewer;
     int textMin, textMax, linkBegin;
     NotificationCompat.BigTextStyle bigTextStyle;
@@ -23,7 +32,7 @@ public class JobScheduler extends IntentService {
     PendingIntent pendingIntent;
     Intent myIntent;
     SharedPreferences preferences,settingPreference;
-    public JobScheduler() {
+    public MyIntentService() {
         super("MyService");
     }
     boolean checked;
@@ -156,16 +165,16 @@ public class JobScheduler extends IntentService {
             preferences=getSharedPreferences("regiDeptSetting",0);
             checked=preferences.getBoolean("regiDeptChecked",false);
             if(checked) {
-            regiDept();executableTag();
-            if(btxt.contains("expired")){
+                regiDept();executableTag();
+                if(btxt.contains("expired")){
                 }else {
-                myIntent = new Intent(this, Browser.class);
-                myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
-                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                pendingIntent = PendingIntent.getActivity(this, 6, myIntent, 0);
-                bigTextStyleNotification("Departmental Exam Registration", getString(R.string.regidepttext));
-                notification("Departmental Exam Registration", getString(R.string.regidepttext), 6);
-            }
+                    myIntent = new Intent(this, Browser.class);
+                    myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
+                    myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    pendingIntent = PendingIntent.getActivity(this, 6, myIntent, 0);
+                    bigTextStyleNotification("Departmental Exam Registration", getString(R.string.regidepttext));
+                    notification("Departmental Exam Registration", getString(R.string.regidepttext), 6);
+                }
             }
             preferences=getSharedPreferences("regiSeniorSetting",0);
             checked=preferences.getBoolean("regiSeniorChecked",false);
@@ -182,31 +191,22 @@ public class JobScheduler extends IntentService {
                     notification("Senior Scale Exam Registration", getString(R.string.regiseniortext), 7);
                 }
             }
-//            update();executableTag();
-//            preferences=getSharedPreferences("update",Context.MODE_PRIVATE);
-//            previousSaved=preferences.getString("update",null);
-//
-//            if(btxt.equalsIgnoreCase(previousSaved)){
-//                updateNotification();
-//            }else {
-//
-//                preferences.edit().putString("update",btxt).apply();
-//            }
         } catch (Exception e) {
         }
     }
-
-
-
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        Toast.makeText(this,"DocSites is checking new notice in websites",Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent, flags, startId);
     }
     @Override
     public void onDestroy() {
-        Toast.makeText(this,"Update checking completed",Toast.LENGTH_SHORT).show();
         super.onDestroy();
+        try {
+            AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Intent newIntent = new Intent(MyIntentService.this, NotificationReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(MyIntentService.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            manager.cancel(pendingIntent);
+        }catch (Exception e){}
     }
 
     private void residency() {
@@ -281,11 +281,11 @@ public class JobScheduler extends IntentService {
             Elements links = doc.select(paramTagForText);
             Elements hrefs = doc.select(paramTagForLink);
 
-                Element link = links.get(textMin);
-                btxt = link.text();
+            Element link = links.get(textMin);
+            btxt = link.text();
 
-                Element li = hrefs.get(linkBegin);
-                url = li.attr(paramLink);
+            Element li = hrefs.get(linkBegin);
+            url = li.attr(paramLink);
 
         } catch (Exception e) {
         }
