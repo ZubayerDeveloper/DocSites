@@ -86,17 +86,6 @@ public class CardView extends Activity {
         font.setFont(this, "kalpurush.ttf", true);
         manager=(AlarmManager)getSystemService(Context.ALARM_SERVICE) ;
         int density=getResources().getDisplayMetrics().densityDpi;
-        DisplayMetrics displayMetrics;
-        switch (density){
-            case DisplayMetrics.DENSITY_XXXHIGH: myToaster("XXXHigh density");
-            break;
-            case DisplayMetrics.DENSITY_XXHIGH: myToaster("XXHigh density");
-                break;
-            case DisplayMetrics.DENSITY_XHIGH: myToaster("XHigh density");
-                break;
-            case DisplayMetrics.DENSITY_HIGH:myToaster(" High Density");
-            break;
-        }
         try{
             manager.cancel(pendingIntent);
         }catch (Exception e){}
