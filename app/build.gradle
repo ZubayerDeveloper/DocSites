@@ -7,7 +7,7 @@ android {
         applicationId "zubayer.docsites"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 11
+        versionCode 12
         versionName "2.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
