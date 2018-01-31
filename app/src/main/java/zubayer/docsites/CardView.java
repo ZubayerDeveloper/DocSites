@@ -85,7 +85,6 @@ public class CardView extends Activity {
         Calligrapher font = new Calligrapher(this);
         font.setFont(this, "kalpurush.ttf", true);
         manager=(AlarmManager)getSystemService(Context.ALARM_SERVICE) ;
-        int density=getResources().getDisplayMetrics().densityDpi;
         try{
             manager.cancel(pendingIntent);
         }catch (Exception e){}
@@ -143,6 +142,7 @@ public class CardView extends Activity {
         gridView =(GridView)findViewById(R.id.grid);
         list.setAdapter(adapter);
         gridView.setAdapter(gridAdapter);
+        int density=getResources().getDisplayMetrics().densityDpi;
         if(density>=DisplayMetrics.DENSITY_XXHIGH) {
             gridView.setHorizontalSpacing(22);
             gridView.setVerticalSpacing(22);

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.*;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -127,14 +128,14 @@ public class Main2Activity extends Activity {
         result.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-               try {
-                   pdfFilter = listUrls.get(position);
-                   browser(pdfFilter);
-               }catch (Exception e){
-                   checkinternet=builder.create();
-                   checkinternet.setMessage("Something went wrong, try again");
-                   checkinternet.show();
-               }
+                try {
+                    pdfFilter = listUrls.get(position);
+                    browser(pdfFilter);
+                }catch (Exception e){
+                    checkinternet=builder.create();
+                    checkinternet.setMessage("Something went wrong, try again");
+                    checkinternet.show();
+                }
             }
         });
     }
@@ -238,8 +239,8 @@ public class Main2Activity extends Activity {
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
             if (btxt != null) {
-               yearUrl=yearUrlNext;
-               executeYearNext();
+                yearUrl=yearUrlNext;
+                executeYearNext();
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -361,16 +362,16 @@ public class Main2Activity extends Activity {
         }
     }
     public  void executeYear(){
-            pareseYear = new YearParser();
-            paramTagForText = "#MyResult tr";
-            paramTagForLink = "#MyResult tr a";
-            paramLink = "abs:href";
-            textMin = 0;
-            linkBegin = 0;
-            textMax = 12;
-            linkEnd = 12;
-            pareseYear.execute();
-}
+        pareseYear = new YearParser();
+        paramTagForText = "#MyResult tr";
+        paramTagForLink = "#MyResult tr a";
+        paramLink = "abs:href";
+        textMin = 0;
+        linkBegin = 0;
+        textMax = 12;
+        linkEnd = 12;
+        pareseYear.execute();
+    }
     public  void executeYearNext(){
         yearNextParser = new YearNextParser();
         paramTagForText = "#MyResult tr";
@@ -404,20 +405,20 @@ public class Main2Activity extends Activity {
     }
     public  void browser(String inurl){
         final String uurl=inurl;
-            try {
-                boolean isChecked;
-                SharedPreferences settings = getSharedPreferences("setting", 0);
-                isChecked=settings.getBoolean("checked",false);
-                if (isChecked == false) {
-                    Intent intent = new Intent(Main2Activity.this, Browser.class);
-                    intent.putExtra("value", inurl);
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(inurl));
-                    startActivity(intent);
-                }
-            }catch (Exception e){}
-        }
+        try {
+            boolean isChecked;
+            SharedPreferences settings = getSharedPreferences("setting", 0);
+            isChecked=settings.getBoolean("checked",false);
+            if (isChecked == false) {
+                Intent intent = new Intent(Main2Activity.this, Browser.class);
+                intent.putExtra("value", inurl);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(inurl));
+                startActivity(intent);
+            }
+        }catch (Exception e){}
+    }
 
     @Override
     public void onBackPressed() {
@@ -449,7 +450,7 @@ public class Main2Activity extends Activity {
 
             checkinternet.show();
         }
-        }
+    }
     private void loadMonthAgain() {
         if (monthArray.isEmpty()) {
             checkinternet = builder.create();

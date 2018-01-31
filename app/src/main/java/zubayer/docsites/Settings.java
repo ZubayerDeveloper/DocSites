@@ -3,14 +3,17 @@ package zubayer.docsites;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 public class Settings extends Activity {
 
     CheckBox residency,notice,dghs,reultBcs, resultDept, resultSenior,regiDept,regiSenior;
     SharedPreferences preferences;
     boolean checked;
+    TextView heading;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +28,11 @@ public class Settings extends Activity {
         regiDept=(CheckBox)findViewById(R.id.regiDeptSetting);
         regiSenior=(CheckBox)findViewById(R.id.regiSeniorSetting);
 
+        heading=(TextView)findViewById(R.id.settingHeading);
+        int density=getResources().getDisplayMetrics().densityDpi;
+        if(density<=DisplayMetrics.DENSITY_HIGH) {
+            heading.setTextSize(20);
+        }
         preferences=getSharedPreferences("residencySetting",0);
         checked=preferences.getBoolean("residencyChecked",false);
         residency.setChecked(checked);
