@@ -5,7 +5,6 @@ import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,12 +22,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -38,7 +34,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -61,14 +56,15 @@ public class CardView extends Activity {
     ProgressBar progressBar;
     ListView list;
     GridView gridView;
-    ArrayList<String> buttonTexts,urls,buttonHeadidng,buttonDescription,buttonHint,
+    ArrayList<String> buttonTexts,urls,buttonHeadidng,buttonDescription,buttonHint,buttonTexts2,urlTexts,
     bsmmuOptions,bcpsOptions,dghsOptions,mohfwOptions,bpscOptions,gazetteOptions,bmdcOptions,resultOptions;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
-    bcpsParser bcps;
+    BcpsParser bcps;
+    ServiceParser serviceParser;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
-            updateMessage,parseVersionCode,pdfFilter,driveViewer,dateHour,dateMin,dateSec;
+            updateMessage,parseVersionCode,pdfFilter,driveViewer,urlText,filterContent,filterContent2;
     int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=11;
     boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,bmdcClicked,resultsClicked,poped,checkpop;
     MenuItem menuitem;
@@ -112,6 +108,7 @@ public class CardView extends Activity {
         String[] resultsOption=getResources().getStringArray(R.array.resultsOption);
         driveViewer="https://docs.google.com/viewer?url=";
         buttonTexts=new ArrayList<>();
+        buttonTexts2=new ArrayList<>();
         urls=new ArrayList<>();
         buttonHeadidng=new ArrayList<>();
         buttonDescription=new ArrayList<>();
@@ -180,7 +177,6 @@ public class CardView extends Activity {
         }else {
             checkinternet.show();
         }
-
         Dialog = builder.create();
         Dialog.setCancelable(false);
         Dialog.setButton("Close", new DialogInterface.OnClickListener() {
@@ -300,6 +296,62 @@ public class CardView extends Activity {
                             case 1:
                                 deputation();
                                 break;
+                            case 2:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.assistantSurgeon);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 3:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.juniorConsultant);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 4:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.seniorConsultant2);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 5:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.assistantProfessor);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 6:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.associateProfessor);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 7:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.professor);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 8:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.civilSurgeon);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 9:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.adhok);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
+                                Dialog.show();
+                                break;
                         }
                     }
                     if (bpscClicked) {
@@ -322,20 +374,27 @@ public class CardView extends Activity {
                                 break;
                             case 4:
                                 buttonTexts.clear();
-                                regiDept();
+                                filterContent=getString(R.string.assistantSurgeon);
+                                filterContent2="aaaaaaa";
+                                serviceConfirmGazette();
                                 Dialog.show();
                                 break;
                             case 5:
                                 buttonTexts.clear();
-                                resultDept();
+                                regiDept();
                                 Dialog.show();
                                 break;
                             case 6:
                                 buttonTexts.clear();
-                                regiSenior();
+                                resultDept();
                                 Dialog.show();
                                 break;
                             case 7:
+                                buttonTexts.clear();
+                                regiSenior();
+                                Dialog.show();
+                                break;
+                            case 8:
                                 buttonTexts.clear();
                                 resultSenior();
                                 Dialog.show();
@@ -351,7 +410,14 @@ public class CardView extends Activity {
                                 departmentalGazette();
                                 break;
                             case 2:
+                                buttonTexts.clear();
+                                filterContent=getString(R.string.service);
+                                filterContent2=getString(R.string.service2);
                                 serviceConfirmGazette();
+                                Dialog.show();
+                                break;
+                            case 3:
+                                weeklyGazette();
                                 break;
                         }
                     }
@@ -480,12 +546,8 @@ public class CardView extends Activity {
                 aa = i;
                 Element link = links.get(aa);
                 btxt = link.text();
+                url=link.select("a").attr(Attr);
                 buttonTexts.add(btxt);
-            }
-            for (i = linkBegin; i < linkEnd; i++) {
-                aa = i;
-                Element li = hrefs.get(aa);
-                url = li.attr(Attr);
                 urls.add(url);
             }
             buttonTexts.add(position, newline);
@@ -493,7 +555,37 @@ public class CardView extends Activity {
         } catch (Exception e) {
         }
     }
+    public void serviceConfirmTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end,
+                                    int lBegin, int lEnd) {
+        Url="http://mohfw.gov.bd/index.php?option=com_content&view=article&id=111:bcs-health&catid=38:bcs-health&Itemid=&lang=en";
+        paramTagForLink = tagForLink;
+        paramTagForText = TagForText;
+        paramLink = Attr;
+        textMin = begin;
+        textMax = end;
+        try {
+            Document doc = Jsoup.connect(Url).get();
+            Elements links = doc.select(TagForText);
 
+            for (i = begin; i < links.size(); i++) {
+                aa = i;
+                Element link = links.get(aa);
+                btxt = link.text();
+                url=link.select("a").attr(Attr);
+                if (btxt.contains(filterContent)) {
+                    buttonTexts.add(btxt);
+                    urls.add(url);
+                }
+                if (btxt.contains(filterContent2)) {
+                    buttonTexts.add(btxt);
+                    urls.add(url);
+                }
+            }
+
+
+        } catch (Exception e) {
+        }
+    }
     class HtmlParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
@@ -532,7 +624,45 @@ public class CardView extends Activity {
             }
         }
     }
-    class bcpsParser extends AsyncTask<Void, Void, Void> {
+    class ServiceParser extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            serviceConfirmTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            buttonTexts.clear();
+            urls.clear();
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+            if (btxt != null) {
+                progressBar.setVisibility(View.GONE);
+                list.setAdapter(adapter);
+            } else {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }
+        }
+    }
+    class BcpsParser extends AsyncTask<Void, Void, Void> {
 
         String URl = "http://www.bcpsbd.org/notice.php";
         String tagtext = "a";
@@ -839,7 +969,7 @@ public class CardView extends Activity {
         browser(pdfFilter);
     }
     private void bcpsGuideline() {
-        bcps = new bcpsParser();
+        bcps = new BcpsParser();
         back = new HtmlParser();
         paramUrl = "http://www.bcpsbd.org/notice.php";
         paramTagForText = "a";
@@ -1017,11 +1147,25 @@ public class CardView extends Activity {
         intent.putExtra("examname", getString(R.string.filterDepartmental));
         startActivity(intent);
     }
-    private void serviceConfirmGazette() {
+    private void weeklyGazette(){
         Intent intent = new Intent(CardView.this, ServiceConfirmation.class);
         startActivity(intent);
     }
 
+    private void serviceConfirmGazette() {
+        executeService();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void executeService() {
+        serviceParser = new ServiceParser();
+        paramTagForText = "table tbody tr td table tbody tr td table tbody tr";
+        paramTagForLink = "table tbody tr td table tbody tr td table tbody tr a";
+        paramLink = "abs:href";
+        textMin = 0;
+        linkBegin = 0;
+        serviceParser.execute();
+    }
     private void bmdcHpme() {
         pdfFilter="http://bmdc.org.bd/";
         browser(pdfFilter);

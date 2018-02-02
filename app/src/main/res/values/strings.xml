@@ -12,9 +12,9 @@
     <string name="hgazettes">Gazette</string>
     <string name="hresult">MBBS/BDS\nAdmission</string>
 
-    <!--button description-->
+    <!--button description স্বাস্থ্য ও পরিবার পরিকল্পনা\nমন্ত্রণালয়-->
     <string name="bsmmu">বঙ্গবন্ধু শেখ মুজিব মেডিকেল\nবিশ্ববিদ্যালয়</string>
-    <string name="mohf">স্বাস্থ্য ও পরিবার পরিকল্পনা\nমন্ত্রণালয়</string>
+    <string name="mohf">পদোন্নতি, পদায়ন\nএডহক নিয়মিতকরণ</string>
     <string name="bpsc">বাংলাদেশ সরকারি কর্ম \nকমিশন</string>
     <string name="gazettes">বাংলাদেশ সরকারি মুদ্রণালয়\n(বি.জি.প্রেস)</string>
     <string name="dghs">স্বাস্থ্য অধিদপ্তর\n</string>
@@ -22,16 +22,8 @@
     <string name="bcps">Bangladesh College of\nPhysicians and Surgeons</string>
     <string name="bmdc">Bangladesh Medical and\nDental Council</string>
 
-
-    <!--gazette item filter list-->
-    <string name="seniorGazette"><b>সিনিয়র স্কেল</b></string>
-    <string name="departmentalGazette"><b>ডিপার্টমেন্টাল</b></string>
-    <string name="service"><b>চাকুরি স্থায়ীকরণ</b></string>
-    <string name="filterDepartmental">অর্ধ-বার্ষিকী বিভাগীয়</string>
-    <string name="filterSeniorScale">সিনিয়র স্কেল</string>
-    <string name="filterGazette">appointments, promotions, transfers</string>
-
     <string name="homePage">Home page</string>
+
     <!--bsmmuOptions-->
     <string name="residency">Residency/Non Residency</string>
     <string name="admissionEreregi">Admission and e-Registration</string>
@@ -51,6 +43,15 @@
 
     <!--mohfOptions-->
     <string name="deputation">সংশোধিত ডেপুটেশন নীতিমালা ২০১৩\nবিভিন্ন কোর্সে বিদ্যমান আসন সংখ্যা\nদুর্গম উপজেলার তালিকা</string>
+    <string name="bcsHealth">বিসিএস</string>
+    <string name="assistantProfessorOption">সহকারী অধ্যাপকঃ পদোন্নতি/পদায়ন </string>
+    <string name="associateProfessorOption">সহযোগী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="juniorConsultantOption">জুনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="seniorConsultantOption">সিনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="professorOption">অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="assistantSurgeonOption">(বিসিএস) সহকারী সার্জন পদে পদায়ন</string>
+    <string name="civilSurgeonOption">সহকারী পরিচালক/সিভিল সার্জন/সমমান পদের বিজ্ঞপ্তি</string>
+    <string name="adhokOpion">এডহকঃ নিয়মিতকরণ</string>
 
     <!--bpscOptions-->
     <string name="bcsOnline">বিসিএস পরীক্ষার অনলাইন রেজিস্ট্রেশন</string>
@@ -59,7 +60,7 @@
     <string name="bcsResult">বিসিএস পরীক্ষার নোটিশ ও ফলাফল</string>
     <string name="departmentalResult">বিভাগীয় পরীক্ষার নোটিশ ও ফলাফল</string>
     <string name="seniorResult">সিনিয়র স্কেল পরীক্ষার নোটিশ ও ফলাফল</string>
-    <string name="forms">ফর্মসমূহ\n(BPSC form-2, BPSC form-3)</string>
+    <string name="forms">বিপিএসসি ফর্মসমূহ\n(BPSC form-2, BPSC form-3)</string>
 
     <!--bmdcOptions-->
     <string name="findDoctor">Find Registered Doctors</string>
@@ -68,9 +69,11 @@
     <!--resultsOption-->
     <string name="mbbs">Results of MBBS</string>
     <string name="bds">Results of BDS</string>
+
     <!--gazetteOptins-->
     <string name="seniorScaleOption"><b>সিনিয়র স্কেল পরীক্ষার গেজেট</b></string>
     <string name="departmentalOption"><b>ডিপার্টমেন্টাল পরীক্ষার গেজেট</b></string>
+    <string name="weeklyGazette"><b>সাপ্তাহিক গেজেটের ভলিউম</b></string>
     <string name="serviceConfirmOption"><b>চাকুরি স্থায়ীকরণের গেজেট</b></string>
 
     <!--buttonHints-->
@@ -80,15 +83,16 @@
     <string name="mohfwHints">ডেপুটেশন নীতিমালা ২০১৩\nবিভিন্ন কোর্সে আসন সংখ্যা</string>
     <string name="bpscHints">BCS, Departmental exam,\nSenior Scale Exam</string>
     <string name="gazetteHints">সিনিয়র স্কেল, ডিপার্টমেন্টাল,\nচাকুরি স্থায়ীকরণ</string>
-    <string name="bmdcHints">Find Registered Doctor\nRegistration/renewl forms</string>
-    <string name="resultsHints"></string>
+    <string name="bmdcHints">Find Registered Doctor\nRegistration/renewal forms</string>
+    <string name="resultsHints"> </string>
 
-<!--jkjkjk-->
+<!--addMob add unit id-->
     <string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>
     <string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>
     <string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>
     <string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>
 
+    <!--Notice text-->
     <string name="notification">Select the notifications you want daily</string>
     <string name="residencySetting">"BSMMU: (For residents only) exam notice for phase A, phase B, results "</string>
     <string name="noticeSetting">Residency Non residency (Diploma, M.Phil) admission notice, seat plan, result </string>
@@ -98,9 +102,29 @@
     <string name="resultSeniorSetting">Senior Scale exam: Results and other notice</string>
     <string name="regiDeptSetting">Departmental exam: Notify me when online registration starts</string>
     <string name="regiSeniorSetting">Senior Scale exam: Notify me when online registration starts</string>
-
     <string name="regidepttext">Registration for Departmental Exam has been started. Click to go for Registration</string>
     <string name="regiseniortext">Registration for Senior Scale Exam has been started. Click to go for Registration</string>
+
+    <!--filter string-->
+    <string name="seniorGazette">সিনিয়র স্কেল</string>
+    <string name="departmentalGazette">ডিপার্টমেন্টাল</string>
+    <string name="service">স্থায়ীকরণ</string>
+    <string name="service2">স্থায়ীকরণ</string>
+    <string name="filterDepartmental">অর্ধ-বার্ষিকী বিভাগীয়</string>
+    <string name="filterSeniorScale">সিনিয়র স্কেল</string>
+    <string name="filterGazette">appointments, promotions, transfers</string>
+    <string name="assistantProfessor">সহকারী অধ্যাপক</string>
+    <string name="associateProfessor">সহযোগী অধ্যাপক</string>
+    <string name="juniorConsultant">জুনিয়র</string>
+    <string name="juniorConsultant2">(জুনিয়র</string>
+    <string name="seniorConsultant">সিনিয়র কনসালটেন্ট</string>
+    <string name="seniorConsultant2">সিনিয়র কন</string>স
+    <string name="professor">(অধ্যাপক পদে</string>
+    <string name="assistantSurgeon">সহকারী সার্জন</string>
+    <string name="civilSurgeon">সিভিল সার্জন</string>
+    <string name="adhok">এডহক</string>
+
+    <string name="weeklyGazetteHeading">সাপ্তাহিক গেজেট</string>
     <string name="about">App Developer:\n\n<b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>
     </string>
     <string name="settingDialog">\nChoose websites from which you want to get notifications daily\n</string>

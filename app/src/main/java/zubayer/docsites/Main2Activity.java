@@ -241,6 +241,7 @@ public class Main2Activity extends Activity {
             if (btxt != null) {
                 yearUrl=yearUrlNext;
                 executeYearNext();
+                btxt=null;
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -267,6 +268,7 @@ public class Main2Activity extends Activity {
             if (btxt != null) {
                 yearSpinner.setAdapter(yearAdapter);
                 progressDialog.dismiss();
+                btxt=null;
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -292,6 +294,7 @@ public class Main2Activity extends Activity {
             if (btxt != null) {
                 progressDialog.dismiss();
                 monthSpinner.setAdapter(monthAdapter);
+                btxt=null;
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -319,6 +322,7 @@ public class Main2Activity extends Activity {
             if (btxt != null) {
                 result.setAdapter(resultAdapter);
                 progressDialog.dismiss();
+                btxt=null;
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -403,6 +407,55 @@ public class Main2Activity extends Activity {
         reslinkBegin = 0;
         parseResult.execute();
     }
+
+    private void loadYearAgain() {
+        if (yearArray.isEmpty()) {
+            checkinternet = builder.create();
+            checkinternet.setMessage("You need to reload again");
+            checkinternet.setCancelable(false);
+            checkinternet.setButton("Reload", new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog, int id) {
+                    progressDialog.dismiss();
+                    yearUrls.clear();
+                    yearArray.clear();
+                    progressDialog = ProgressDialog.show(Main2Activity.this, "", "Loading gazette years...", true, true);
+                    executeYear();
+                }
+            });
+            checkinternet.setButton3("Exit", new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog, int id) {
+                    finish();
+                }
+            });
+
+            checkinternet.show();
+        }
+    }
+    private void loadMonthAgain() {
+        if (monthArray.isEmpty()) {
+            checkinternet = builder.create();
+            checkinternet.setButton("Reload", new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog, int id) {
+                    progressDialog.dismiss();
+                    progressDialog=ProgressDialog.show(Main2Activity.this,"","Loading gazette months...",true,true);
+                    yearUrls.clear();
+                    yearArray.clear();
+                    executeMonth();
+                    checkinternet.dismiss();
+                }
+            });
+            checkinternet.setButton3("Exit", new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog, int id) {
+                    finish();
+                }
+            });
+            checkinternet.setMessage("You need to reload again");
+            checkinternet.show();
+        }else {
+            checkinternet.dismiss();
+        }
+    }
+
     public  void browser(String inurl){
         final String uurl=inurl;
         try {
@@ -429,49 +482,6 @@ public class Main2Activity extends Activity {
         }catch (Exception e){}
         super.onBackPressed();
     }
-    private void loadYearAgain() {
-        if (yearArray.isEmpty()) {
-            checkinternet = builder.create();
-            checkinternet.setMessage("You need to reload again");
-            checkinternet.setCancelable(false);
-            checkinternet.setButton("Reload", new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, int id) {
-                    yearUrls.clear();
-                    yearArray.clear();
-                    progressDialog = ProgressDialog.show(Main2Activity.this, "", "Loading gazette years...", true, true);
-                    executeYear();
-                }
-            });
-            checkinternet.setButton3("Exit", new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, int id) {
-                    finish();
-                }
-            });
 
-            checkinternet.show();
-        }
-    }
-    private void loadMonthAgain() {
-        if (monthArray.isEmpty()) {
-            checkinternet = builder.create();
-            checkinternet.setButton("Reload", new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, int id) {
-                    progressDialog=ProgressDialog.show(Main2Activity.this,"","Loading gazette months...",true,true);
-                    yearUrls.clear();
-                    yearArray.clear();
-                    executeMonth();
-                    checkinternet.dismiss();
-                }
-            });
-            checkinternet.setButton3("Exit", new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, int id) {
-                    finish();
-                }
-            });
-            checkinternet.setMessage("You need to reload again");
-            checkinternet.show();
-        }else {
-            checkinternet.dismiss();
-        }
-    }
+
 }

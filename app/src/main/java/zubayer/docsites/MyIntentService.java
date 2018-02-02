@@ -212,22 +212,18 @@ public class MyIntentService extends IntentService {
     private void residency() {
         paramUrl = "http://www.bsmmu.edu.bd";
         paramTagForText = "a";
-        paramTagForLink = "a";
         paramLink = "abs:href";
         textMin = 146;
-        linkBegin = 146;
     }
     private void bsmmuNotice() {
         paramUrl = "http://www.bsmmu.edu.bd";
         paramTagForText = "h3";
-        paramTagForLink = "h3 a";
         paramLink = "abs:href";
         textMin = 0;
-        linkBegin = 0;
     }
     private void dghsHomeLinks() {
         paramUrl = "http://dghs.gov.bd/index.php/bd/";
-        paramTagForText = "#system a";
+        paramTagForText = "#system span";
         paramTagForLink = "#system a";
         paramLink = "abs:href";
         textMin = 0;
@@ -237,56 +233,41 @@ public class MyIntentService extends IntentService {
     private void regiDept() {
         paramUrl = "http://dept.bpsc.gov.bd/node/apply";
         paramTagForText = "p";
-        paramTagForLink = "p";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 1;
     }
     private void regiSenior() {
         paramUrl = "http://snsc.bpsc.gov.bd/node/apply";
         paramTagForText = "p";
-        paramTagForLink = "p";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 1;
     }
     private void resultBCS() {
         paramUrl = "http://bpsc.gov.bd/site/view/psc_exam/BCS%20Examination/বিসিএস-পরীক্ষা";
         paramTagForText = "tr";
-        paramTagForLink = "tr a";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 0;
     }
     private void resultDept() {
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Departmental%20Examination/বিভাগীয়-পরীক্ষা";
         paramTagForText = "tr";
-        paramTagForLink = "tr td a";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 1;
     }
     private void resultSenior() {
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Senior%20Scale%20Examination/সিনিয়র-স্কেল-পরীক্ষা";
         paramTagForText = "tr";
-        paramTagForLink = "tr td a";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 1;
     }
 
     public void executableTag() {
         try {
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
-            Elements hrefs = doc.select(paramTagForLink);
-
             Element link = links.get(textMin);
             btxt = link.text();
-
-            Element li = hrefs.get(linkBegin);
-            url = li.attr(paramLink);
-
+            url=link.select("a").attr(paramLink);
         } catch (Exception e) {
         }
     }

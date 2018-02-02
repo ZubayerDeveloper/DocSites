@@ -18,7 +18,10 @@
 		android:id="@+id/idTitle"
 		android:textAppearance="?android:attr/textAppearanceMedium"
 		android:textColor="#353433"
-		android:padding="6dp"/>
+		android:paddingTop="10dp"
+		android:paddingBottom="10dp"
+		android:paddingLeft="5dp"
+		android:paddingRight="3dp"/>
 
 </LinearLayout>
 

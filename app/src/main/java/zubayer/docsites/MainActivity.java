@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 	AlertDialog Dialog, checkinternet;
 	AlertDialog.Builder builder;
 //	HtmlParser back;
-//	bcpsParser bcps;
+//	BcpsParser bcps;
 	View m;
 	ListView list;
 	MyAdapter my;
@@ -254,7 +254,7 @@ public class MainActivity extends Activity {
 //		});
 //		bcpsGuideline.setOnClickListener(new OnClickListener() {
 //			public void onClick(View v) {
-//				bcps = new bcpsParser();
+//				bcps = new BcpsParser();
 //				back = new HtmlParser();
 //				paramUrl = "http://www.bcpsbd.org/notice.php";
 //				paramTagForText = "a";

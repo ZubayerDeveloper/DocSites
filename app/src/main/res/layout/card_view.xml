@@ -10,45 +10,6 @@
     android:background="@drawable/stetho"
     android:orientation="vertical">
 
-    <!--<EditText-->
-        <!--android:id="@+id/hour"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="Hour"-->
-        <!--android:inputType="number"-->
-        <!--android:textColor="#FFFFFF"-->
-        <!--android:textColorHint="#FFFFFF" />-->
-    <!--<EditText-->
-        <!--android:hint="min"-->
-        <!--android:inputType="number"-->
-        <!--android:textColorHint="#FFFFFF"-->
-        <!--android:textColor="#FFFFFF"-->
-        <!--android:id="@+id/min"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-    <!--<EditText-->
-        <!--android:hint="Sec"-->
-        <!--android:inputType="number"-->
-        <!--android:textColorHint="#FFFFFF"-->
-        <!--android:textColor="#FFFFFF"-->
-        <!--android:id="@+id/sec"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-    <!--<Button-->
-        <!--android:text="Start"-->
-        <!--android:textColor="#FFFFFF"-->
-        <!--android:id="@+id/start"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-    <!--<Button-->
-        <!--android:text="Stop"-->
-        <!--android:textColor="#FFFFFF"-->
-        <!--android:id="@+id/stop"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-<!--<RelativeLayout-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content">-->
     <GridView
         android:paddingBottom="50dp"
         android:id="@+id/grid"
@@ -65,6 +26,5 @@
         android:gravity="center"
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_id_home" />
-<!--</RelativeLayout>-->
 </RelativeLayout>
 

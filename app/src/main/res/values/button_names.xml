@@ -53,12 +53,21 @@
     <array name="mohfwOptions">
         <item>@string/homePage</item>
         <item>@string/deputation</item>
+        <item>@string/assistantSurgeonOption</item>
+        <item>@string/juniorConsultantOption</item>
+        <item>@string/seniorConsultantOption</item>
+        <item>@string/assistantProfessorOption</item>
+        <item>@string/associateProfessorOption</item>
+        <item>@string/professorOption</item>
+        <item>@string/civilSurgeonOption</item>
+        <item>@string/adhokOpion</item>
     </array>
     <array name="bpscOptions">
         <item>@string/homePage</item>
         <item>@string/bcsOnline</item>
         <item>@string/bcsResult</item>
         <item>@string/forms</item>
+        <item>@string/assistantSurgeonOption</item>
         <item>@string/departmentalOnline</item>
         <item>@string/departmentalResult</item>
         <item>@string/seniorOnline</item>
@@ -78,6 +87,7 @@
         <item>@string/seniorScaleOption</item>
         <item>@string/departmentalOption</item>
         <item>@string/serviceConfirmOption</item>
+        <item>@string/weeklyGazette</item>
     </array>
     <array name="bpscFormsOptions">
         <item>@string/seniorScaleOption</item>
