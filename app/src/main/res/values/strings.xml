@@ -104,6 +104,15 @@
     <string name="regiSeniorSetting">Senior Scale exam: Notify me when online registration starts</string>
     <string name="regidepttext">Registration for Departmental Exam has been started. Click to go for Registration</string>
     <string name="regiseniortext">Registration for Senior Scale Exam has been started. Click to go for Registration</string>
+    <string name="assistantSurgeonSetting">(বিসিএস) সহকারী সার্জন পদে পদায়ন</string>
+    <string name="juniorConsultantSetting">জুনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="seniorConsultantSetting">সিনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="assistantProfessorSetting">সহকারী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="associateProfessorSetting">সহযোগী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="professorSetting">অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="civilSurgeonSetting">সহকারী পরিচালক/সিভিল সার্জন/সমমান পদের বিজ্ঞপ্তি</string>
+    <string name="adhocSetting">এডহকঃ নিয়মিতকরণ</string>
+    <string name="mohfwSetting">স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়ে নতুন বদলি/পদায়ন/প্রজ্ঞাপন</string>
 
     <!--filter string-->
     <string name="seniorGazette">সিনিয়র স্কেল</string>
@@ -122,7 +131,7 @@
     <string name="professor">(অধ্যাপক পদে</string>
     <string name="assistantSurgeon">সহকারী সার্জন</string>
     <string name="civilSurgeon">সিভিল সার্জন</string>
-    <string name="adhok">এডহক</string>
+    <string name="adhoc">এডহক</string>
 
     <string name="weeklyGazetteHeading">সাপ্তাহিক গেজেট</string>
     <string name="about">App Developer:\n\n<b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>

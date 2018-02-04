@@ -3,6 +3,7 @@ package zubayer.docsites;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -65,7 +67,7 @@ public class CardView extends Activity {
     ServiceParser serviceParser;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage,parseVersionCode,pdfFilter,driveViewer,urlText,filterContent,filterContent2;
-    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=11;
+    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=12;
     boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,bmdcClicked,resultsClicked,poped,checkpop;
     MenuItem menuitem;
     SharedPreferences preferences;
@@ -347,7 +349,7 @@ public class CardView extends Activity {
                                 break;
                             case 9:
                                 buttonTexts.clear();
-                                filterContent=getString(R.string.adhok);
+                                filterContent=getString(R.string.adhoc);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
@@ -947,7 +949,7 @@ public class CardView extends Activity {
     private void bsmmuNotice() {
         back = new HtmlParser();
         paramUrl = "http://www.bsmmu.edu.bd";
-        paramTagForText = "h3";
+        paramTagForText = "#tab4 h3";
         paramTagForLink = "h3 a";
         paramLink = "abs:href";
         textMin = 0;

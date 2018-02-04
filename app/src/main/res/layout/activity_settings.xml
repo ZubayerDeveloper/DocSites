@@ -20,7 +20,23 @@
     <LinearLayout
         android:padding="0.5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/select"
+            android:text="Select All"
+            android:background="@drawable/bcsdept"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/deselect"
+            android:text="Deselect All"
+            android:background="@drawable/bcsdept"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
     <ScrollView
         android:background="@drawable/bcsdept"
         android:padding="5dp"
@@ -89,7 +105,6 @@
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/regiSeniorSetting" />
-
             <CheckBox
                 android:id="@+id/seniorResultSetting"
                 android:layout_width="wrap_content"
@@ -97,6 +112,69 @@
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/resultSeniorSetting" />
+            <CheckBox
+                android:id="@+id/assistantSurgeonSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/assistantSurgeonSetting" />
+            <CheckBox
+                android:id="@+id/juniorConsultantSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/juniorConsultantSetting" />
+            <CheckBox
+                android:id="@+id/seniorConsultantSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/seniorConsultantSetting" />
+            <CheckBox
+                android:id="@+id/assistantProfessorSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/assistantProfessorSetting" />
+            <CheckBox
+                android:id="@+id/associateProfessorSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/associateProfessorSetting" />
+            <CheckBox
+                android:id="@+id/professorSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/professorSetting" />
+            <CheckBox
+                android:id="@+id/civilSergeonSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/civilSurgeonSetting" />
+            <CheckBox
+                android:id="@+id/adhocSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/adhocSetting" />
+            <CheckBox
+                android:id="@+id/mohfwSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/mohfwSetting" />
 
             <TextView
                 android:layout_width="match_parent"

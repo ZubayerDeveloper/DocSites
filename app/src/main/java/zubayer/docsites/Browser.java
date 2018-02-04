@@ -53,13 +53,7 @@ public class Browser extends Activity {
                    Intent intent = new Intent(Browser.this, Browser.class);
                    intent.putExtra("value", url);
                    startActivity(intent);
-               }
-//               else if(url.contains("download")){
-//                   Intent intent = new Intent(Browser.this, Browser.class);
-//                   intent.putExtra("value", url);
-//                   startActivity(intent);
-//               }
-               else  {
+               } else  {
                    Intent intent = new Intent(Browser.this, Browser.class);
                    intent.putExtra("value", url);
                    startActivity(intent);
@@ -121,13 +115,7 @@ public class Browser extends Activity {
             download.setVisibility(View.VISIBLE);
             website.loadUrl(driveViewer+urls);
             loadProgressBar();
-        }
-//        else if(urls.contains("download")){
-//            download.setVisibility(View.VISIBLE);
-//            website.loadUrl(pdfurl+urls);
-//            loadProgressBar();
-//        }
-        else {
+        }else {
             download.setVisibility(View.GONE);
             website.loadUrl(urls);
             loadProgressBar();
