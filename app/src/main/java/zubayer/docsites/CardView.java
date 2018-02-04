@@ -67,7 +67,7 @@ public class CardView extends Activity {
     ServiceParser serviceParser;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage,parseVersionCode,pdfFilter,driveViewer,urlText,filterContent,filterContent2;
-    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=12;
+    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=13;
     boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,bmdcClicked,resultsClicked,poped,checkpop;
     MenuItem menuitem;
     SharedPreferences preferences;

@@ -403,7 +403,7 @@ public class OrioJobScheduler extends JobService{
                     preferences = getSharedPreferences("mohfw", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("mohfw", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
+                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
 
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);

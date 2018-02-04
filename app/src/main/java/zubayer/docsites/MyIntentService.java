@@ -401,15 +401,15 @@ public class MyIntentService extends IntentService {
                 preferences = getSharedPreferences("mohfw", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("mohfw", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
+                if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
 
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", urls.get(0));
-                    pendingIntent = PendingIntent.getActivity(this, 0, myIntent, 0);
+                    pendingIntent = PendingIntent.getActivity(this, 16, myIntent, 0);
                     bigTextStyleNotification(getString(R.string.mohfwSetting), buttonTexts.get(0));
-                    notification(getString(R.string.mohfwSetting), buttonTexts.get(0), 0);
+                    notification(getString(R.string.mohfwSetting), buttonTexts.get(0), 16);
                     preferences.edit().putString("mohfw", buttonTexts.get(0)).apply();
                 }
             }
