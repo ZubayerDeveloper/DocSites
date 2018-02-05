@@ -15,6 +15,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
@@ -525,17 +526,23 @@ public class MyIntentService extends IntentService {
 
     private void notification(String title,String text, int id) {
         bigTextStyleNotification(title,text);
-        Uri sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        Uri sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setSound(sound)
+                .setColor(0xff990000)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setLights(0xff990000,300,100)
                 .setContentIntent(pendingIntent)
                 .setStyle(bigTextStyle)
                 .setSmallIcon(R.mipmap.ic_launcher);
         MediaPlayer mp=MediaPlayer.create(getApplicationContext(),R.raw.sound);
         mp.start();
+        Vibrator vibrator=(Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null) {
+            vibrator.vibrate(700);
+        }
         notificationManager.notify(id, notificationBuilder.build());
     }
 

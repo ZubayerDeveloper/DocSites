@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
@@ -533,17 +534,32 @@ public class OrioJobScheduler extends JobService{
     private void notification(String channel_id,String channel_name,String title, String text, int notify_id ){
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel channel = new NotificationChannel(channel_id, channel_name, NotificationManager.IMPORTANCE_HIGH);
+            channel.shouldShowLights();
+            channel.shouldVibrate();
+            channel.canShowBadge();
             NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
             Notification notification = new NotificationCompat.Builder(OrioJobScheduler.this)
                     .setContentTitle(title)
                     .setContentText(text)
+                    .setColor(0xff990000)
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                     .setChannelId(channel_id).build();
+            notification.ledARGB=0xff990000;
+            notification.ledOnMS=500;
+            notification.ledOffMS=100;
+
             MediaPlayer mp=MediaPlayer.create(getApplicationContext(),R.raw.sound);
             mp.start();
+            Vibrator vibrator=(Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+
+            if (vibrator != null) {
+                vibrator.vibrate(700);
+            }
             notificationManager.notify(notify_id, notification);
         }
     }

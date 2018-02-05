@@ -65,6 +65,7 @@ public class CardView extends Activity {
     HtmlParser back;
     BcpsParser bcps;
     ServiceParser serviceParser;
+    UpdateChecker check;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage,parseVersionCode,pdfFilter,driveViewer,urlText,filterContent,filterContent2;
     int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=13;
@@ -190,34 +191,35 @@ public class CardView extends Activity {
                 try {
                     back.cancel(true);
                     bcps.cancel(true);
+                    serviceParser.cancel(true);
                 }catch (Exception e){}
             }
         });
         Dialog.setView(m);
         checkSstorage();
-        UpdateChecker check=new UpdateChecker();
+        check=new UpdateChecker();
         check.execute();
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Dialog.setTitle(buttonHeadidng.get(position));
+                check=new UpdateChecker();
                 switch (position){
-                    case 0: loadBsmmuOptions();bsmmuClicked=true;
-
+                    case 0: check.execute();loadBsmmuOptions();bsmmuClicked=true;
                         break;
-                    case 1: loadBcpsOptions();bcpsClicked=true;
+                    case 1: loadBcpsOptions();bcpsClicked=true;check.execute();
                         break;
-                    case 2: loadDghsOptions();dghsClicked=true;
+                    case 2: loadDghsOptions();dghsClicked=true;check.execute();
                         break;
-                    case 3: loadMohfwOptions();mohfwClicked=true;
+                    case 3: loadMohfwOptions();mohfwClicked=true;check.execute();
                         break;
-                    case 4: loadBpscOptions();bpscClicked=true;
+                    case 4: loadBpscOptions();bpscClicked=true;check.execute();
                         break;
-                    case 5: loadGazetteOptions();gazetteClicked=true;
+                    case 5: loadGazetteOptions();gazetteClicked=true;check.execute();
                         break;
-                    case 6: loadBMDCOptions();bmdcClicked=true;
+                    case 6: loadBMDCOptions();bmdcClicked=true;check.execute();
                         break;
-                    case 7: loadResultOptions();resultsClicked=true;
+                    case 7: loadResultOptions();resultsClicked=true;check.execute();
                         break;
                 }
             }
@@ -226,6 +228,8 @@ public class CardView extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Dialog.setTitle(buttonTexts.get(position));
+                check=new UpdateChecker();
+                check.execute();
                 if(urls.isEmpty()) {
                     if (bsmmuClicked) {
                         switch (position) {
