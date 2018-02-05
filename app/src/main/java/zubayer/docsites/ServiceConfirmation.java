@@ -211,7 +211,12 @@ public class ServiceConfirmation extends Activity {
             volumeExecutableTag(parentUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
         }
-
+        @Override
+        protected void onCancelled() {
+            volumeArray.clear();
+            volumeUrls.clear();
+            super.onCancelled();
+        }
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
@@ -238,7 +243,12 @@ public class ServiceConfirmation extends Activity {
             navigationExecutableTag(parentUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
         }
-
+        @Override
+        protected void onCancelled() {
+            navigatinArray.clear();
+            navigationUrls.clear();
+            super.onCancelled();
+        }
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
@@ -265,7 +275,12 @@ public class ServiceConfirmation extends Activity {
             gazetteExecutableTag(parentUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
         }
-
+        @Override
+        protected void onCancelled() {
+            gazetteArray.clear();
+            gazetteUrls.clear();
+            super.onCancelled();
+        }
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);

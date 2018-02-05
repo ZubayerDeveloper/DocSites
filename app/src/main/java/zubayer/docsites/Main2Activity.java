@@ -235,7 +235,12 @@ public class Main2Activity extends Activity {
             yearExecutableTag(yearUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
         }
-
+        @Override
+        protected void onCancelled() {
+            yearArray.clear();
+            yearUrls.clear();
+            super.onCancelled();
+        }
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
@@ -262,7 +267,12 @@ public class Main2Activity extends Activity {
             yearExecutableTag(yearUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
         }
-
+        @Override
+        protected void onCancelled() {
+            yearArray.clear();
+            yearUrls.clear();
+            super.onCancelled();
+        }
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
@@ -288,6 +298,12 @@ public class Main2Activity extends Activity {
         protected Void doInBackground(Void... params) {
             monthExecutableTag(monthUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
+        }
+        @Override
+        protected void onCancelled() {
+            monthArray.clear();
+            monthUrls.clear();
+            super.onCancelled();
         }
         @Override
         protected void onPostExecute(Void b) {
@@ -316,7 +332,12 @@ public class Main2Activity extends Activity {
             resultExecutableTag(resultUrl, paramTagForText, paramTagForLink, paramLink, resultMin, resulttMax, reslinkBegin, reslinkEnd);
             return null;
         }
-
+        @Override
+        protected void onCancelled() {
+            resultArray.clear();
+            listUrls.clear();
+            super.onCancelled();
+        }
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);

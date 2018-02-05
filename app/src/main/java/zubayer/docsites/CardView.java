@@ -68,7 +68,7 @@ public class CardView extends Activity {
     UpdateChecker check;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage,parseVersionCode,pdfFilter,driveViewer,urlText,filterContent,filterContent2;
-    int position, i, textMin, textMax, linkBegin, linkEnd, aa,versionCode=13;
+    int position, textMin, textMax, linkBegin, linkEnd,versionCode=13;
     boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,bmdcClicked,resultsClicked,poped,checkpop;
     MenuItem menuitem;
     SharedPreferences preferences;
@@ -548,9 +548,8 @@ public class CardView extends Activity {
             Document doc = Jsoup.connect(Url).get();
             Elements links = doc.select(TagForText);
             Elements hrefs = doc.select(tagForLink);
-            for (i = begin; i < end; i++) {
-                aa = i;
-                Element link = links.get(aa);
+            for (int i = begin; i < end; i++) {
+                Element link = links.get(i);
                 btxt = link.text();
                 url=link.select("a").attr(Attr);
                 buttonTexts.add(btxt);
@@ -573,9 +572,8 @@ public class CardView extends Activity {
             Document doc = Jsoup.connect(Url).get();
             Elements links = doc.select(TagForText);
 
-            for (i = begin; i < links.size(); i++) {
-                aa = i;
-                Element link = links.get(aa);
+            for (int i = begin; i < links.size(); i++) {
+                Element link = links.get(i);
                 btxt = link.text();
                 url=link.select("a").attr(Attr);
                 if (btxt.contains(filterContent)) {
@@ -683,15 +681,13 @@ public class CardView extends Activity {
                 Document doc = Jsoup.connect(URl).get();
                 Elements links = doc.select(tagtext);
                 Elements hrefs = doc.select(taglink);
-                for (i = 5; i < hrefs.size(); i++) {
-                    aa = i;
-                    Element link = links.get(aa);
+                for (int i = 5; i < hrefs.size(); i++) {
+                    Element link = links.get(i);
                     btxt = link.text();
                     buttonTexts.add(btxt);
                 }
-                for (i = 5; i < hrefs.size(); i++) {
-                    aa = i;
-                    Element li = hrefs.get(aa);
+                for (int i = 5; i < hrefs.size(); i++) {
+                    Element li = hrefs.get(i);
                     uRl = li.attr(Attrs);
                     urls.add(stringmaker());
                 }

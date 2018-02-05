@@ -27,7 +27,7 @@ import java.util.Calendar;
 
 public class OrioJobScheduler extends JobService{
     String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,filterContent,filterContent2,driveViewer;
-    int textMin,linkBegin,i,aa;
+    int textMin,linkBegin;
     SharedPreferences preferences;
     boolean checked;
     PendingIntent pendingIntent;
@@ -496,9 +496,8 @@ public class OrioJobScheduler extends JobService{
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
 
-            for (i = textMin; i < links.size(); i++) {
-                aa = i;
-                Element link = links.get(aa);
+            for (int i = textMin; i < links.size(); i++) {
+                Element link = links.get(i);
                 btxt = link.text();
                 url=link.select("a").attr(paramLink);
                 if (btxt.contains(filterContent)) {

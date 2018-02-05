@@ -30,7 +30,7 @@ import java.util.Calendar;
 
 public class MyIntentService extends IntentService {
     String btxt,url,Url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,driveViewer,filterContent,filterContent2;
-    int textMin, textMax, linkBegin,i,aa;
+    int textMin, textMax, linkBegin;
     NotificationCompat.BigTextStyle bigTextStyle;
     NotificationCompat.Builder notificationBuilder;
     NotificationManager notificationManager;
@@ -494,9 +494,8 @@ public class MyIntentService extends IntentService {
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
 
-            for (i = textMin; i < links.size(); i++) {
-                aa = i;
-                Element link = links.get(aa);
+            for (int i = textMin; i < links.size(); i++) {
+                Element link = links.get(i);
                 btxt = link.text();
                 url=link.select("a").attr(paramLink);
                 if (btxt.contains(filterContent)) {
@@ -508,8 +507,6 @@ public class MyIntentService extends IntentService {
                     urls.add(url);
                 }
             }
-
-
         } catch (Exception e) {
         }
     }
@@ -523,10 +520,8 @@ public class MyIntentService extends IntentService {
         }
     }
 
-
     private void notification(String title,String text, int id) {
         bigTextStyleNotification(title,text);
-//        Uri sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(title)
