@@ -319,7 +319,7 @@ public class CardView extends Activity {
                             case 4:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.seniorConsultant2);
-                                filterContent2="aaaaaaa";
+                                filterContent2=getString(R.string.seniorConsultant);
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;

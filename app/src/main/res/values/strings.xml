@@ -125,9 +125,8 @@
     <string name="assistantProfessor">সহকারী অধ্যাপক</string>
     <string name="associateProfessor">সহযোগী অধ্যাপক</string>
     <string name="juniorConsultant">জুনিয়র</string>
-    <string name="juniorConsultant2">(জুনিয়র</string>
-    <string name="seniorConsultant">সিনিয়র কনসালটেন্ট</string>
-    <string name="seniorConsultant2">সিনিয়র কন</string>স
+    <string name="seniorConsultant">(সিনিয়র ও</string>
+    <string name="seniorConsultant2">সিনিয়র কন</string>
     <string name="professor">(অধ্যাপক পদে</string>
     <string name="assistantSurgeon">সহকারী সার্জন</string>
     <string name="civilSurgeon">সিভিল সার্জন</string>

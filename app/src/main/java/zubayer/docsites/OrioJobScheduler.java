@@ -26,13 +26,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class OrioJobScheduler extends JobService{
-    String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,filterContent,filterContent2,driveViewer;
+    String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,previousSaved2,filterContent,filterContent2,driveViewer;
     int textMin,linkBegin;
     SharedPreferences preferences;
     boolean checked;
     PendingIntent pendingIntent;
     Intent myIntent;
     NotificationParser notificationParser=new NotificationParser();
+    ArrayList<String> buttonTexts2=new ArrayList<>();
+    ArrayList<String>urls2=new ArrayList<>();
     ArrayList<String> buttonTexts=new ArrayList<>();
     ArrayList<String>urls=new ArrayList<>();
     @Override
@@ -260,11 +262,12 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.seniorConsultant);
-                    filterContent2="aaaaaaa";
+                    filterContent2=getString(R.string.seniorConsultant2);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("seniorConsultant", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("seniorConsultant", null);
+
 
                     if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
 
@@ -275,6 +278,18 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 10, myIntent, 0);
                         notification("channel_10","seniorConsultant",getString(R.string.seniorConsultantSetting),buttonTexts.get(0),10);
                         preferences.edit().putString("seniorConsultant", buttonTexts.get(0)).apply();
+                    }
+                    preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
+                    previousSaved2 = preferences.getString("seniorConsultant2", null);
+                    if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
+
+                    } else {
+                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent.putExtra("value", urls2.get(0));
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 101, myIntent, 0);
+                        notification("channel_101","seniorConsultant2",getString(R.string.seniorConsultantSetting),buttonTexts2.get(0),101);
+                        preferences.edit().putString("seniorConsultant2", buttonTexts2.get(0)).apply();
                     }
                 }
                 preferences=getSharedPreferences("assistantProfessorSetting",0);
@@ -505,8 +520,8 @@ public class OrioJobScheduler extends JobService{
                     urls.add(url);
                 }
                 if (btxt.contains(filterContent2)) {
-                    buttonTexts.add(btxt);
-                    urls.add(url);
+                    buttonTexts2.add(btxt);
+                    urls2.add(url);
                 }
             }
 

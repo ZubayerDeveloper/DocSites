@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class MyIntentService extends IntentService {
-    String btxt,url,Url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,driveViewer,filterContent,filterContent2;
+    String btxt,url,Url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,previousSaved2,driveViewer,filterContent,filterContent2;
     int textMin, textMax, linkBegin;
     NotificationCompat.BigTextStyle bigTextStyle;
     NotificationCompat.Builder notificationBuilder;
@@ -42,7 +42,9 @@ public class MyIntentService extends IntentService {
     }
     boolean checked;
     ArrayList<String> buttonTexts=new ArrayList<>();
+    ArrayList<String> buttonTexts2=new ArrayList<>();
     ArrayList<String>urls=new ArrayList<>();
+    ArrayList<String>urls2=new ArrayList<>();
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         bigTextStyle=new NotificationCompat.BigTextStyle();
@@ -252,7 +254,7 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.seniorConsultant);
-                filterContent2="aaaaaaa";
+                filterContent2=getString(R.string.seniorConsultant2);
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("seniorConsultant", Context.MODE_PRIVATE);
@@ -270,6 +272,20 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("seniorConsultant", buttonTexts.get(0)).apply();
                 }
             }
+            preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
+            previousSaved2 = preferences.getString("seniorConsultant2", null);
+            if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
+
+            } else {
+                myIntent = new Intent(this, Browser.class);
+                myIntent.putExtra("value", urls2.get(0));
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                pendingIntent = PendingIntent.getActivity(this, 10, myIntent, 0);
+                bigTextStyleNotification(getString(R.string.seniorConsultantSetting), buttonTexts2.get(0));
+                notification(getString(R.string.seniorConsultantSetting), buttonTexts2.get(0), 101);
+                preferences.edit().putString("seniorConsultant2", buttonTexts2.get(0)).apply();
+            }
+
             preferences=getSharedPreferences("assistantProfessorSetting",0);
             checked=preferences.getBoolean("assistantProfessorChecked",false);
             if(checked) {
@@ -447,7 +463,7 @@ public class MyIntentService extends IntentService {
     private void dghsHomeLinks() {
         paramUrl = "http://dghs.gov.bd/index.php/bd/";
         paramTagForText = "#system span";
-        paramTagForLink = "#system a";
+        paramTagForLink = "#system span a";
         paramLink = "abs:href";
         textMin = 0;
         linkBegin = 0;
@@ -503,8 +519,8 @@ public class MyIntentService extends IntentService {
                     urls.add(url);
                 }
                 if (btxt.contains(filterContent2)) {
-                    buttonTexts.add(btxt);
-                    urls.add(url);
+                    buttonTexts2.add(btxt);
+                    urls2.add(url);
                 }
             }
         } catch (Exception e) {
