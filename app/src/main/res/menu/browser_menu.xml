@@ -18,5 +18,9 @@
         android:id="@+id/exit"
         android:title="Exit Browser"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/externalBrowser"
+        android:title="Open in external browser"
+        app:showAsAction="never" />
 
 </menu>

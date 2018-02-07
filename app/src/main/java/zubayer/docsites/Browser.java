@@ -173,8 +173,6 @@ public class Browser extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.browser_menu, menu);
-
-        SharedPreferences shared = getSharedPreferences("settings", 0);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -199,6 +197,10 @@ public class Browser extends Activity {
                 ClipboardManager clipboardManager=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clipData=ClipData.newPlainText("url",website.getUrl());
                 clipboardManager.setPrimaryClip(clipData);
+                break;
+            case R.id.externalBrowser:
+                Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
+                startActivity(intentNew);
                 break;
         }
         return  true;

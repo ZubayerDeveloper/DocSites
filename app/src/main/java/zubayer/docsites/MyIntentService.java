@@ -440,7 +440,6 @@ public class MyIntentService extends IntentService {
             Intent newIntent = new Intent(MyIntentService.this, NotificationReceiver.class);
             pendingIntent = PendingIntent.getBroadcast(MyIntentService.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             manager.cancel(pendingIntent);
-            Toast.makeText(getApplicationContext(),Integer.toString(buttonTexts.size()),Toast.LENGTH_LONG).show();
         }catch (Exception e){}
     }
 
