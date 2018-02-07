@@ -216,7 +216,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.assistantSurgeon);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("assistantSurgeon", Context.MODE_PRIVATE);
@@ -239,7 +238,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.juniorConsultant);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("juniorConsultant", Context.MODE_PRIVATE);
@@ -261,6 +259,8 @@ public class OrioJobScheduler extends JobService{
                 if(checked) {
                     buttonTexts.clear();
                     urls.clear();
+                    buttonTexts2.clear();
+                    urls2.clear();
                     filterContent=getString(R.string.seniorConsultant);
                     filterContent2=getString(R.string.seniorConsultant2);
                     executeService();
@@ -279,6 +279,7 @@ public class OrioJobScheduler extends JobService{
                         notification("channel_10","seniorConsultant",getString(R.string.seniorConsultantSetting),buttonTexts.get(0),10);
                         preferences.edit().putString("seniorConsultant", buttonTexts.get(0)).apply();
                     }
+                    serviceConfirmTag2();
                     preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
                     previousSaved2 = preferences.getString("seniorConsultant2", null);
                     if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
@@ -298,7 +299,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.assistantProfessor);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("assistantProfessor", Context.MODE_PRIVATE);
@@ -321,7 +321,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.associateProfessor);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("associateProfessorSetting", Context.MODE_PRIVATE);
@@ -344,7 +343,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.professor);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("professor", Context.MODE_PRIVATE);
@@ -367,7 +365,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.civilSurgeon);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("civilSurgeon", Context.MODE_PRIVATE);
@@ -390,7 +387,6 @@ public class OrioJobScheduler extends JobService{
                     buttonTexts.clear();
                     urls.clear();
                     filterContent=getString(R.string.adhoc);
-                    filterContent2="aaaaaaa";
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("adhoc", Context.MODE_PRIVATE);
@@ -510,22 +506,35 @@ public class OrioJobScheduler extends JobService{
         try {
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
-
-            for (int i = textMin; i < links.size(); i++) {
+            int textMax=links.size();
+            for (int i = textMin; i <=textMax; i++) {
                 Element link = links.get(i);
                 btxt = link.text();
-                url=link.select("a").attr(paramLink);
+                url = link.select("a").attr(paramLink);
                 if (btxt.contains(filterContent)) {
                     buttonTexts.add(btxt);
                     urls.add(url);
+                    textMax=i;
                 }
+            }
+        } catch (Exception e) {
+        }
+    }
+    public void serviceConfirmTag2() {
+        try {
+            Document doc = Jsoup.connect(paramUrl).get();
+            Elements links = doc.select(paramTagForText);
+            int textMax=links.size();
+            for (int i = textMin; i <=textMax; i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.select("a").attr(paramLink);
                 if (btxt.contains(filterContent2)) {
                     buttonTexts2.add(btxt);
                     urls2.add(url);
+                    textMax=i;
                 }
             }
-
-
         } catch (Exception e) {
         }
     }
@@ -559,6 +568,7 @@ public class OrioJobScheduler extends JobService{
                     .setContentTitle(title)
                     .setContentText(text)
                     .setColor(0xff990000)
+                    .setWhen(System.currentTimeMillis())
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))

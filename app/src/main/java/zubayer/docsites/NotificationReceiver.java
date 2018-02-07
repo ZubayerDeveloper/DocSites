@@ -1,11 +1,14 @@
 package zubayer.docsites;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.widget.Toast;
 

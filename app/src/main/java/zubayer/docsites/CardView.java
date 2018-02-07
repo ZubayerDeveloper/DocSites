@@ -49,9 +49,6 @@ public class CardView extends Activity {
     View m;
     Calendar calendar;
     private AdView mAdView;
-    NotificationCompat.BigTextStyle myNotification;
-    NotificationCompat.Builder notificationBuilder;
-    NotificationManager notificationManager;
     AlarmManager manager;
     AlarmManager.AlarmClockInfo info;
     PendingIntent pendingIntent,instantPendingIntent;;
@@ -73,10 +70,12 @@ public class CardView extends Activity {
     MenuItem menuitem;
     SharedPreferences preferences;
     Intent newIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.card_view);
+
 
         mAdView = (AdView) findViewById(R.id.adViewCard);
         AdRequest adRequest = new AdRequest.Builder().build();

@@ -288,7 +288,6 @@ public class ServiceConfirmation extends Activity {
                 gazettelist.setAdapter(gazetteAdapter);
                 progressDialog.dismiss();
                 progressBar.setVisibility(View.GONE);
-//                browser(gazetteUrls.get(gazetteUrlPosition));
                 Dialog.show();
             } else {
                 checkinternet = builder.create();

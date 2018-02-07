@@ -15,6 +15,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -206,7 +207,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.assistantSurgeon);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("assistantSurgeon", Context.MODE_PRIVATE);
@@ -230,7 +230,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.juniorConsultant);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("juniorConsultant", Context.MODE_PRIVATE);
@@ -253,8 +252,10 @@ public class MyIntentService extends IntentService {
             if(checked) {
                 buttonTexts.clear();
                 urls.clear();
-                filterContent=getString(R.string.seniorConsultant);
-                filterContent2=getString(R.string.seniorConsultant2);
+                buttonTexts2.clear();
+                urls2.clear();
+                filterContent = getString(R.string.seniorConsultant);
+                filterContent2 = getString(R.string.seniorConsultant2);
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("seniorConsultant", Context.MODE_PRIVATE);
@@ -271,28 +272,27 @@ public class MyIntentService extends IntentService {
                     notification(getString(R.string.seniorConsultantSetting), buttonTexts.get(0), 10);
                     preferences.edit().putString("seniorConsultant", buttonTexts.get(0)).apply();
                 }
-            }
-            preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
-            previousSaved2 = preferences.getString("seniorConsultant2", null);
-            if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
+                serviceConfirmTag2();
+                preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
+                previousSaved2 = preferences.getString("seniorConsultant2", null);
+                if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
 
-            } else {
-                myIntent = new Intent(this, Browser.class);
-                myIntent.putExtra("value", urls2.get(0));
-                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                pendingIntent = PendingIntent.getActivity(this, 10, myIntent, 0);
-                bigTextStyleNotification(getString(R.string.seniorConsultantSetting), buttonTexts2.get(0));
-                notification(getString(R.string.seniorConsultantSetting), buttonTexts2.get(0), 101);
-                preferences.edit().putString("seniorConsultant2", buttonTexts2.get(0)).apply();
+                } else {
+                    myIntent = new Intent(this, Browser.class);
+                    myIntent.putExtra("value", urls2.get(0));
+                    myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    pendingIntent = PendingIntent.getActivity(this, 10, myIntent, 0);
+                    bigTextStyleNotification(getString(R.string.seniorConsultantSetting), buttonTexts2.get(0));
+                    notification(getString(R.string.seniorConsultantSetting), buttonTexts2.get(0), 101);
+                    preferences.edit().putString("seniorConsultant2", buttonTexts2.get(0)).apply();
+                }
             }
-
             preferences=getSharedPreferences("assistantProfessorSetting",0);
             checked=preferences.getBoolean("assistantProfessorChecked",false);
             if(checked) {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.assistantProfessor);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("assistantProfessor", Context.MODE_PRIVATE);
@@ -316,7 +316,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.associateProfessor);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("associateProfessor", Context.MODE_PRIVATE);
@@ -340,7 +339,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.professor);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("professor", Context.MODE_PRIVATE);
@@ -364,7 +362,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.civilSurgeon);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("civilSurgeon", Context.MODE_PRIVATE);
@@ -388,7 +385,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent=getString(R.string.adhoc);
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("adhoc", Context.MODE_PRIVATE);
@@ -412,7 +408,6 @@ public class MyIntentService extends IntentService {
                 buttonTexts.clear();
                 urls.clear();
                 filterContent="Per";
-                filterContent2="aaaaaaa";
                 executeService();
                 serviceConfirmTag();
                 preferences = getSharedPreferences("mohfw", Context.MODE_PRIVATE);
@@ -445,6 +440,7 @@ public class MyIntentService extends IntentService {
             Intent newIntent = new Intent(MyIntentService.this, NotificationReceiver.class);
             pendingIntent = PendingIntent.getBroadcast(MyIntentService.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             manager.cancel(pendingIntent);
+            Toast.makeText(getApplicationContext(),Integer.toString(buttonTexts.size()),Toast.LENGTH_LONG).show();
         }catch (Exception e){}
     }
 
@@ -509,18 +505,33 @@ public class MyIntentService extends IntentService {
         try {
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
-
-            for (int i = textMin; i < links.size(); i++) {
+            int textMax=links.size();
+            for (int i = textMin; i <=textMax; i++) {
                 Element link = links.get(i);
                 btxt = link.text();
-                url=link.select("a").attr(paramLink);
+                url = link.select("a").attr(paramLink);
                 if (btxt.contains(filterContent)) {
                     buttonTexts.add(btxt);
                     urls.add(url);
+                    textMax=i;
                 }
+            }
+        } catch (Exception e) {
+        }
+    }
+    public void serviceConfirmTag2() {
+        try {
+            Document doc = Jsoup.connect(paramUrl).get();
+            Elements links = doc.select(paramTagForText);
+            int textMax=links.size();
+            for (int i = textMin; i <=textMax; i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.select("a").attr(paramLink);
                 if (btxt.contains(filterContent2)) {
                     buttonTexts2.add(btxt);
                     urls2.add(url);
+                    textMax=i;
                 }
             }
         } catch (Exception e) {
@@ -543,6 +554,7 @@ public class MyIntentService extends IntentService {
                 .setContentTitle(title)
                 .setContentText(text)
                 .setColor(0xff990000)
+                .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MAX)
                 .setLights(0xff990000,300,100)
                 .setContentIntent(pendingIntent)
@@ -553,6 +565,16 @@ public class MyIntentService extends IntentService {
         Vibrator vibrator=(Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
         if (vibrator != null) {
             vibrator.vibrate(700);
+        }
+        PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = null;
+        if (pm != null) {
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
+                    | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                    | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+        }
+        if (wakeLock != null) {
+            wakeLock.acquire(100);
         }
         notificationManager.notify(id, notificationBuilder.build());
     }
