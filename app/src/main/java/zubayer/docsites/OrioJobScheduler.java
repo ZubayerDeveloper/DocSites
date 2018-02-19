@@ -11,8 +11,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
@@ -26,10 +29,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class OrioJobScheduler extends JobService{
-    String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,previousSaved2,filterContent,filterContent2,driveViewer;
+    String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,previousSaved2,
+            filterContent,filterContent2,driveViewer,title,text;
     int textMin,linkBegin;
     SharedPreferences preferences;
-    boolean checked;
+    boolean checked,enableSound,enableVibrate,wifiAvailable,mobileDataAvailable;
     PendingIntent pendingIntent;
     Intent myIntent;
     NotificationParser notificationParser=new NotificationParser();
@@ -37,8 +41,10 @@ public class OrioJobScheduler extends JobService{
     ArrayList<String>urls2=new ArrayList<>();
     ArrayList<String> buttonTexts=new ArrayList<>();
     ArrayList<String>urls=new ArrayList<>();
+
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
+        checkConnectivity();
         notificationParser=new NotificationParser(){
             @Override
             protected void onPostExecute(Void aVoid) {
@@ -63,12 +69,17 @@ public class OrioJobScheduler extends JobService{
     }
     public class NotificationParser extends AsyncTask<Void,Void,Void>{
 
-
         @Override
         protected Void doInBackground(Void... voids) {
             driveViewer="https://docs.google.com/viewer?url=";
 
             try {
+                preferences=getSharedPreferences("notificationSound",0);
+                enableSound=preferences.getBoolean("notificationSoundChecked",false);
+
+                preferences=getSharedPreferences("vibration",0);
+                enableVibrate=preferences.getBoolean("vibrationChecked",false);
+
                 preferences=getSharedPreferences("residencySetting",0);
                 checked=preferences.getBoolean("residencyChecked",false);
                 if(checked) {
@@ -186,28 +197,75 @@ public class OrioJobScheduler extends JobService{
                 preferences=getSharedPreferences("regiDeptSetting",0);
                 checked=preferences.getBoolean("regiDeptChecked",false);
                 if(checked) {
-                    regiDept();executableTag();
-                    if(btxt.contains("expired")){
-                    }else {
+                    regiDeptStarts();
+                    executableTag();
+                    if(btxt.contains("Section 1: Personal Details")){
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 6, myIntent, 0);
-                        notification("channel_6","deptregi","Departmental Exam Registration",getString(R.string.regidepttext),6);
+                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 61, myIntent, 0);
+                        notification("channel_61","deptstarts","Departmental Exam", getString(R.string.regideptStarted), 61);
+
+                        preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
+                        preferences.edit().remove("regideptExpired").apply();
+                    }else {
+
+                    }
+                }
+                preferences=getSharedPreferences("regiDeptSetting",0);
+                checked=preferences.getBoolean("regiDeptChecked",false);
+                if(checked) {
+                    regiDeptExpire();
+                    executableTag();
+                    preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("deptExpired", null);
+                    if(btxt.contains("expired")){
+                        if(btxt.equalsIgnoreCase(previousSaved)) {
+                        }else {
+                            myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                            myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
+                            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 6, myIntent, 0);
+                            notification("channel_6","deptexpires","Departmental Exam", getString(R.string.regiExpired), 6);
+                            preferences.edit().putString("deptExpired", btxt).apply();
+                        }
                     }
                 }
                 preferences=getSharedPreferences("regiSeniorSetting",0);
                 checked=preferences.getBoolean("regiSeniorChecked",false);
                 if(checked) {
-                    regiSenior();
+                    regiSeniorStsrts();
                     executableTag();
-                    if (btxt.contains("expired")) {
-                    } else {
+                    if (btxt.contains("Section 1: Personal Details")) {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 7, myIntent, 0);
-                        notification("channel_7","regisenior","Senior Scale Exam Registration",getString(R.string.regiseniortext),7);
+                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 71, myIntent, 0);
+                        notification("channel_71","seniorstarts","Senior Scale Exam", getString(R.string.regiExpired), 71);
+
+                        preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
+                        preferences.edit().remove("regiSeniorExpired").apply();
+                    } else {
+
+                    }
+                }
+                preferences=getSharedPreferences("regiSeniorSetting",0);
+                checked=preferences.getBoolean("regiSeniorChecked",false);
+                if(checked) {
+                    regiSeniorExpre();
+                    executableTag();
+                    preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("seniorExpired", null);
+                    if (btxt.contains("expired")) {
+                        if (btxt.equalsIgnoreCase(previousSaved)) {
+                        } else {
+                            myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                            myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
+                            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 7, myIntent, 0);
+                            notification("channel_7","seniorexires","Senior Scale Exam", getString(R.string.regiExpired), 7);
+                            preferences.edit().putString("seniorExpired", btxt).apply();
+                        }
                     }
                 }
                 preferences=getSharedPreferences("assistantSurgeonSetting",0);
@@ -426,7 +484,53 @@ public class OrioJobScheduler extends JobService{
                         preferences.edit().putString("mohfw", buttonTexts.get(0)).apply();
                     }
                 }
-            } catch (Exception e) {
+                preferences=getSharedPreferences("deputationSetting",0);
+                checked=preferences.getBoolean("deputationChecked",false);
+                if(checked) {
+                    buttonTexts.clear();
+                    urls.clear();
+                    filterContent="ME-";
+                    executeDeputation();
+                    serviceConfirmTag();
+                    preferences = getSharedPreferences("deputation", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("deputation", null);
+
+                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+
+                    } else {
+                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", urls.get(0));
+                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 17, myIntent, 0);
+                        notification("channel_17","deputation",getString(R.string.deputationOrders), buttonTexts.get(0), 17);
+                        preferences.edit().putString("deputation", buttonTexts.get(0)).apply();
+                    }
+                }
+
+                preferences=getSharedPreferences("leaveSetting",0);
+                checked=preferences.getBoolean("leaveChecked",false);
+                if(checked) {
+                    buttonTexts.clear();
+                    urls.clear();
+                    filterContent="HR-";
+                    executeLeave();
+                    serviceConfirmTag();
+                    preferences = getSharedPreferences("leave", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("leave", null);
+
+                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+
+                    } else {
+                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", urls.get(0));
+                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 18, myIntent, 0);
+                        notification("channel_18","leave",getString(R.string.leaveOpion), buttonTexts.get(0), 18);
+                        preferences.edit().putString("leave", buttonTexts.get(0)).apply();
+                    }
+                }
+
+            } catch (Exception ignored) {
             }
             return null;
         }
@@ -449,28 +553,36 @@ public class OrioJobScheduler extends JobService{
     }
     private void dghsHomeLinks() {
         paramUrl = "http://dghs.gov.bd/index.php/bd/";
-        paramTagForText = "#system a";
-        paramTagForLink = "#system a";
+        paramTagForText = "#system span";
+        paramTagForLink = "#system span a";
         paramLink = "abs:href";
         textMin = 0;
         linkBegin = 0;
     }
 
-    private void regiDept() {
+    private void regiDeptExpire() {
         paramUrl = "http://dept.bpsc.gov.bd/node/apply";
         paramTagForText = "p";
-        paramTagForLink = "p";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 1;
     }
-    private void regiSenior() {
+    private void regiDeptStarts() {
+        paramUrl = "http://dept.bpsc.gov.bd/node/apply";
+        paramTagForText = "h6";
+        paramLink = "href";
+        textMin = 1;
+    }
+    private void regiSeniorExpre() {
         paramUrl = "http://snsc.bpsc.gov.bd/node/apply";
         paramTagForText = "p";
-        paramTagForLink = "p";
         paramLink = "href";
         textMin = 1;
-        linkBegin = 1;
+    }
+    private void regiSeniorStsrts() {
+        paramUrl = "http://snsc.bpsc.gov.bd/node/apply";
+        paramTagForText = "h6";
+        paramLink = "href";
+        textMin = 1;
     }
     private void resultBCS() {
         paramUrl = "http://bpsc.gov.bd/site/view/psc_exam/BCS%20Examination/বিসিএস-পরীক্ষা";
@@ -501,6 +613,18 @@ public class OrioJobScheduler extends JobService{
         paramTagForText = "#wrapper table tbody tr td table tbody tr td table tbody tr";
         paramLink = "abs:href";
         textMin = 12;
+    }
+    private void executeDeputation() {
+        paramUrl="http://www.mohfw.gov.bd/index.php?option=com_content&view=article&id=61%3Amedical-education&catid=46%3Amedical-education&Itemid=&lang=en";
+        paramTagForText = "#wrapper table tbody tr td table tbody tr td table tbody tr";
+        paramLink = "abs:href";
+        textMin = 29;
+    }
+    private void executeLeave() {
+        paramUrl="http://mohfw.gov.bd/index.php?option=com_content&view=article&id=121%3Aearn-leave&catid=101%3Aearn-leave-ex-bangladesh-leave&Itemid=&lang=en";
+        paramTagForText = "#wrapper table tbody tr td table tbody tr td table tbody tr";
+        paramLink = "abs:href";
+        textMin = 29;
     }
     public void serviceConfirmTag() {
         try {
@@ -576,15 +700,44 @@ public class OrioJobScheduler extends JobService{
             notification.ledARGB=0xff990000;
             notification.ledOnMS=500;
             notification.ledOffMS=100;
+            if(enableSound) {
+                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
+                mp.start();
+            }
 
-            MediaPlayer mp=MediaPlayer.create(getApplicationContext(),R.raw.sound);
-            mp.start();
-            Vibrator vibrator=(Vibrator)getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-
-            if (vibrator != null) {
-                vibrator.vibrate(700);
+            if(enableVibrate) {
+                Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                if (vibrator != null) {
+                    vibrator.vibrate(700);
+                }
+            }
+            PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wakeLock = null;
+            if (pm != null) {
+                wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                        | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                        | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+            }
+            if (wakeLock != null) {
+                wakeLock.acquire(100);
             }
             notificationManager.notify(notify_id, notification);
+        }
+    }
+    public void checkConnectivity(){
+        title="Turn on Data";
+        text=getString(R.string.noData);
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
+        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        wifiAvailable = networkInfo.isConnected();
+        networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        mobileDataAvailable = networkInfo.isConnected();
+        if (!wifiAvailable&& !mobileDataAvailable) {
+            myIntent = new Intent(OrioJobScheduler.this, CardView.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 112, myIntent, 0);
+            notification("nodata","dataNotFound",title,text,113);
         }
     }
 }

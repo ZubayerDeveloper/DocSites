@@ -53,6 +53,7 @@
     <array name="mohfwOptions">
         <item>@string/homePage</item>
         <item>@string/deputation</item>
+        <item>@string/deputationOrders</item>
         <item>@string/assistantSurgeonOption</item>
         <item>@string/juniorConsultantOption</item>
         <item>@string/seniorConsultantOption</item>
@@ -61,6 +62,7 @@
         <item>@string/professorOption</item>
         <item>@string/civilSurgeonOption</item>
         <item>@string/adhokOpion</item>
+        <item>@string/leaveOpion</item>
     </array>
     <array name="bpscOptions">
         <item>@string/homePage</item>

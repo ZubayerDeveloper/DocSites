@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -24,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -40,8 +43,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import me.anwarshahriar.calligrapher.Calligrapher;
-import static android.widget.Toast.makeText;
 
+import static android.widget.Toast.makeText;
 
 public class CardView extends Activity {
     AlertDialog Dialog, checkinternet;
@@ -50,12 +53,11 @@ public class CardView extends Activity {
     Calendar calendar;
     private AdView mAdView;
     AlarmManager manager;
-    AlarmManager.AlarmClockInfo info;
-    PendingIntent pendingIntent,instantPendingIntent;;
+    PendingIntent pendingIntent;
     ProgressBar progressBar;
     ListView list;
     GridView gridView;
-    ArrayList<String> buttonTexts,urls,buttonHeadidng,buttonDescription,buttonHint,buttonTexts2,urlTexts,
+    ArrayList<String> buttonTexts,urls,buttonHeadidng,buttonDescription,buttonHint,buttonTexts2,
     bsmmuOptions,bcpsOptions,dghsOptions,mohfwOptions,bpscOptions,gazetteOptions,bmdcOptions,resultOptions;
     MyAdapter adapter;
     GridAdapter gridAdapter;
@@ -64,24 +66,30 @@ public class CardView extends Activity {
     ServiceParser serviceParser;
     UpdateChecker check;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
-            updateMessage,parseVersionCode,pdfFilter,driveViewer,urlText,filterContent,filterContent2;
-    int position, textMin, textMax, linkBegin, linkEnd,versionCode=13;
-    boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,bmdcClicked,resultsClicked,poped,checkpop;
+            updateMessage,parseVersionCode,pdfFilter,driveViewer,filterContent,filterContent2;
+    int position, textMin, textMax, linkBegin, linkEnd,versionCode=15;
+    boolean  bsmmuClicked,bcpsClicked,dghsClicked,mohfwClicked,bpscClicked,gazetteClicked,
+            bmdcClicked,resultsClicked,applaunched,checkpop,wifiAvailable,mobileDataAvailable;
     MenuItem menuitem;
     SharedPreferences preferences;
     Intent newIntent;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.card_view);
-
 
         mAdView = (AdView) findViewById(R.id.adViewCard);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
         Calligrapher font = new Calligrapher(this);
         font.setFont(this, "kalpurush.ttf", true);
+
+        preferences=getSharedPreferences("appLaunched",0);
+        applaunched=preferences.getBoolean("appLaunchedchecked",false);
+        if(applaunched){
+        }else {
+            selectAll();
+        }
         manager=(AlarmManager)getSystemService(Context.ALARM_SERVICE) ;
         try{
             manager.cancel(pendingIntent);
@@ -95,6 +103,7 @@ public class CardView extends Activity {
                 newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 pendingIntent=PendingIntent.getBroadcast(CardView.this,0,newIntent,PendingIntent.FLAG_UPDATE_CURRENT);
                 manager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),AlarmManager.INTERVAL_HALF_DAY,pendingIntent);
+
 
         bsmmuClicked=bcpsClicked=dghsClicked=mohfwClicked=bpscClicked=gazetteClicked=bmdcClicked=resultsClicked=false;
         String[] headingName=getResources().getStringArray(R.array.heading);
@@ -166,10 +175,6 @@ public class CardView extends Activity {
                 editor.putBoolean("wentToSetting", true).apply();
                 Intent settingIntent=new Intent(CardView.this,Settings.class);
                 startActivity(settingIntent);
-            }
-        });
-        checkinternet.setButton3("Not now", new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, int id) {
             }
         });
         preferences=getSharedPreferences("wentToSetting", 0);
@@ -302,60 +307,66 @@ public class CardView extends Activity {
                                 deputation();
                                 break;
                             case 2:
+                                browser("http://www.mohfw.gov.bd/index.php?option=com_content&view=article&id=61%3Amedical-education&catid=46%3Amedical-education&Itemid=&lang=en");
+                                break;
+                            case 3:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.assistantSurgeon);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 3:
+                            case 4:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.juniorConsultant);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 4:
+                            case 5:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.seniorConsultant2);
                                 filterContent2=getString(R.string.seniorConsultant);
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 5:
+                            case 6:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.assistantProfessor);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 6:
+                            case 7:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.associateProfessor);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 7:
+                            case 8:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.professor);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 8:
+                            case 9:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.civilSurgeon);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
                                 break;
-                            case 9:
+                            case 10:
                                 buttonTexts.clear();
                                 filterContent=getString(R.string.adhoc);
                                 filterContent2="aaaaaaa";
                                 serviceConfirmGazette();
                                 Dialog.show();
+                                break;
+                            case 11:
+                                browser("http://mohfw.gov.bd/index.php?option=com_content&view=article&id=121%3Aearn-leave&catid=101%3Aearn-leave-ex-bangladesh-leave&Itemid=&lang=en");
                                 break;
                         }
                     }
@@ -876,9 +887,28 @@ public class CardView extends Activity {
                 startActivity(i);
                 break;
             case R.id.check:
-                pendingIntent=PendingIntent.getBroadcast(CardView.this,11,newIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-                manager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),AlarmManager.INTERVAL_DAY,pendingIntent);
-                myToaster("Checking Notifications");
+                ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                assert connectivityManager != null;
+                NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                wifiAvailable = networkInfo.isConnected();
+                networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                mobileDataAvailable = networkInfo.isConnected();
+                if (!wifiAvailable&& !mobileDataAvailable) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Turn on Wi-Fi or Mobile Data then try again.");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                        }
+                    });
+
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }else {
+                    pendingIntent = PendingIntent.getBroadcast(CardView.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                    myToaster("Checking Notifications");
+                }
         }
         return super.onOptionsItemSelected(item);
 
@@ -1206,6 +1236,37 @@ public class CardView extends Activity {
         Toast toast = makeText(CardView.this, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    public void selectDeselect(String preferenceName, boolean setTrueFalse, String putBooleanName){
+        SharedPreferences settings = getSharedPreferences(preferenceName, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putBoolean(putBooleanName, setTrueFalse);
+        editor.apply();
+    }
+    public  void selectAll(){
+        selectDeselect("residencySetting",true,"residencyChecked");
+        selectDeselect("noticeSetting",true,"noticeChecked");
+        selectDeselect("dghsSetting",true,"dghsChecked");
+        selectDeselect("reultBcsSetting",true,"reultBcsChecked");
+        selectDeselect("resultDeptSetting",true,"resultDeptChecked");
+        selectDeselect("resultSeniorSetting",true,"resultSeniorChecked");
+        selectDeselect("regiDeptSetting",true,"regiDeptChecked");
+        selectDeselect("regiSeniorSetting",true,"regiSeniorChecked");
+        selectDeselect("assistantSurgeonSetting",true,"assistantSurgeonChecked");
+        selectDeselect("juniorConsultantSetting",true,"juniorConsultantChecked");
+        selectDeselect("seniorConsultantSetting",true,"seniorConsultantChecked");
+        selectDeselect("assistantProfessorSetting",true,"assistantProfessorChecked");
+        selectDeselect("associateProfessorSetting",true,"associateProfessorChecked");
+        selectDeselect("professorSetting",true,"professorChecked");
+        selectDeselect("civilSurgeonSetting", true,"civilSurgeonChecked");
+        selectDeselect("adhocSetting",true,"adhocChecked");
+        selectDeselect("mohfwSetting",true,"mohfwChecked");
+        selectDeselect("deputationSetting",true,"deputationChecked");
+        selectDeselect("leaveSetting",true,"leaveChecked");
+        selectDeselect("notificationSound",true,"notificationSoundChecked");
+        selectDeselect("vibration",true,"vibrationChecked");
+        selectDeselect("appLaunched",true,"appLaunchedchecked");
     }
 }
 

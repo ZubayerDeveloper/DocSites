@@ -7,6 +7,36 @@
     android:paddingLeft="5dp"
     android:orientation="vertical"
     >
+    <ScrollView
+        android:background="@drawable/bcsdept"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:paddingBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <CheckBox
+                android:textColor="#AA7E02"
+                android:textSize="20sp"
+                android:id="@+id/soundSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/soundSetting" />
+            <CheckBox
+                android:textColor="#59038D"
+                android:textSize="20sp"
+                android:id="@+id/vibrateSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/vibrateSetting" />
     <TextView
         android:id="@+id/settingHeading"
         android:background="@drawable/bcsdept"
@@ -23,6 +53,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
+            android:textColor="#009900"
             android:id="@+id/select"
             android:text="Select All"
             android:background="@drawable/bcsdept"
@@ -30,6 +61,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content" />
         <Button
+            android:textColor="#990000"
             android:id="@+id/deselect"
             android:text="Deselect All"
             android:background="@drawable/bcsdept"
@@ -37,22 +69,9 @@
             android:layout_weight="1"
             android:layout_height="wrap_content" />
     </LinearLayout>
-    <ScrollView
-        android:background="@drawable/bcsdept"
-        android:padding="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:paddingBottom="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
             <CheckBox
                 android:id="@+id/residencySetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
@@ -60,7 +79,7 @@
 
             <CheckBox
                 android:id="@+id/noticeSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
@@ -68,7 +87,7 @@
 
             <CheckBox
                 android:id="@+id/DGHSSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
@@ -76,7 +95,7 @@
 
             <CheckBox
                 android:id="@+id/bcsResultSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
@@ -84,7 +103,7 @@
 
             <CheckBox
                 android:id="@+id/regiDeptSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
@@ -92,7 +111,7 @@
 
             <CheckBox
                 android:id="@+id/deptResultSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
@@ -100,81 +119,95 @@
 
             <CheckBox
                 android:id="@+id/regiSeniorSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/regiSeniorSetting" />
             <CheckBox
                 android:id="@+id/seniorResultSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/resultSeniorSetting" />
             <CheckBox
                 android:id="@+id/assistantSurgeonSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/assistantSurgeonSetting" />
             <CheckBox
+                android:id="@+id/deputationSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/deputationOrders" />
+            <CheckBox
                 android:id="@+id/juniorConsultantSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/juniorConsultantSetting" />
             <CheckBox
                 android:id="@+id/seniorConsultantSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/seniorConsultantSetting" />
             <CheckBox
                 android:id="@+id/assistantProfessorSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/assistantProfessorSetting" />
             <CheckBox
                 android:id="@+id/associateProfessorSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/associateProfessorSetting" />
             <CheckBox
                 android:id="@+id/professorSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/professorSetting" />
             <CheckBox
                 android:id="@+id/civilSergeonSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/civilSurgeonSetting" />
             <CheckBox
                 android:id="@+id/adhocSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/adhocSetting" />
             <CheckBox
                 android:id="@+id/mohfwSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
                 android:checked="true"
                 android:text="@string/mohfwSetting" />
+            <CheckBox
+                android:id="@+id/leaveSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/leaveSetting" />
 
             <TextView
                 android:layout_width="match_parent"

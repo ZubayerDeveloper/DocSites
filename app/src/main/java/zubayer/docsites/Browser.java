@@ -139,7 +139,9 @@ public class Browser extends Activity {
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
                 DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                dm.enqueue(request);
+                if (dm != null) {
+                    dm.enqueue(request);
+                }
             }
         });
     }
@@ -196,7 +198,9 @@ public class Browser extends Activity {
             case R.id.copy:
                 ClipboardManager clipboardManager=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clipData=ClipData.newPlainText("url",website.getUrl());
-                clipboardManager.setPrimaryClip(clipData);
+                if (clipboardManager != null) {
+                    clipboardManager.setPrimaryClip(clipData);
+                }
                 break;
             case R.id.externalBrowser:
                 Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
