@@ -14,14 +14,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class GadgetteAdapter extends ArrayAdapter<String> {
+public class GazetteAdapter extends ArrayAdapter<String> {
 
 public Typeface font;
 ArrayList<String> titleArray;
 private Activity context;
 
 
-public GadgetteAdapter(Activity context, ArrayList<String> titleArray) {
+public GazetteAdapter(Activity context, ArrayList<String> titleArray) {
 
         super(context, R.layout.gadgette_layout,titleArray);
         this.context=context;

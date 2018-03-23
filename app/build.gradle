@@ -7,8 +7,8 @@ android {
         applicationId "zubayer.docsites"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 18
-        versionName "2.5.6"
+        versionCode 19
+        versionName "2.6.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
