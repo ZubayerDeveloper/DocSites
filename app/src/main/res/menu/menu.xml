@@ -29,5 +29,10 @@
         android:icon="@android:drawable/ic_menu_share"
         android:title="Check notificatons now"
         app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/summery"-->
+        <!--android:icon="@android:drawable/ic_menu_share"-->
+        <!--android:title="Notification Summery"-->
+        <!--app:showAsAction="never" />-->
 
 </menu>

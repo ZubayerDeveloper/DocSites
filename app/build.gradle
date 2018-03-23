@@ -7,8 +7,8 @@ android {
         applicationId "zubayer.docsites"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 15
-        versionName "2.4.4"
+        versionCode 18
+        versionName "2.5.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,9 +25,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //noinspection GradleCompatible
-    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.firebase:firebase-ads:11.8.0'
+    compile 'com.google.firebase:firebase-ads:12.0.0'
     compile 'me.anwarshahriar:calligrapher:1.0'
     testCompile 'junit:junit:4.12'
 

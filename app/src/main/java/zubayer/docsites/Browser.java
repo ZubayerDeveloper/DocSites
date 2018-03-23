@@ -3,12 +3,10 @@ package zubayer.docsites;
 import android.app.*;
 import android.os.*;
 import android.content.*;
-import android.support.v7.app.AppCompatActivity;
 import android.webkit.*;
 import android.net.*;
 import android.view.*;
 import android.widget.*;
-import java.util.zip.*;
 import android.app.DownloadManager;
 
 import com.google.android.gms.ads.AdRequest;
@@ -183,7 +181,7 @@ public class Browser extends Activity {
 
         switch (item.getItemId()) {
             case R.id.exit:
-                Intent intent=new Intent(this,CardView.class);
+                Intent intent=new Intent(this,MainActivity.class);
                 startActivity(intent);
                finish();
                 break;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>2.4.4</b></string>
+    <string name="app_name">DocSites <b>2.5.6</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>
@@ -87,7 +87,7 @@
     <string name="bmdcHints">Find Registered Doctor\nRegistration/renewal forms</string>
     <string name="resultsHints"> </string>
 
-<!--addMob add unit id-->
+    <!--addMob add unit id-->
     <string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>
     <string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>
     <string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>
@@ -95,31 +95,31 @@
 
     <!--Notice text-->
     <string name="notification">Select the notifications you want daily</string>
-    <string name="residencySetting">"BSMMU: (For residents only) exam notice for phase A, phase B, results "</string>
-    <string name="noticeSetting">Diploma, M.Phil admission notice, seat plan, result </string>
-    <string name="dghsSetting">Foundation training orders and other orders from DGHS</string>
-    <string name="resultBcsSetting"><b>BCS exam:</b> Results and other notice</string>
-    <string name="resultDeptSetting"><b>Departmental exam:</b> Results and other notice</string>
-    <string name="resultSeniorSetting"><b>Senior Scale exam:</b> Results and other notice</string>
-    <string name="regiDeptSetting"><b>Departmental exam:</b> Notify me when online registration starts</string>
-    <string name="regiSeniorSetting"><b>Senior Scale exam:</b> Notify me when online registration starts</string>
+    <string name="residencySetting">1. BSMMU: (For residents only) exam notice for phase A, phase B, results</string>
+    <string name="noticeSetting">2. Diploma, M.Phil admission notice, seat plan, result </string>
+    <string name="dghsSetting">3. Foundation training orders and other orders from DGHS</string>
+    <string name="resultBcsSetting"><b>4. BCS exam:</b> Results and other notice</string>
+    <string name="regiDeptSetting"><b>5. Departmental exam:</b> Notify me when online registration starts</string>
+    <string name="resultDeptSetting"><b>6. Departmental exam:</b> Results and other notice</string>
+    <string name="regiSeniorSetting"><b>7. Senior Scale exam:</b> Notify me when online registration starts</string>
+    <string name="resultSeniorSetting"><b>8. Senior Scale exam:</b> Results and other notice</string>
+    <string name="assistantSurgeonSetting">9. (বিসিএস) সহকারী সার্জন পদে পদায়ন</string>
+    <string name="juniorConsultantSetting">10. জুনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="seniorConsultantSetting">11. সিনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="assistantProfessorSetting">12. সহকারী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="associateProfessorSetting">13. সহযোগী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="professorSetting">14. অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
+    <string name="civilSurgeonSetting">15. সহকারী পরিচালক/সিভিল সার্জন/সমমান পদের বিজ্ঞপ্তি</string>
+    <string name="adhocSetting">16. এডহকঃ নিয়মিতকরণ</string>
+    <string name="mohfwSetting">17. স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়ে নতুন বদলি/পদায়ন/প্রজ্ঞাপন</string>
+    <string name="leaveSetting">18. অর্জিত ছুটি, বহিরাগমন, লিয়েন</string>
+    <string name="leaveOpion">অর্জিত ছুটি, বহিরাগমন, লিয়েন</string>
     <string name="regideptStarted">Registration for Departmental Exam has been started. Click to go for Registration</string>
+    <string name="regiseniortext">11. Registration for Senior Scale Exam has been started. Click to go for Registration</string>
     <string name="regiExpired">Oline registration date is expired</string>
-    <string name="regiseniortext">Registration for Senior Scale Exam has been started. Click to go for Registration</string>
-    <string name="assistantSurgeonSetting">(বিসিএস) সহকারী সার্জন পদে পদায়ন</string>
-    <string name="juniorConsultantSetting">জুনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
-    <string name="seniorConsultantSetting">সিনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
-    <string name="assistantProfessorSetting">সহকারী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
-    <string name="associateProfessorSetting">সহযোগী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
-    <string name="professorSetting">অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
-    <string name="civilSurgeonSetting">সহকারী পরিচালক/সিভিল সার্জন/সমমান পদের বিজ্ঞপ্তি</string>
-    <string name="adhocSetting">এডহকঃ নিয়মিতকরণ</string>
-    <string name="mohfwSetting">স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়ে নতুন বদলি/পদায়ন/প্রজ্ঞাপন</string>
     <string name="soundSetting">Allow notification sound</string>
     <string name="vibrateSetting">Allow notification vibration</string>
-    <string name="noData">You missed today\'s notification.\nFollow the steps to get notifications\n1. Turn on Wi-Fi or mobile data\n2. click this notification or open DocSites app </string>
-    <string name="leaveSetting">অর্জিত ছুটি, বহিরাগমন, লিয়েন</string>
-    <string name="leaveOpion">অর্জিত ছুটি, বহিরাগমন, লিয়েন</string>
+    <string name="noData">You missed today\'s notification.\nFollow the steps to get notifications\nStep 1. Turn on Wi-Fi or mobile data\nStep 2. click this notification or open DocSites app </string>
 
     <!--filter string-->
     <string name="seniorGazette">সিনিয়র স্কেল</string>
@@ -143,9 +143,10 @@
     <string name="about">App Developer:\n\n<b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>
     </string>
     <string name="settingDialog">\nManage your notifications\n</string>
-    <string name="vloumeHeading">\লিস্ট থেকে গেজেট নির্বাচন করুন</string>
-    <string name="volumeNavigation">\পরবর্তী পৃষ্ঠা</string>
+    <string name="vloumeHeading">\বছর</string>
+    <string name="volumeNavigation">\গেজেট</string>
     <string name="dialogueText">\গেজেট দেখার জন্য এখানে ক্লিক করুন</string>
+    <string name="text">\লিস্ট থেকে বছর নির্বাচন করুন</string>
 
     <string name="browseralert">\n\n1.If the page is empty \n\n2. if you see \"no preview available\"\n\n** Press \"Reload\" button several times, it may solve the problem\n</string>
     <string name="exit">\nMail me your problems, Ideas and suggestions for more links you want\n</string>

@@ -1,9 +1,12 @@
 package zubayer.docsites;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
@@ -230,7 +233,7 @@ public class Settings extends Activity {
         }else {
             leave.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("notificationSound",0);
+        preferences=getSharedPreferences("notificationSounds",0);
         enableSound=preferences.getBoolean("notificationSoundChecked",false);
         sound.setChecked(enableSound);
         if(sound.isChecked()){
@@ -239,7 +242,7 @@ public class Settings extends Activity {
         }else {
             sound.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("vibration",0);
+        preferences=getSharedPreferences("vibrations",0);
         enableVibrate=preferences.getBoolean("vibrationChecked",false);
         vibration.setChecked(enableVibrate);
         if(vibration.isChecked()){
@@ -576,11 +579,13 @@ public class Settings extends Activity {
         sound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences soundsettings = getSharedPreferences("notificationSound", 0);
+                SharedPreferences soundsettings = getSharedPreferences("notificationSounds", 0);
                 SharedPreferences.Editor soundeditor = soundsettings.edit();
                 if(sound.isChecked()){
                     sound.setChecked(true);
                     sound.setTextColor(Color.parseColor("#AA7E02"));
+                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
+                    mp.start();
                 }else {
                     sound.setChecked(false);
                     sound.setTextColor(Color.parseColor("#B4B4B4"));
@@ -592,11 +597,16 @@ public class Settings extends Activity {
         vibration.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences vibrationsettings = getSharedPreferences("vibration", 0);
+                SharedPreferences vibrationsettings = getSharedPreferences("vibrations", 0);
                 SharedPreferences.Editor vibrateEditor = vibrationsettings.edit();
                 if(vibration.isChecked()){
                     vibration.setChecked(true);
                     vibration.setTextColor(Color.parseColor("#59038D"));
+                    Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                    if (vibrator != null) {
+                        vibrator.vibrate(1000);
+                        vibrator.vibrate(1000);
+                    }
                 }else {
                     vibration.setChecked(false);
                     vibration.setTextColor(Color.parseColor("#B4B4B4"));

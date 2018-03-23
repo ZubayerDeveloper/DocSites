@@ -7,10 +7,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:fullBackupContent="true"
@@ -21,7 +20,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Browser" />
         <activity
-            android:name=".CardView"
+            android:name=".MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,8 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Main2Activity" />
-        <activity android:name=".MainActivity" />
 
         <receiver
             android:name=".NotificationReceiver"
@@ -42,12 +39,19 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <service android:name=".OrioJobScheduler"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
+
+        <service
+            android:name=".OrioJobScheduler"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".MyIntentService" />
+
         <activity android:name=".Settings" />
-        <activity android:name=".ServiceConfirmation"/>
+        <activity android:name=".WeeklyGazettes" />
+        <activity
+            android:name=".NotificationSummery"
+            android:theme="@style/Theme.Transparent" />
+        <activity android:name=".GazetteActivity"></activity>
     </application>
 
 </manifest>

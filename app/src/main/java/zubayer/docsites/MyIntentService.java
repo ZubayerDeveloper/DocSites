@@ -11,12 +11,10 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.opengl.Visibility;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,7 +30,7 @@ public class MyIntentService extends IntentService {
     NotificationCompat.Builder notificationBuilder;
     NotificationManager notificationManager;
     PendingIntent pendingIntent,pendingSetting;
-    Intent myIntent,settingIntent;
+    Intent myIntent,settingIntent,summeryIntent;
     SharedPreferences preferences;
     public MyIntentService() {
         super("MyService");
@@ -47,7 +45,12 @@ public class MyIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        checkConnectivity();
+        try {
+            checkConnectivity();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        summeryIntent=new Intent(getApplicationContext(),NotificationSummery.class);
     }
 
     @Override
@@ -69,8 +72,10 @@ public class MyIntentService extends IntentService {
                 preferences = getSharedPreferences("residency", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("residency", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -79,18 +84,22 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BSMMU:Residency/Non-Residency", btxt);
                     notification("BSMMU:Residency/Non-Residency", btxt, 0);
                     preferences.edit().putString("residency", btxt).apply();
+
                 }
             }
             preferences=getSharedPreferences("noticeSetting",0);
             checked=preferences.getBoolean("noticeChecked",false);
             if(checked) {
+                btxt="";
                 bsmmuNotice();
                 executableTag();
                 preferences = getSharedPreferences("bsmmuNotice", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("bsmmuNotice", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("2",getString(R.string.residencySetting));
+                }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_2",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -99,18 +108,22 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BSMMU Notice", btxt);
                     notification("BSMMU Notice", btxt, 1);
                     preferences.edit().putString("bsmmuNotice", btxt).apply();
+
                 }
             }
             preferences=getSharedPreferences("dghsSetting",0);
             checked=preferences.getBoolean("dghsChecked",false);
             if(checked) {
+                btxt="";
                 dghsHomeLinks();
                 executableTag();
                 preferences = getSharedPreferences("dghs", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("dghs", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("3",getString(R.string.residencySetting));
+                }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_3",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -119,18 +132,22 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("New from DGHS", btxt);
                     notification("New from DGHS", btxt, 2);
                     preferences.edit().putString("dghs", btxt).apply();
+
                 }
             }
             preferences=getSharedPreferences("resultDeptSetting",0);
             checked=preferences.getBoolean("resultDeptChecked",false);
             if(checked) {
+                btxt="";
                 resultDept();
                 executableTag();
                 preferences = getSharedPreferences("dept", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("dept", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("4",getString(R.string.residencySetting));
+                }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_4",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
@@ -139,18 +156,22 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BPSC:Departmental Exam", btxt);
                     notification("BPSC:Departmental Exam", btxt, 3);
                     preferences.edit().putString("dept", btxt).apply();
+
                 }
             }
             preferences=getSharedPreferences("resultSeniorSetting",0);
             checked=preferences.getBoolean("resultSeniorChecked",false);
             if(checked) {
+                btxt="";
                 resultSenior();
                 executableTag();
                 preferences = getSharedPreferences("senior", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("senior", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("5",getString(R.string.residencySetting));
+                }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_5",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
@@ -159,18 +180,22 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BPSC:Senior Scale Exam", btxt);
                     notification("BPSC:Senior Scale Exam", btxt, 4);
                     preferences.edit().putString("senior", btxt).apply();
+
                 }
             }
             preferences=getSharedPreferences("reultBcsSetting",0);
             checked=preferences.getBoolean("reultBcsChecked",false);
             if(checked) {
+                btxt="";
                 resultBCS();
                 executableTag();
                 preferences = getSharedPreferences("bcs", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("bcs", null);
 
-                if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("6",getString(R.string.residencySetting));
+                }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_6",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
@@ -179,14 +204,18 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BPSC:BCS Exam", btxt);
                     notification("BPSC:BCS Exam", btxt, 5);
                     preferences.edit().putString("bcs", btxt).apply();
+
                 }
             }
             preferences=getSharedPreferences("regiDeptSetting",0);
             checked=preferences.getBoolean("regiDeptChecked",false);
             if(checked) {
+                btxt="";
                 regiDeptStarts();
                 executableTag();
-                if(btxt.contains("Section 1: Personal Details")){
+                if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_7",getString(R.string.residencySetting));
+                }else if(btxt.contains("Section 1: Personal Details")){
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -195,20 +224,17 @@ public class MyIntentService extends IntentService {
                     notification("Departmental Exam", getString(R.string.regideptStarted), 61);
 
                     preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
-                    preferences.edit().remove("regideptExpired").apply();
-                }else {
+                    preferences.edit().putString("deptExpired", "").apply();
 
                 }
-            }
-            preferences=getSharedPreferences("regiDeptSetting",0);
-            checked=preferences.getBoolean("regiDeptChecked",false);
-            if(checked) {
                 regiDeptExpire();
                 executableTag();
                 preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("deptExpired", null);
-                if(btxt.contains("expired")){
-                    if(btxt.equalsIgnoreCase(previousSaved)) {
+                if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_8",getString(R.string.residencySetting));
+                }else if(btxt.contains("expired")){
+                    if(btxt.equalsIgnoreCase(previousSaved)||btxt.length()==0) {
                     }else {
                         myIntent = new Intent(this, Browser.class);
                         myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
@@ -217,15 +243,19 @@ public class MyIntentService extends IntentService {
                         bigTextStyleNotification("Departmental Exam", btxt);
                         notification("Departmental Exam", getString(R.string.regiExpired), 6);
                         preferences.edit().putString("deptExpired", btxt).apply();
+
                     }
                 }
             }
             preferences=getSharedPreferences("regiSeniorSetting",0);
             checked=preferences.getBoolean("regiSeniorChecked",false);
             if(checked) {
+                btxt="";
                 regiSeniorStsrts();
                 executableTag();
-                if (btxt.contains("Section 1: Personal Details")) {
+                if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_9",getString(R.string.residencySetting));
+                }else if (btxt.contains("Section 1: Personal Details")) {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -234,19 +264,16 @@ public class MyIntentService extends IntentService {
                     notification("Senior Scale Exam", getString(R.string.regiExpired), 71);
 
                     preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
-                    preferences.edit().remove("regiSeniorExpired").apply();
-                    } else {
+                    preferences.edit().putString("seniorExpired", "").apply();
 
-                    }
                 }
-            preferences=getSharedPreferences("regiSeniorSetting",0);
-            checked=preferences.getBoolean("regiSeniorChecked",false);
-            if(checked) {
                 regiSeniorExpre();
                 executableTag();
                 preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                 previousSaved = preferences.getString("seniorExpired", null);
-                if (btxt.contains("expired")) {
+                if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_10",getString(R.string.residencySetting));
+                }else if (btxt.contains("expired")) {
                     if (btxt.equalsIgnoreCase(previousSaved)) {
                     } else {
                         myIntent = new Intent(this, Browser.class);
@@ -256,6 +283,7 @@ public class MyIntentService extends IntentService {
                         bigTextStyleNotification("Senior Scale Exam",btxt);
                         notification("Senior Scale Exam", getString(R.string.regiExpired), 7);
                         preferences.edit().putString("seniorExpired", btxt).apply();
+
                     }
                 }
             }
@@ -271,7 +299,9 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("assistantSurgeon", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
+//                    summeryIntent.putExtra("11",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                   summeryIntent.putExtra("fail_11",getString(R.string.residencySetting));
                 } else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
@@ -294,8 +324,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("juniorConsultant", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("12",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_12",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -320,8 +352,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("seniorConsultant", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("13",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_13",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -333,9 +367,11 @@ public class MyIntentService extends IntentService {
                 serviceConfirmTag2();
                 preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
                 previousSaved2 = preferences.getString("seniorConsultant2", null);
-                if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
-
-                } else {
+                if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+//                    summeryIntent.putExtra("14",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_14",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls2.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -357,8 +393,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("assistantProfessor", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("15",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_15",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -380,8 +418,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("associateProfessor", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("16",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_16",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -403,8 +443,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("professor", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("17",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_17",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -426,8 +468,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("civilSurgeon", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("18",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_18",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -449,8 +493,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("adhoc", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("19",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_19",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", urls.get(0));
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -472,8 +518,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("mohfw", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("20",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_20",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", urls.get(0));
@@ -496,8 +544,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("deputation", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("21",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_21",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", urls.get(0));
@@ -520,8 +570,10 @@ public class MyIntentService extends IntentService {
                 previousSaved = preferences.getString("leave", null);
 
                 if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
-
-                } else {
+//                    summeryIntent.putExtra("22",getString(R.string.residencySetting));
+                }else if (buttonTexts.size()==0){
+//                    summeryIntent.putExtra("fail_22",getString(R.string.residencySetting));
+                }else {
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", urls.get(0));
@@ -542,15 +594,22 @@ public class MyIntentService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent newIntent = new Intent(MyIntentService.this, NotificationReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(MyIntentService.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         try {
-            AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent newIntent = new Intent(MyIntentService.this, NotificationReceiver.class);
-            pendingIntent = PendingIntent.getBroadcast(MyIntentService.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            if (manager != null) {
-                manager.cancel(pendingIntent);
-            }
-//            Toast.makeText(getApplicationContext(),urls.get(0),Toast.LENGTH_LONG).show();
-        }catch (Exception e){}
+            assert manager != null;
+            manager.cancel(pendingIntent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+//        summeryIntent.setAction(Intent.ACTION_MAIN);
+//        summeryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+//        summeryIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        ComponentName cn=new ComponentName(this,NotificationSummery.class);
+//        summeryIntent.setComponent(cn);
+//        startActivity(summeryIntent);
+//            Toast.makeText(getApplicationContext(),"tttttttttt",Toast.LENGTH_LONG).show();
     }
 
     private void residency() {
@@ -567,8 +626,8 @@ public class MyIntentService extends IntentService {
     }
     private void dghsHomeLinks() {
         paramUrl = "http://dghs.gov.bd/index.php/bd/";
-        paramTagForText = "#system span";
-        paramTagForLink = "#system span a";
+        paramTagForText = "#system a";
+        paramTagForLink = "#system a";
         paramLink = "abs:href";
         textMin = 0;
         linkBegin = 0;
@@ -691,14 +750,14 @@ public class MyIntentService extends IntentService {
                 .setContentText(text)
                 .addAction(0,"Turn off notification",pendingSetting)
                 .setColor(0xff990000)
+                .setVibrate(new long[]{0,300,300,300})
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MAX)
-                .setLights(0xff990000,300,100)
                 .setContentIntent(pendingIntent)
                 .setStyle(bigTextStyle)
                 .setSmallIcon(R.mipmap.ic_launcher);
-
+        notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
         if(enableSound) {
             MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
             mp.start();
@@ -740,7 +799,7 @@ public class MyIntentService extends IntentService {
         mobileDataAvailable = networkInfo.isConnected();
         if (!wifiAvailable&& !mobileDataAvailable) {
             bigTextStyleNotification(title,text);
-            settingIntent = new Intent(this, CardView.class);
+            settingIntent = new Intent(this, MainActivity.class);
             settingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingSetting = PendingIntent.getActivity(this, 111, settingIntent, 0);
             notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
@@ -756,13 +815,6 @@ public class MyIntentService extends IntentService {
                     .setStyle(bigTextStyle)
                     .setSmallIcon(R.mipmap.ic_launcher);
 
-            MediaPlayer mp = MediaPlayer.create(this, R.raw.sound);
-            mp.start();
-
-            Vibrator vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-            if (vibrator != null) {
-                vibrator.vibrate(700);
-            }
             PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
             PowerManager.WakeLock wakeLock = null;
             if (pm != null) {

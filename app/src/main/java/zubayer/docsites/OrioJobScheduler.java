@@ -18,7 +18,6 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,7 +25,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class OrioJobScheduler extends JobService{
     String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,previousSaved2,
@@ -88,8 +86,10 @@ public class OrioJobScheduler extends JobService{
                     preferences = getSharedPreferences("residency", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("residency", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                    if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -102,13 +102,16 @@ public class OrioJobScheduler extends JobService{
                 preferences=getSharedPreferences("noticeSetting",0);
                 checked=preferences.getBoolean("noticeChecked",false);
                 if(checked) {
+                    btxt="";
                     bsmmuNotice();
                     executableTag();
                     preferences = getSharedPreferences("bsmmuNotice", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("bsmmuNotice", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                    if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -121,13 +124,16 @@ public class OrioJobScheduler extends JobService{
                 preferences=getSharedPreferences("dghsSetting",0);
                 checked=preferences.getBoolean("dghsChecked",false);
                 if(checked) {
+                    btxt="";
                     dghsHomeLinks();
                     executableTag();
                     preferences = getSharedPreferences("dghs", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dghs", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                    if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -140,51 +146,60 @@ public class OrioJobScheduler extends JobService{
                 preferences=getSharedPreferences("resultDeptSetting",0);
                 checked=preferences.getBoolean("resultDeptChecked",false);
                 if(checked) {
+                    btxt="";
                     resultDept();
                     executableTag();
                     preferences = getSharedPreferences("dept", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dept", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                    if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 3, myIntent, 0);
-                        notification("channel_3","dept","Departmental Exam",btxt,3);
+                        notification("channel_3","dept","Departmental Exam Notice",btxt,3);
                         preferences.edit().putString("dept", btxt).apply();
                     }
                 }
                 preferences=getSharedPreferences("resultSeniorSetting",0);
                 checked=preferences.getBoolean("resultSeniorChecked",false);
                 if(checked) {
+                    btxt="";
                     resultSenior();
                     executableTag();
                     preferences = getSharedPreferences("senior", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("senior", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                    if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 4, myIntent, 0);
-                        notification("channel_4","senior","Senior Scale Exam",btxt,4);
+                        notification("channel_4","senior","Senior Scale Exam Notice",btxt,4);
                         preferences.edit().putString("senior", btxt).apply();
                     }
                 }
                 preferences=getSharedPreferences("reultBcsSetting",0);
                 checked=preferences.getBoolean("reultBcsChecked",false);
                 if(checked) {
+                    btxt="";
                     resultBCS();
                     executableTag();
                     preferences = getSharedPreferences("bcs", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("bcs", null);
 
-                    if (btxt.equalsIgnoreCase(previousSaved)) {
-
+                    if (btxt.equalsIgnoreCase(previousSaved)){
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    }else if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
@@ -197,9 +212,12 @@ public class OrioJobScheduler extends JobService{
                 preferences=getSharedPreferences("regiDeptSetting",0);
                 checked=preferences.getBoolean("regiDeptChecked",false);
                 if(checked) {
+                    btxt="";
                     regiDeptStarts();
                     executableTag();
-                    if(btxt.contains("Section 1: Personal Details")){
+                    if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_7",getString(R.string.residencySetting));
+                    }else if(btxt.contains("Section 1: Personal Details")){
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -211,10 +229,6 @@ public class OrioJobScheduler extends JobService{
                     }else {
 
                     }
-                }
-                preferences=getSharedPreferences("regiDeptSetting",0);
-                checked=preferences.getBoolean("regiDeptChecked",false);
-                if(checked) {
                     regiDeptExpire();
                     executableTag();
                     preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
@@ -234,9 +248,12 @@ public class OrioJobScheduler extends JobService{
                 preferences=getSharedPreferences("regiSeniorSetting",0);
                 checked=preferences.getBoolean("regiSeniorChecked",false);
                 if(checked) {
+                    btxt="";
                     regiSeniorStsrts();
                     executableTag();
-                    if (btxt.contains("Section 1: Personal Details")) {
+                    if(btxt.length()==0) {
+//                    summeryIntent.putExtra("fail_7",getString(R.string.residencySetting));
+                    }else if(btxt.contains("Section 1: Personal Details")){
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -248,10 +265,6 @@ public class OrioJobScheduler extends JobService{
                     } else {
 
                     }
-                }
-                preferences=getSharedPreferences("regiSeniorSetting",0);
-                checked=preferences.getBoolean("regiSeniorChecked",false);
-                if(checked) {
                     regiSeniorExpre();
                     executableTag();
                     preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
@@ -553,8 +566,8 @@ public class OrioJobScheduler extends JobService{
     }
     private void dghsHomeLinks() {
         paramUrl = "http://dghs.gov.bd/index.php/bd/";
-        paramTagForText = "#system span";
-        paramTagForLink = "#system span a";
+        paramTagForText = "#system a";
+        paramTagForLink = "#system a";
         paramLink = "abs:href";
         textMin = 0;
         linkBegin = 0;
@@ -734,7 +747,7 @@ public class OrioJobScheduler extends JobService{
         networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         mobileDataAvailable = networkInfo.isConnected();
         if (!wifiAvailable&& !mobileDataAvailable) {
-            myIntent = new Intent(OrioJobScheduler.this, CardView.class);
+            myIntent = new Intent(OrioJobScheduler.this, MainActivity.class);
             myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 112, myIntent, 0);
             notification("nodata","dataNotFound",title,text,113);
