@@ -1129,7 +1129,7 @@ public class MainActivity extends Activity {
             checkinternet.setButton("Send mail", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + "zubayer.developer@gmail.com"));
-                    i.putExtra(Intent.EXTRA_SUBJECT, "DocSites: " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
+                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name)+": "+ Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
                     i.putExtra(Intent.EXTRA_TEXT, "Write here:");
                     startActivity(i);
                 }
