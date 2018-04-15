@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/settings"
+        android:icon="@drawable/settings"
         android:title="Notification settings"
         app:showAsAction="never" />
+
     <item
-        android:id="@+id/item2"
-        android:checkable="true"
-        android:checked="true"
-        android:title="Links open externally"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/about"
-        android:title="About Developer"
+        android:id="@+id/check"
+        android:icon="@drawable/notification"
+        android:title="Check notificatons now"
         app:showAsAction="never" />
     <item
         android:id="@+id/rate"
+        android:icon="@drawable/rate"
         android:title="Rate This App"
         app:showAsAction="never" />
     <item
         android:id="@+id/share"
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/share"
         android:title="Share This App"
         app:showAsAction="never" />
     <item
-        android:id="@+id/check"
-        android:icon="@android:drawable/ic_menu_share"
-        android:title="Check notificatons now"
+        android:id="@+id/about"
+        android:icon="@drawable/about"
+        android:title="About Developer"
         app:showAsAction="never" />
-    <!--<item-->
-        <!--android:id="@+id/summery"-->
-        <!--android:icon="@android:drawable/ic_menu_share"-->
-        <!--android:title="Notification Summery"-->
-        <!--app:showAsAction="never" />-->
+    <item
+        android:id="@+id/summery"
+        android:icon="@drawable/about"
+        android:title="Notification Summery"
+        app:showAsAction="never" />
 
 </menu>

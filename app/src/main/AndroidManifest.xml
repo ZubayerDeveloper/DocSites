@@ -16,11 +16,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".Browser" />
+        android:supportsRtl="true">
+        <activity android:name=".Browser"
+            android:theme="@style/Theme.AppCompat.DayNight"/>
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.AppCompat.DayNight"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,12 +47,17 @@
             android:permission="android.permission.BIND_JOB_SERVICE" />
         <service android:name=".MyIntentService" />
 
-        <activity android:name=".Settings" />
-        <activity android:name=".WeeklyGazettes" />
+        <activity android:name=".Settings"
+            android:theme="@style/Theme.AppCompat.DayNight"/>
+        <activity android:name=".WeeklyGazettes"
+            android:theme="@style/Theme.AppCompat.DayNight"/>
         <activity
             android:name=".NotificationSummery"
-            android:theme="@style/Theme.Transparent" />
-        <activity android:name=".GazetteActivity"></activity>
+            android:theme="@style/transparent"/>
+
+
+        <activity android:name=".GazetteActivity"
+            android:theme="@style/Theme.AppCompat.DayNight"/>
     </application>
 
 </manifest>

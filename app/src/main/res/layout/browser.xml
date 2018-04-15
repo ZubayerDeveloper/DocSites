@@ -1,58 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:mlns="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    mlns:ads="http://schemas.android.com/apk/res-auto">
+
     <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="1.5dp"
-        android:progressDrawable="@drawable/custom_progress"/>
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        android:progressDrawable="@drawable/custom_progress" />
 
-
-    <WebView
-        android:id="@+id/WebView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="50dp"/>
-    <Button
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Reload"
-        android:textColor="#FFFFFF"
-        android:id="@+id/reload"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentRight="true"
-        android:layout_above="@+id/download"
-        android:background="@drawable/bcps"
-        android:src="@android:drawable/stat_sys_download"/>
-    <ImageButton
-        android:id="@+id/download"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginBottom="45dp"
-        android:layout_alignParentRight="true"
-        android:layout_above="@+id/adViewBrowser"
-        android:background="@drawable/bcps"
-        android:src="@android:drawable/stat_sys_download"/>
+        android:layout_height="match_parent">
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adViewBrowser"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_id_browser" />
-</RelativeLayout>
+        <WebView
+            android:id="@+id/WebView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="50dp" />
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adViewBrowser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            ads:adSize="SMART_BANNER"
+            ads:adUnitId="@string/banner_id_browser" />
+
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/fabweb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="80dp"
+            android:layout_above="@+id/adViewBrowser"
+            ads:fabGravity="bottom_end"
+            ads:fabMenu="@menu/browser_menu"
+            ads:miniFabBackgroundTint="#000000"
+            ads:miniFabDrawableTint="#FFFFFF"
+            ads:miniFabTitleBackgroundTint="#000000"
+            ads:miniFabTitleTextColor="#FFFFFF"
+            ads:touchGuard="true"
+            ads:touchGuardDrawable="@color/cardview_shadow_start_color" />
+    </RelativeLayout>
 </LinearLayout>

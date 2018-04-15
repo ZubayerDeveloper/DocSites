@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>2.6.6</b></string>
+    <string name="app_name">DocSites <b>3.0.0</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>
@@ -147,6 +147,7 @@
     <string name="volumeNavigation">\গেজেট</string>
     <string name="dialogueText">\গেজেট দেখার জন্য এখানে ক্লিক করুন</string>
     <string name="text">\⇦ লিস্ট থেকে বছর নির্বাচন করুন</string>
+    <string name="openInBrowser">Links Open in Browser</string>
 
     <string name="browseralert">\n\n1.If the page is empty \n\n2. if you see \"no preview available\"\n\n** Press \"Reload\" button several times, it may solve the problem\n</string>
     <string name="exit">\nMail me your problems, Ideas and suggestions for more links you want\n</string>

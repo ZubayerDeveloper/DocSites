@@ -18,12 +18,14 @@ import me.anwarshahriar.calligrapher.Calligrapher;
 
 public class Settings extends Activity {
 
-    CheckBox residency,notice,dghs,reultBcs, resultDept, resultSenior,regiDept,regiSenior,assistantSurgeon,juniorConsultant,
-            seniorConsultant,assistantProfessor,associateProfessor,professor, civilSurgeon,adhoc,mohfw,deputation,leave,sound,vibration;
+    CheckBox residency, notice, dghs, reultBcs, resultDept, resultSenior, regiDept, regiSenior, assistantSurgeon, juniorConsultant,
+            seniorConsultant, assistantProfessor, associateProfessor, professor, civilSurgeon, adhoc, mohfw, deputation, leave, sound,
+            vibration, openInBrowser;
     SharedPreferences preferences;
-    boolean checked,enableSound,enableVibrate;
+    boolean checked, enableSound, enableVibrate;
     TextView heading;
-    Button select,deselect;
+    Button select, deselect;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,255 +33,268 @@ public class Settings extends Activity {
 
         Calligrapher font = new Calligrapher(this);
         font.setFont(this, "kalpurush.ttf", true);
-        residency=(CheckBox)findViewById(R.id.residencySetting);
-        notice=(CheckBox)findViewById(R.id.noticeSetting);
-        dghs=(CheckBox)findViewById(R.id.DGHSSetting);
-        reultBcs=(CheckBox)findViewById(R.id.bcsResultSetting);
-        resultDept =(CheckBox)findViewById(R.id.deptResultSetting);
-        resultSenior =(CheckBox)findViewById(R.id.seniorResultSetting);
-        regiDept=(CheckBox)findViewById(R.id.regiDeptSetting);
-        regiSenior=(CheckBox)findViewById(R.id.regiSeniorSetting);
-        assistantSurgeon=(CheckBox)findViewById(R.id.assistantSurgeonSetting);
-        juniorConsultant=(CheckBox)findViewById(R.id.juniorConsultantSetting);
-        seniorConsultant =(CheckBox)findViewById(R.id.seniorConsultantSetting);
-        assistantProfessor=(CheckBox)findViewById(R.id.assistantProfessorSetting);
-        associateProfessor=(CheckBox)findViewById(R.id.associateProfessorSetting);
-        professor=(CheckBox)findViewById(R.id.professorSetting);
-        civilSurgeon =(CheckBox)findViewById(R.id.civilSergeonSetting);
-        adhoc=(CheckBox)findViewById(R.id.adhocSetting);
-        mohfw=(CheckBox)findViewById(R.id.mohfwSetting);
-        deputation=(CheckBox)findViewById(R.id.deputationSetting);
-        leave=(CheckBox)findViewById(R.id.leaveSetting);
-        sound=(CheckBox)findViewById(R.id.soundSetting);
-        vibration=(CheckBox)findViewById(R.id.vibrateSetting);
+        residency = (CheckBox) findViewById(R.id.residencySetting);
+        notice = (CheckBox) findViewById(R.id.noticeSetting);
+        dghs = (CheckBox) findViewById(R.id.DGHSSetting);
+        reultBcs = (CheckBox) findViewById(R.id.bcsResultSetting);
+        resultDept = (CheckBox) findViewById(R.id.deptResultSetting);
+        resultSenior = (CheckBox) findViewById(R.id.seniorResultSetting);
+        regiDept = (CheckBox) findViewById(R.id.regiDeptSetting);
+        regiSenior = (CheckBox) findViewById(R.id.regiSeniorSetting);
+        assistantSurgeon = (CheckBox) findViewById(R.id.assistantSurgeonSetting);
+        juniorConsultant = (CheckBox) findViewById(R.id.juniorConsultantSetting);
+        seniorConsultant = (CheckBox) findViewById(R.id.seniorConsultantSetting);
+        assistantProfessor = (CheckBox) findViewById(R.id.assistantProfessorSetting);
+        associateProfessor = (CheckBox) findViewById(R.id.associateProfessorSetting);
+        professor = (CheckBox) findViewById(R.id.professorSetting);
+        civilSurgeon = (CheckBox) findViewById(R.id.civilSergeonSetting);
+        adhoc = (CheckBox) findViewById(R.id.adhocSetting);
+        mohfw = (CheckBox) findViewById(R.id.mohfwSetting);
+        deputation = (CheckBox) findViewById(R.id.deputationSetting);
+        leave = (CheckBox) findViewById(R.id.leaveSetting);
+        sound = (CheckBox) findViewById(R.id.soundSetting);
+        vibration = (CheckBox) findViewById(R.id.vibrateSetting);
+        openInBrowser = (CheckBox) findViewById(R.id.openInbrowser);
 
-        select=(Button) findViewById(R.id.select);
-        deselect=(Button) findViewById(R.id.deselect);
+        select = (Button) findViewById(R.id.select);
+        deselect = (Button) findViewById(R.id.deselect);
 
-        heading=(TextView)findViewById(R.id.settingHeading);
-        int density=getResources().getDisplayMetrics().densityDpi;
-        if(density<=DisplayMetrics.DENSITY_HIGH) {
+        heading = (TextView) findViewById(R.id.settingHeading);
+        int density = getResources().getDisplayMetrics().densityDpi;
+        if (density <= DisplayMetrics.DENSITY_HIGH) {
             heading.setTextSize(20);
         }
-        preferences=getSharedPreferences("residencySetting",0);
-        checked=preferences.getBoolean("residencyChecked",false);
+        preferences = getSharedPreferences("residencySetting", 0);
+        checked = preferences.getBoolean("residencyChecked", false);
         residency.setChecked(checked);
-        if(residency.isChecked()){
+        if (residency.isChecked()) {
             residency.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             residency.setTextColor(Color.parseColor("#B4B4B4"));
         }
 
-        preferences=getSharedPreferences("noticeSetting",0);
-        checked=preferences.getBoolean("noticeChecked",false);
+        preferences = getSharedPreferences("noticeSetting", 0);
+        checked = preferences.getBoolean("noticeChecked", false);
         notice.setChecked(checked);
-        if(notice.isChecked()){
+        if (notice.isChecked()) {
             notice.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             notice.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("dghsSetting",0);
-        checked=preferences.getBoolean("dghsChecked",false);
+        preferences = getSharedPreferences("dghsSetting", 0);
+        checked = preferences.getBoolean("dghsChecked", false);
         dghs.setChecked(checked);
-        if(dghs.isChecked()){
+        if (dghs.isChecked()) {
             dghs.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             dghs.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("reultBcsSetting",0);
-        checked=preferences.getBoolean("reultBcsChecked",false);
+        preferences = getSharedPreferences("reultBcsSetting", 0);
+        checked = preferences.getBoolean("reultBcsChecked", false);
         reultBcs.setChecked(checked);
-        if(reultBcs.isChecked()){
+        if (reultBcs.isChecked()) {
             reultBcs.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             reultBcs.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("resultDeptSetting",0);
-        checked=preferences.getBoolean("resultDeptChecked",false);
+        preferences = getSharedPreferences("resultDeptSetting", 0);
+        checked = preferences.getBoolean("resultDeptChecked", false);
         resultDept.setChecked(checked);
-        if(resultDept.isChecked()){
+        if (resultDept.isChecked()) {
             resultDept.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             resultDept.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("resultSeniorSetting",0);
-        checked=preferences.getBoolean("resultSeniorChecked",false);
+        preferences = getSharedPreferences("resultSeniorSetting", 0);
+        checked = preferences.getBoolean("resultSeniorChecked", false);
         resultSenior.setChecked(checked);
-        if(resultSenior.isChecked()){
+        if (resultSenior.isChecked()) {
             resultSenior.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             resultSenior.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("regiDeptSetting",0);
-        checked=preferences.getBoolean("regiDeptChecked",false);
+        preferences = getSharedPreferences("regiDeptSetting", 0);
+        checked = preferences.getBoolean("regiDeptChecked", false);
         regiDept.setChecked(checked);
-        if(regiDept.isChecked()){
+        if (regiDept.isChecked()) {
             regiDept.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             regiDept.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("regiSeniorSetting",0);
-        checked=preferences.getBoolean("regiSeniorChecked",false);
+        preferences = getSharedPreferences("regiSeniorSetting", 0);
+        checked = preferences.getBoolean("regiSeniorChecked", false);
         regiSenior.setChecked(checked);
-        if(regiSenior.isChecked()){
+        if (regiSenior.isChecked()) {
             regiSenior.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             regiSenior.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("assistantSurgeonSetting",0);
-        checked=preferences.getBoolean("assistantSurgeonChecked",false);
+        preferences = getSharedPreferences("assistantSurgeonSetting", 0);
+        checked = preferences.getBoolean("assistantSurgeonChecked", false);
         assistantSurgeon.setChecked(checked);
-        if(assistantSurgeon.isChecked()){
+        if (assistantSurgeon.isChecked()) {
             assistantSurgeon.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             assistantSurgeon.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("juniorConsultantSetting",0);
-        checked=preferences.getBoolean("juniorConsultantChecked",false);
+        preferences = getSharedPreferences("juniorConsultantSetting", 0);
+        checked = preferences.getBoolean("juniorConsultantChecked", false);
         juniorConsultant.setChecked(checked);
-        if(juniorConsultant.isChecked()){
+        if (juniorConsultant.isChecked()) {
             juniorConsultant.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             juniorConsultant.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("seniorConsultantSetting",0);
-        checked=preferences.getBoolean("seniorConsultantChecked",false);
+        preferences = getSharedPreferences("seniorConsultantSetting", 0);
+        checked = preferences.getBoolean("seniorConsultantChecked", false);
         seniorConsultant.setChecked(checked);
-        if(seniorConsultant.isChecked()){
+        if (seniorConsultant.isChecked()) {
             seniorConsultant.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             seniorConsultant.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("assistantProfessorSetting",0);
-        checked=preferences.getBoolean("assistantProfessorChecked",false);
+        preferences = getSharedPreferences("assistantProfessorSetting", 0);
+        checked = preferences.getBoolean("assistantProfessorChecked", false);
         assistantProfessor.setChecked(checked);
-        if(assistantProfessor.isChecked()){
+        if (assistantProfessor.isChecked()) {
             assistantProfessor.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             assistantProfessor.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("associateProfessorSetting",0);
-        checked=preferences.getBoolean("associateProfessorChecked",false);
+        preferences = getSharedPreferences("associateProfessorSetting", 0);
+        checked = preferences.getBoolean("associateProfessorChecked", false);
         associateProfessor.setChecked(checked);
-        if(associateProfessor.isChecked()){
+        if (associateProfessor.isChecked()) {
             associateProfessor.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             associateProfessor.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("professorSetting",0);
-        checked=preferences.getBoolean("professorChecked",false);
+        preferences = getSharedPreferences("professorSetting", 0);
+        checked = preferences.getBoolean("professorChecked", false);
         professor.setChecked(checked);
-        if(professor.isChecked()){
+        if (professor.isChecked()) {
             professor.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             professor.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("civilSurgeonSetting",0);
-        checked=preferences.getBoolean("civilSurgeonChecked",false);
+        preferences = getSharedPreferences("civilSurgeonSetting", 0);
+        checked = preferences.getBoolean("civilSurgeonChecked", false);
         civilSurgeon.setChecked(checked);
-        if(civilSurgeon.isChecked()){
+        if (civilSurgeon.isChecked()) {
             civilSurgeon.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             civilSurgeon.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("adhocSetting",0);
-        checked=preferences.getBoolean("adhocChecked",false);
+        preferences = getSharedPreferences("adhocSetting", 0);
+        checked = preferences.getBoolean("adhocChecked", false);
         adhoc.setChecked(checked);
-        if(adhoc.isChecked()){
+        if (adhoc.isChecked()) {
             adhoc.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             adhoc.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("mohfwSetting",0);
-        checked=preferences.getBoolean("mohfwChecked",false);
+        preferences = getSharedPreferences("mohfwSetting", 0);
+        checked = preferences.getBoolean("mohfwChecked", false);
         mohfw.setChecked(checked);
-        if(mohfw.isChecked()){
+        if (mohfw.isChecked()) {
             mohfw.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             mohfw.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("deputationSetting",0);
-        checked=preferences.getBoolean("deputationChecked",false);
+        preferences = getSharedPreferences("deputationSetting", 0);
+        checked = preferences.getBoolean("deputationChecked", false);
         deputation.setChecked(checked);
-        if(deputation.isChecked()){
+        if (deputation.isChecked()) {
             deputation.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             deputation.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("leaveSetting",0);
-        checked=preferences.getBoolean("leaveChecked",false);
+        preferences = getSharedPreferences("leaveSetting", 0);
+        checked = preferences.getBoolean("leaveChecked", false);
         leave.setChecked(checked);
-        if(leave.isChecked()){
+        if (leave.isChecked()) {
             leave.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             leave.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("notificationSounds",0);
-        enableSound=preferences.getBoolean("notificationSoundChecked",false);
+
+        preferences = getSharedPreferences("notificationSounds", 0);
+        enableSound = preferences.getBoolean("notificationSoundChecked", false);
         sound.setChecked(enableSound);
-        if(sound.isChecked()){
+        if (sound.isChecked()) {
             sound.setTextColor(Color.parseColor("#AA7E02"));
 
-        }else {
+        } else {
             sound.setTextColor(Color.parseColor("#B4B4B4"));
         }
-        preferences=getSharedPreferences("vibrations",0);
-        enableVibrate=preferences.getBoolean("vibrationChecked",false);
+
+        preferences = getSharedPreferences("vibrations", 0);
+        enableVibrate = preferences.getBoolean("vibrationChecked", false);
         vibration.setChecked(enableVibrate);
-        if(vibration.isChecked()){
+        if (vibration.isChecked()) {
             vibration.setTextColor(Color.parseColor("#59038D"));
 
-        }else {
+        } else {
             vibration.setTextColor(Color.parseColor("#B4B4B4"));
         }
 
+        preferences = getSharedPreferences("setting", 0);
+        checked = preferences.getBoolean("checked", false);
+        openInBrowser.setChecked(checked);
+        if (openInBrowser.isChecked()) {
+            openInBrowser.setTextColor(Color.parseColor("#890000"));
 
-            residency.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    SharedPreferences settings = getSharedPreferences("residencySetting", 0);
-                    SharedPreferences.Editor editor = settings.edit();
-                    if(residency.isChecked()){
-                        residency.setChecked(true);
-                        residency.setTextColor(Color.parseColor("#000000"));
+        } else {
+            openInBrowser.setTextColor(Color.parseColor("#B4B4B4"));
+        }
 
-                    }else {
-                        residency.setChecked(false);
-                        residency.setTextColor(Color.parseColor("#B4B4B4"));
-                    }
-                    editor.putBoolean("residencyChecked", residency.isChecked());
-                    editor.apply();
+
+        residency.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences settings = getSharedPreferences("residencySetting", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                if (residency.isChecked()) {
+                    residency.setChecked(true);
+                    residency.setTextColor(Color.parseColor("#000000"));
+
+                } else {
+                    residency.setChecked(false);
+                    residency.setTextColor(Color.parseColor("#B4B4B4"));
                 }
-            });
+                editor.putBoolean("residencyChecked", residency.isChecked());
+                editor.apply();
+            }
+        });
 
         notice.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("noticeSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(notice.isChecked()){
+                if (notice.isChecked()) {
                     notice.setChecked(true);
                     notice.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     notice.setChecked(false);
                     notice.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -293,10 +308,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("dghsSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(dghs.isChecked()){
+                if (dghs.isChecked()) {
                     dghs.setChecked(true);
                     dghs.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     dghs.setChecked(false);
                     dghs.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -310,10 +325,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("reultBcsSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(reultBcs.isChecked()){
+                if (reultBcs.isChecked()) {
                     reultBcs.setChecked(true);
                     reultBcs.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     reultBcs.setChecked(false);
                     reultBcs.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -327,10 +342,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("resultSeniorSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(resultSenior.isChecked()){
+                if (resultSenior.isChecked()) {
                     resultSenior.setChecked(true);
                     resultSenior.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     resultSenior.setChecked(false);
                     resultSenior.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -344,10 +359,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("resultDeptSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(resultDept.isChecked()){
+                if (resultDept.isChecked()) {
                     resultDept.setChecked(true);
                     resultDept.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     resultDept.setChecked(false);
                     resultDept.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -361,10 +376,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("regiDeptSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(regiDept.isChecked()){
+                if (regiDept.isChecked()) {
                     regiDept.setChecked(true);
                     regiDept.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     regiDept.setChecked(false);
                     regiDept.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -378,10 +393,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("regiSeniorSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(regiSenior.isChecked()){
+                if (regiSenior.isChecked()) {
                     regiSenior.setChecked(true);
                     regiSenior.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     regiSenior.setChecked(false);
                     regiSenior.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -395,10 +410,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("assistantSurgeonSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(assistantSurgeon.isChecked()){
+                if (assistantSurgeon.isChecked()) {
                     assistantSurgeon.setChecked(true);
                     assistantSurgeon.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     assistantSurgeon.setChecked(false);
                     assistantSurgeon.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -412,10 +427,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("juniorConsultantSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(juniorConsultant.isChecked()){
+                if (juniorConsultant.isChecked()) {
                     juniorConsultant.setChecked(true);
                     juniorConsultant.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     juniorConsultant.setChecked(false);
                     juniorConsultant.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -429,10 +444,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("seniorConsultantSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(seniorConsultant.isChecked()){
+                if (seniorConsultant.isChecked()) {
                     seniorConsultant.setChecked(true);
                     seniorConsultant.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     seniorConsultant.setChecked(false);
                     seniorConsultant.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -446,10 +461,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("assistantProfessorSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(assistantProfessor.isChecked()){
+                if (assistantProfessor.isChecked()) {
                     assistantProfessor.setChecked(true);
                     assistantProfessor.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     assistantProfessor.setChecked(false);
                     assistantProfessor.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -463,10 +478,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("associateProfessorSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(associateProfessor.isChecked()){
+                if (associateProfessor.isChecked()) {
                     associateProfessor.setChecked(true);
                     associateProfessor.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     associateProfessor.setChecked(false);
                     associateProfessor.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -480,10 +495,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("professorSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(professor.isChecked()){
+                if (professor.isChecked()) {
                     professor.setChecked(true);
                     professor.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     professor.setChecked(false);
                     professor.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -497,10 +512,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("civilSurgeonSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(civilSurgeon.isChecked()){
+                if (civilSurgeon.isChecked()) {
                     civilSurgeon.setChecked(true);
                     civilSurgeon.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     civilSurgeon.setChecked(false);
                     civilSurgeon.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -514,10 +529,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("adhocSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(adhoc.isChecked()){
+                if (adhoc.isChecked()) {
                     adhoc.setChecked(true);
                     adhoc.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     adhoc.setChecked(false);
                     adhoc.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -531,10 +546,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("mohfwSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(mohfw.isChecked()){
+                if (mohfw.isChecked()) {
                     mohfw.setChecked(true);
                     mohfw.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     mohfw.setChecked(false);
                     mohfw.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -548,10 +563,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("deputationSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(deputation.isChecked()){
+                if (deputation.isChecked()) {
                     deputation.setChecked(true);
                     deputation.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     deputation.setChecked(false);
                     deputation.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -565,10 +580,10 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences settings = getSharedPreferences("leaveSetting", 0);
                 SharedPreferences.Editor editor = settings.edit();
-                if(leave.isChecked()){
+                if (leave.isChecked()) {
                     leave.setChecked(true);
                     leave.setTextColor(Color.parseColor("#000000"));
-                }else {
+                } else {
                     leave.setChecked(false);
                     leave.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -581,12 +596,12 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences soundsettings = getSharedPreferences("notificationSounds", 0);
                 SharedPreferences.Editor soundeditor = soundsettings.edit();
-                if(sound.isChecked()){
+                if (sound.isChecked()) {
                     sound.setChecked(true);
                     sound.setTextColor(Color.parseColor("#AA7E02"));
                     MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
                     mp.start();
-                }else {
+                } else {
                     sound.setChecked(false);
                     sound.setTextColor(Color.parseColor("#B4B4B4"));
                 }
@@ -599,7 +614,7 @@ public class Settings extends Activity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 SharedPreferences vibrationsettings = getSharedPreferences("vibrations", 0);
                 SharedPreferences.Editor vibrateEditor = vibrationsettings.edit();
-                if(vibration.isChecked()){
+                if (vibration.isChecked()) {
                     vibration.setChecked(true);
                     vibration.setTextColor(Color.parseColor("#59038D"));
                     Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -607,12 +622,28 @@ public class Settings extends Activity {
                         vibrator.vibrate(1000);
                         vibrator.vibrate(1000);
                     }
-                }else {
+                } else {
                     vibration.setChecked(false);
                     vibration.setTextColor(Color.parseColor("#B4B4B4"));
                 }
                 vibrateEditor.putBoolean("vibrationChecked", vibration.isChecked());
                 vibrateEditor.apply();
+            }
+        });
+        openInBrowser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences settings = getSharedPreferences("setting", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                if (openInBrowser.isChecked()) {
+                    openInBrowser.setChecked(true);
+                    openInBrowser.setTextColor(Color.parseColor("#890000"));
+                } else {
+                    openInBrowser.setChecked(false);
+                    openInBrowser.setTextColor(Color.parseColor("#B4B4B4"));
+                }
+                editor.putBoolean("checked", openInBrowser.isChecked());
+                editor.apply();
             }
         });
 
@@ -629,62 +660,65 @@ public class Settings extends Activity {
             }
         });
     }
-    public void selectDeselect(String preferenceName,CheckBox checkBoxName,boolean setTrueFalse,String putBooleanName){
+
+    public void selectDeselect(String preferenceName, CheckBox checkBoxName, boolean setTrueFalse, String putBooleanName) {
         SharedPreferences settings = getSharedPreferences(preferenceName, 0);
         SharedPreferences.Editor editor = settings.edit();
         checkBoxName.setChecked(setTrueFalse);
-        if(setTrueFalse){
+        if (setTrueFalse) {
             checkBoxName.setTextColor(Color.parseColor("#000000"));
 
-        }else {
+        } else {
             checkBoxName.setTextColor(Color.parseColor("#B4B4B4"));
         }
         editor.putBoolean(putBooleanName, checkBoxName.isChecked());
         editor.apply();
     }
-    public  void selectAll(){
-        selectDeselect("residencySetting",residency,true,"residencyChecked");
-        selectDeselect("noticeSetting",notice,true,"noticeChecked");
-        selectDeselect("dghsSetting",dghs,true,"dghsChecked");
-        selectDeselect("reultBcsSetting",reultBcs,true,"reultBcsChecked");
-        selectDeselect("resultDeptSetting",resultDept,true,"resultDeptChecked");
-        selectDeselect("resultSeniorSetting",resultSenior,true,"resultSeniorChecked");
-        selectDeselect("regiDeptSetting",regiDept,true,"regiDeptChecked");
-        selectDeselect("regiSeniorSetting",regiSenior,true,"regiSeniorChecked");
-        selectDeselect("assistantSurgeonSetting",assistantSurgeon,true,"assistantSurgeonChecked");
-        selectDeselect("juniorConsultantSetting",juniorConsultant,true,"juniorConsultantChecked");
-        selectDeselect("seniorConsultantSetting",seniorConsultant,true,"seniorConsultantChecked");
-        selectDeselect("assistantProfessorSetting",assistantProfessor,true,"assistantProfessorChecked");
-        selectDeselect("associateProfessorSetting",associateProfessor,true,"associateProfessorChecked");
-        selectDeselect("professorSetting",professor,true,"professorChecked");
-        selectDeselect("civilSurgeonSetting", civilSurgeon,true,"civilSurgeonChecked");
-        selectDeselect("adhocSetting",adhoc,true,"adhocChecked");
-        selectDeselect("mohfwSetting",mohfw,true,"mohfwChecked");
-        selectDeselect("deputationSetting",deputation,true,"deputationChecked");
-        selectDeselect("leaveSetting",leave,true,"leaveChecked");
+
+    public void selectAll() {
+        selectDeselect("residencySetting", residency, true, "residencyChecked");
+        selectDeselect("noticeSetting", notice, true, "noticeChecked");
+        selectDeselect("dghsSetting", dghs, true, "dghsChecked");
+        selectDeselect("reultBcsSetting", reultBcs, true, "reultBcsChecked");
+        selectDeselect("resultDeptSetting", resultDept, true, "resultDeptChecked");
+        selectDeselect("resultSeniorSetting", resultSenior, true, "resultSeniorChecked");
+        selectDeselect("regiDeptSetting", regiDept, true, "regiDeptChecked");
+        selectDeselect("regiSeniorSetting", regiSenior, true, "regiSeniorChecked");
+        selectDeselect("assistantSurgeonSetting", assistantSurgeon, true, "assistantSurgeonChecked");
+        selectDeselect("juniorConsultantSetting", juniorConsultant, true, "juniorConsultantChecked");
+        selectDeselect("seniorConsultantSetting", seniorConsultant, true, "seniorConsultantChecked");
+        selectDeselect("assistantProfessorSetting", assistantProfessor, true, "assistantProfessorChecked");
+        selectDeselect("associateProfessorSetting", associateProfessor, true, "associateProfessorChecked");
+        selectDeselect("professorSetting", professor, true, "professorChecked");
+        selectDeselect("civilSurgeonSetting", civilSurgeon, true, "civilSurgeonChecked");
+        selectDeselect("adhocSetting", adhoc, true, "adhocChecked");
+        selectDeselect("mohfwSetting", mohfw, true, "mohfwChecked");
+        selectDeselect("deputationSetting", deputation, true, "deputationChecked");
+        selectDeselect("leaveSetting", leave, true, "leaveChecked");
 
     }
-    public  void deSelectAll(){
-        selectDeselect("residencySetting",residency,false,"residencyChecked");
-        selectDeselect("noticeSetting",notice,false,"noticeChecked");
-        selectDeselect("dghsSetting",dghs,false,"dghsChecked");
-        selectDeselect("reultBcsSetting",reultBcs,false,"reultBcsChecked");
-        selectDeselect("resultDeptSetting",resultDept,false,"resultDeptChecked");
-        selectDeselect("resultSeniorSetting",resultSenior,false,"resultSeniorChecked");
-        selectDeselect("regiDeptSetting",regiDept,false,"regiDeptChecked");
-        selectDeselect("regiSeniorSetting",regiSenior,false,"regiSeniorChecked");
-        selectDeselect("assistantSurgeonSetting",assistantSurgeon,false,"assistantSurgeonChecked");
-        selectDeselect("juniorConsultantSetting",juniorConsultant,false,"juniorConsultantChecked");
-        selectDeselect("seniorConsultantSetting",seniorConsultant,false,"seniorConsultantChecked");
-        selectDeselect("assistantProfessorSetting",assistantProfessor,false,"assistantProfessorChecked");
-        selectDeselect("associateProfessorSetting",associateProfessor,false,"associateProfessorChecked");
-        selectDeselect("professorSetting",professor,false,"professorChecked");
-        selectDeselect("civilSurgeonSetting", civilSurgeon,false,"civilSurgeonChecked");
-        selectDeselect("adhocSetting",adhoc,false,"adhocChecked");
-        selectDeselect("mohfwSetting",mohfw,false,"mohfwChecked");
-        selectDeselect("deputationSetting",deputation,false,"deputationChecked");
-        selectDeselect("leaveSetting",leave,false,"leaveChecked");
-           }
+
+    public void deSelectAll() {
+        selectDeselect("residencySetting", residency, false, "residencyChecked");
+        selectDeselect("noticeSetting", notice, false, "noticeChecked");
+        selectDeselect("dghsSetting", dghs, false, "dghsChecked");
+        selectDeselect("reultBcsSetting", reultBcs, false, "reultBcsChecked");
+        selectDeselect("resultDeptSetting", resultDept, false, "resultDeptChecked");
+        selectDeselect("resultSeniorSetting", resultSenior, false, "resultSeniorChecked");
+        selectDeselect("regiDeptSetting", regiDept, false, "regiDeptChecked");
+        selectDeselect("regiSeniorSetting", regiSenior, false, "regiSeniorChecked");
+        selectDeselect("assistantSurgeonSetting", assistantSurgeon, false, "assistantSurgeonChecked");
+        selectDeselect("juniorConsultantSetting", juniorConsultant, false, "juniorConsultantChecked");
+        selectDeselect("seniorConsultantSetting", seniorConsultant, false, "seniorConsultantChecked");
+        selectDeselect("assistantProfessorSetting", assistantProfessor, false, "assistantProfessorChecked");
+        selectDeselect("associateProfessorSetting", associateProfessor, false, "associateProfessorChecked");
+        selectDeselect("professorSetting", professor, false, "professorChecked");
+        selectDeselect("civilSurgeonSetting", civilSurgeon, false, "civilSurgeonChecked");
+        selectDeselect("adhocSetting", adhoc, false, "adhocChecked");
+        selectDeselect("mohfwSetting", mohfw, false, "mohfwChecked");
+        selectDeselect("deputationSetting", deputation, false, "deputationChecked");
+        selectDeselect("leaveSetting", leave, false, "leaveChecked");
+    }
 }
 
 

@@ -547,6 +547,7 @@ public class OrioJobScheduler extends JobService{
             }
             return null;
         }
+
     }
     private void residency() {
         paramUrl = "http://www.bsmmu.edu.bd";
@@ -576,32 +577,32 @@ public class OrioJobScheduler extends JobService{
     private void regiDeptExpire() {
         paramUrl = "http://dept.bpsc.gov.bd/node/apply";
         paramTagForText = "p";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
     }
     private void regiDeptStarts() {
         paramUrl = "http://dept.bpsc.gov.bd/node/apply";
         paramTagForText = "h6";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
     }
     private void regiSeniorExpre() {
         paramUrl = "http://snsc.bpsc.gov.bd/node/apply";
         paramTagForText = "p";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
     }
     private void regiSeniorStsrts() {
         paramUrl = "http://snsc.bpsc.gov.bd/node/apply";
         paramTagForText = "h6";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
     }
     private void resultBCS() {
         paramUrl = "http://bpsc.gov.bd/site/view/psc_exam/BCS%20Examination/বিসিএস-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr a";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
         linkBegin = 0;
     }
@@ -609,7 +610,7 @@ public class OrioJobScheduler extends JobService{
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Departmental%20Examination/বিভাগীয়-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
         linkBegin = 1;
     }
@@ -617,7 +618,7 @@ public class OrioJobScheduler extends JobService{
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Senior%20Scale%20Examination/সিনিয়র-স্কেল-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
-        paramLink = "href";
+        paramLink = "abs:href";
         textMin = 1;
         linkBegin = 1;
     }
@@ -706,8 +707,9 @@ public class OrioJobScheduler extends JobService{
                     .setContentText(text)
                     .setColor(0xff990000)
                     .setWhen(System.currentTimeMillis())
+                    .setVibrate(new long[]{0,300,300,300})
                     .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                     .setChannelId(channel_id).build();
             notification.ledARGB=0xff990000;
