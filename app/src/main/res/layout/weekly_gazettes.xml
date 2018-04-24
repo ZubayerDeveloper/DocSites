@@ -71,7 +71,7 @@
             android:textAlignment="center"
             android:id="@+id/navigation"
             android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_weight="1.7"
             android:layout_height="match_parent"
             android:background="@drawable/bcsdept"
             android:scrollbars="none"

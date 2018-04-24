@@ -73,7 +73,6 @@ public class Settings extends Activity {
         } else {
             residency.setTextColor(Color.parseColor("#B4B4B4"));
         }
-
         preferences = getSharedPreferences("noticeSetting", 0);
         checked = preferences.getBoolean("noticeChecked", false);
         notice.setChecked(checked);

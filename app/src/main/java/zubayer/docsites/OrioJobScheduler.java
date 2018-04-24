@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,25 +25,37 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class OrioJobScheduler extends JobService{
     String btxt,url, paramUrl, paramTagForText, paramTagForLink, paramLink,previousSaved,previousSaved2,
-            filterContent,filterContent2,driveViewer,title,text;
+            filterContent,filterContent2,driveViewer,title,text,date;
     int textMin,linkBegin;
     SharedPreferences preferences;
     boolean checked,enableSound,enableVibrate,wifiAvailable,mobileDataAvailable;
     PendingIntent pendingIntent;
-    Intent myIntent;
+    Intent myIntent,summeryIntent;
     NotificationParser notificationParser=new NotificationParser();
     ArrayList<String> buttonTexts2=new ArrayList<>();
     ArrayList<String>urls2=new ArrayList<>();
     ArrayList<String> buttonTexts=new ArrayList<>();
     ArrayList<String>urls=new ArrayList<>();
+    ArrayList<String> notificationHeadings = new ArrayList<>();
+    ArrayList<String> notificationDates = new ArrayList<>();
+    ArrayList<String> notificationTexts = new ArrayList<>();
+    ArrayList<String> notificationUrls = new ArrayList<>();
+    ArrayList<String> missedNotifications = new ArrayList<>();
 
     @Override
     public boolean onStartJob(final JobParameters jobParameters) {
         checkConnectivity();
+        summeryIntent = new Intent(getApplicationContext(), NotificationSummery.class);
+        readHeading();readDate();readText();readUrl();
         notificationParser=new NotificationParser(){
             @Override
             protected void onPostExecute(Void aVoid) {
@@ -63,6 +76,13 @@ public class OrioJobScheduler extends JobService{
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
         notificationParser.cancel(true);
+        clearArray();
+        summeryIntent.setAction(Intent.ACTION_MAIN);
+        summeryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        summeryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ComponentName cn=new ComponentName(this,NotificationSummery.class);
+        summeryIntent.setComponent(cn);
+        startActivity(summeryIntent);
         return false;
     }
     public class NotificationParser extends AsyncTask<Void,Void,Void>{
@@ -80,7 +100,12 @@ public class OrioJobScheduler extends JobService{
 
                 preferences=getSharedPreferences("residencySetting",0);
                 checked=preferences.getBoolean("residencyChecked",false);
+
+                addToSymmery(" ", " ", " ", " ");
+                saveState();
                 if(checked) {
+                    btxt = "";
+                    url="";
                     residency();
                     executableTag();
                     preferences = getSharedPreferences("residency", Context.MODE_PRIVATE);
@@ -89,7 +114,8 @@ public class OrioJobScheduler extends JobService{
                     if (btxt.equalsIgnoreCase(previousSaved)){
 //                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
                     }else if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
+                        addToMissedNotificaton("BSMMU:Residency/Non-Residency");
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -97,12 +123,15 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 0, myIntent, 0);
                         notification("channel_0","res","Residency/Non-Residency",btxt,0);
                         preferences.edit().putString("residency", btxt).apply();
+                        addToSymmery(btxt, url, "BSMMU:Residency/Non-Residency", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("noticeSetting",0);
                 checked=preferences.getBoolean("noticeChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     bsmmuNotice();
                     executableTag();
                     preferences = getSharedPreferences("bsmmuNotice", Context.MODE_PRIVATE);
@@ -111,7 +140,8 @@ public class OrioJobScheduler extends JobService{
                     if (btxt.equalsIgnoreCase(previousSaved)){
 //                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
                     }else if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
+                        addToMissedNotificaton("M.phil, Diploma exam notice");
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -119,12 +149,15 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 1, myIntent, 0);
                         notification("channel_1","notice","BSMMU Notice",btxt,1);
                         preferences.edit().putString("bsmmuNotice", btxt).apply();
+                        addToSymmery(btxt, url, "BSMMU Notice", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("dghsSetting",0);
                 checked=preferences.getBoolean("dghsChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     dghsHomeLinks();
                     executableTag();
                     preferences = getSharedPreferences("dghs", Context.MODE_PRIVATE);
@@ -133,7 +166,8 @@ public class OrioJobScheduler extends JobService{
                     if (btxt.equalsIgnoreCase(previousSaved)){
 //                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
                     }else if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
+                        addToMissedNotificaton("Notification from DGHS");
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -141,12 +175,15 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 2, myIntent, 0);
                         notification("channel_2","dghs","New from DGHS",btxt,2);
                         preferences.edit().putString("dghs", btxt).apply();
+                        addToSymmery(btxt, url, "DGHS", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("resultDeptSetting",0);
                 checked=preferences.getBoolean("resultDeptChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     resultDept();
                     executableTag();
                     preferences = getSharedPreferences("dept", Context.MODE_PRIVATE);
@@ -155,7 +192,8 @@ public class OrioJobScheduler extends JobService{
                     if (btxt.equalsIgnoreCase(previousSaved)){
 //                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
                     }else if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
+                        addToMissedNotificaton("Notice and results for Departmental Exam");
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
@@ -163,12 +201,15 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 3, myIntent, 0);
                         notification("channel_3","dept","Departmental Exam Notice",btxt,3);
                         preferences.edit().putString("dept", btxt).apply();
+                        addToSymmery(btxt, url, "Departmental Exam", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("resultSeniorSetting",0);
                 checked=preferences.getBoolean("resultSeniorChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     resultSenior();
                     executableTag();
                     preferences = getSharedPreferences("senior", Context.MODE_PRIVATE);
@@ -177,7 +218,8 @@ public class OrioJobScheduler extends JobService{
                     if (btxt.equalsIgnoreCase(previousSaved)){
 //                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
                     }else if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
+                        addToMissedNotificaton("Notice and results for Senior Scale Exam");
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
@@ -185,12 +227,15 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 4, myIntent, 0);
                         notification("channel_4","senior","Senior Scale Exam Notice",btxt,4);
                         preferences.edit().putString("senior", btxt).apply();
+                        addToSymmery(btxt, url, "Senior Scale Exam", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("reultBcsSetting",0);
                 checked=preferences.getBoolean("reultBcsChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     resultBCS();
                     executableTag();
                     preferences = getSharedPreferences("bcs", Context.MODE_PRIVATE);
@@ -199,7 +244,8 @@ public class OrioJobScheduler extends JobService{
                     if (btxt.equalsIgnoreCase(previousSaved)){
 //                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
                     }else if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_1",getString(R.string.residencySetting));
+                        addToMissedNotificaton("BCS Exam");
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
@@ -207,16 +253,20 @@ public class OrioJobScheduler extends JobService{
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 5, myIntent, 0);
                         notification("channel_5","bcs","BPSC:BCS Exam",btxt,5);
                         preferences.edit().putString("bcs", btxt).apply();
+                        addToSymmery(btxt, url, "BCS Exam", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("regiDeptSetting",0);
                 checked=preferences.getBoolean("regiDeptChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     regiDeptStarts();
                     executableTag();
                     if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_7",getString(R.string.residencySetting));
+                        addToMissedNotificaton("Departmental exam online registration");
+                        saveMissedNotificationList();
                     }else if(btxt.contains("Section 1: Personal Details")){
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
@@ -226,14 +276,22 @@ public class OrioJobScheduler extends JobService{
 
                         preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
                         preferences.edit().remove("regideptExpired").apply();
+                        addToSymmery(getString(R.string.regideptStarted), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
+                        saveState();
+                        saveState();
                     }else {
 
                     }
+                    btxt = "";
+                    url="";
                     regiDeptExpire();
                     executableTag();
                     preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("deptExpired", null);
-                    if(btxt.contains("expired")){
+                    if(btxt.length()==0) {
+                        addToMissedNotificaton("Departmental exam online registration");
+                        saveMissedNotificationList();
+                    }else if(btxt.contains("expired")){
                         if(btxt.equalsIgnoreCase(previousSaved)) {
                         }else {
                             myIntent = new Intent(OrioJobScheduler.this, Browser.class);
@@ -242,17 +300,21 @@ public class OrioJobScheduler extends JobService{
                             pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 6, myIntent, 0);
                             notification("channel_6","deptexpires","Departmental Exam", getString(R.string.regiExpired), 6);
                             preferences.edit().putString("deptExpired", btxt).apply();
+                            addToSymmery(getString(R.string.regiseniortext), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
+                            saveState();
                         }
                     }
                 }
                 preferences=getSharedPreferences("regiSeniorSetting",0);
                 checked=preferences.getBoolean("regiSeniorChecked",false);
                 if(checked) {
-                    btxt="";
+                    btxt = "";
+                    url="";
                     regiSeniorStsrts();
                     executableTag();
                     if(btxt.length()==0) {
-//                    summeryIntent.putExtra("fail_7",getString(R.string.residencySetting));
+                        addToMissedNotificaton("Senior scale exam online registration");
+                        saveMissedNotificationList();
                     }else if(btxt.contains("Section 1: Personal Details")){
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
@@ -262,14 +324,21 @@ public class OrioJobScheduler extends JobService{
 
                         preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                         preferences.edit().remove("regiSeniorExpired").apply();
+                        addToSymmery(getString(R.string.regiseniortext), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
+                        saveState();
                     } else {
 
                     }
+                    btxt = "";
+                    url="";
                     regiSeniorExpre();
                     executableTag();
                     preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("seniorExpired", null);
-                    if (btxt.contains("expired")) {
+                    if(btxt.length()==0) {
+                        addToMissedNotificaton("Senior scale exam online registration");
+                        saveMissedNotificationList();
+                    }else if (btxt.contains("expired")) {
                         if (btxt.equalsIgnoreCase(previousSaved)) {
                         } else {
                             myIntent = new Intent(OrioJobScheduler.this, Browser.class);
@@ -278,60 +347,70 @@ public class OrioJobScheduler extends JobService{
                             pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 7, myIntent, 0);
                             notification("channel_7","seniorexires","Senior Scale Exam", getString(R.string.regiExpired), 7);
                             preferences.edit().putString("seniorExpired", btxt).apply();
+                            addToSymmery(getString(R.string.regiExpired), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
+                            saveState();
                         }
                     }
                 }
                 preferences=getSharedPreferences("assistantSurgeonSetting",0);
                 checked=preferences.getBoolean("assistantSurgeonChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.assistantSurgeon);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("assistantSurgeon", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("assistantSurgeon", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.assistantSurgeonSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 8, myIntent, 0);
-                        notification("channel_8","assistantSurgeon",getString(R.string.assistantSurgeonSetting),buttonTexts.get(0),8);
-                        preferences.edit().putString("assistantSurgeon", buttonTexts.get(0)).apply();
+                        notification("channel_8","assistantSurgeon",getString(R.string.assistantSurgeonSetting),btxt,8);
+                        preferences.edit().putString("assistantSurgeon", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.assistantSurgeonSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("juniorConsultantSetting",0);
                 checked=preferences.getBoolean("juniorConsultantChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.juniorConsultant);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("juniorConsultant", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("juniorConsultant", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.juniorConsultantSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 9, myIntent, 0);
-                        notification("channel_9","juniorConsultant",getString(R.string.juniorConsultantSetting),buttonTexts.get(0),9);
-                        preferences.edit().putString("juniorConsultant", buttonTexts.get(0)).apply();
+                        notification("channel_9","juniorConsultant",getString(R.string.juniorConsultantSetting),btxt,9);
+                        preferences.edit().putString("juniorConsultant", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.juniorConsultantSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("seniorConsultantSetting",0);
                 checked=preferences.getBoolean("seniorConsultantChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
-                    buttonTexts2.clear();
-                    urls2.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.seniorConsultant);
                     filterContent2=getString(R.string.seniorConsultant2);
                     executeService();
@@ -340,145 +419,182 @@ public class OrioJobScheduler extends JobService{
                     previousSaved = preferences.getString("seniorConsultant", null);
 
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.seniorConsultantSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 10, myIntent, 0);
-                        notification("channel_10","seniorConsultant",getString(R.string.seniorConsultantSetting),buttonTexts.get(0),10);
-                        preferences.edit().putString("seniorConsultant", buttonTexts.get(0)).apply();
+                        notification("channel_10","seniorConsultant",getString(R.string.seniorConsultantSetting),btxt,10);
+                        preferences.edit().putString("seniorConsultant", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting), notificationDate());
+                        saveState();
                     }
+                    btxt = "";
+                    url="";
                     serviceConfirmTag2();
                     preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
                     previousSaved2 = preferences.getString("seniorConsultant2", null);
-                    if (buttonTexts2.get(0).equalsIgnoreCase(previousSaved2)) {
+                    if (btxt.equalsIgnoreCase(previousSaved2)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.seniorConsultantSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls2.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 101, myIntent, 0);
-                        notification("channel_101","seniorConsultant2",getString(R.string.seniorConsultantSetting),buttonTexts2.get(0),101);
-                        preferences.edit().putString("seniorConsultant2", buttonTexts2.get(0)).apply();
+                        notification("channel_101","seniorConsultant2",getString(R.string.seniorConsultantSetting),btxt,101);
+                        preferences.edit().putString("seniorConsultant2", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting) + ":", notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("assistantProfessorSetting",0);
                 checked=preferences.getBoolean("assistantProfessorChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.assistantProfessor);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("assistantProfessor", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("assistantProfessor", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.assistantProfessorSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 11, myIntent, 0);
-                        notification("channel_11","assistantProfessor",getString(R.string.assistantProfessorSetting),buttonTexts.get(0),11);
-                        preferences.edit().putString("assistantProfessor", buttonTexts.get(0)).apply();
+                        notification("channel_11","assistantProfessor",getString(R.string.assistantProfessorSetting),btxt,11);
+                        preferences.edit().putString("assistantProfessor", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.assistantProfessorSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("associateProfessorSetting",0);
                 checked=preferences.getBoolean("associateProfessorChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.associateProfessor);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("associateProfessorSetting", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("associateProfessor", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    } else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.associateProfessorSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 12, myIntent, 0);
-                        notification("channel_12","associateProfessor",getString(R.string.associateProfessorSetting),buttonTexts.get(0),12);
-                        preferences.edit().putString("associateProfessor", buttonTexts.get(0)).apply();
+                        notification("channel_12","associateProfessor",getString(R.string.associateProfessorSetting),btxt,12);
+                        preferences.edit().putString("associateProfessor", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.associateProfessorSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("professorSetting",0);
                 checked=preferences.getBoolean("professorChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.professor);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("professor", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("professor", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.professorSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 13, myIntent, 0);
-                        notification("channel_13","professor",getString(R.string.professorSetting),buttonTexts.get(0),13);
-                        preferences.edit().putString("professor", buttonTexts.get(0)).apply();
+                        notification("channel_13","professor",getString(R.string.professorSetting),btxt,13);
+                        preferences.edit().putString("professor", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.professorSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("civilSurgeonSetting",0);
                 checked=preferences.getBoolean("civilSurgeonChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.civilSurgeon);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("civilSurgeon", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("civilSurgeon", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.civilSurgeonSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 14, myIntent, 0);
-                        notification("channel_14","civilSurgeon",getString(R.string.civilSurgeonSetting),buttonTexts.get(0),14);
-                        preferences.edit().putString("civilSurgeon", buttonTexts.get(0)).apply();
+                        notification("channel_14","civilSurgeon",getString(R.string.civilSurgeonSetting),btxt,14);
+                        preferences.edit().putString("civilSurgeon", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.civilSurgeonSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("adhocSetting",0);
                 checked=preferences.getBoolean("adhocChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent=getString(R.string.adhoc);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("adhoc", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("adhoc", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.adhocSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 15, myIntent, 0);
-                        notification("channel_15","adhoc",getString(R.string.adhocSetting),buttonTexts.get(0),15);
-                        preferences.edit().putString("adhoc", buttonTexts.get(0)).apply();
+                        notification("channel_15","adhoc",getString(R.string.adhocSetting),btxt,15);
+                        preferences.edit().putString("adhoc", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.adhocSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("mohfwSetting",0);
                 checked=preferences.getBoolean("mohfwChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent="Per";
                     filterContent2="aaaaaaa";
                     executeService();
@@ -486,63 +602,79 @@ public class OrioJobScheduler extends JobService{
                     preferences = getSharedPreferences("mohfw", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("mohfw", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.mohfwSetting));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 16, myIntent, 0);
-                        notification("channel_16","mohfw",getString(R.string.mohfwSetting),buttonTexts.get(0),16);
-                        preferences.edit().putString("mohfw", buttonTexts.get(0)).apply();
+                        notification("channel_16","mohfw",getString(R.string.mohfwSetting),btxt,16);
+                        preferences.edit().putString("mohfw", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.mohfwSetting), notificationDate());
+                        saveState();
                     }
                 }
                 preferences=getSharedPreferences("deputationSetting",0);
                 checked=preferences.getBoolean("deputationChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent="ME-";
                     executeDeputation();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("deputation", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("deputation", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.deputationOrders));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 17, myIntent, 0);
-                        notification("channel_17","deputation",getString(R.string.deputationOrders), buttonTexts.get(0), 17);
-                        preferences.edit().putString("deputation", buttonTexts.get(0)).apply();
+                        notification("channel_17","deputation",getString(R.string.deputationOrders), btxt, 17);
+                        preferences.edit().putString("deputation", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.deputationOrders), notificationDate());
+                        saveState();
                     }
                 }
 
                 preferences=getSharedPreferences("leaveSetting",0);
                 checked=preferences.getBoolean("leaveChecked",false);
                 if(checked) {
-                    buttonTexts.clear();
-                    urls.clear();
+                    btxt = "";
+                    url="";
                     filterContent="HR-";
                     executeLeave();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("leave", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("leave", null);
 
-                    if (buttonTexts.get(0).equalsIgnoreCase(previousSaved)) {
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
 
+                    }else if (btxt.length()==0) {
+                        addToMissedNotificaton(getString(R.string.leaveOpion));
+                        saveMissedNotificationList();
                     } else {
                         myIntent = new Intent(OrioJobScheduler.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        myIntent.putExtra("value", urls.get(0));
+                        myIntent.putExtra("value", url);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 18, myIntent, 0);
-                        notification("channel_18","leave",getString(R.string.leaveOpion), buttonTexts.get(0), 18);
-                        preferences.edit().putString("leave", buttonTexts.get(0)).apply();
+                        notification("channel_18","leave",getString(R.string.leaveOpion), btxt, 18);
+                        preferences.edit().putString("leave", btxt).apply();
+                        addToSymmery(btxt, url, getString(R.string.leaveOpion), notificationDate());
+                        saveState();
                     }
                 }
-
+                addToSymmery(" ", " ", notificationDate(), " ");
+                saveState();
             } catch (Exception ignored) {
             }
             return null;
@@ -655,6 +787,10 @@ public class OrioJobScheduler extends JobService{
                     textMax=i;
                 }
             }
+            btxt=buttonTexts.get(0);
+            url=urls.get(0);
+            buttonTexts.clear();
+            urls.clear();
         } catch (Exception e) {
         }
     }
@@ -673,6 +809,10 @@ public class OrioJobScheduler extends JobService{
                     textMax=i;
                 }
             }
+            btxt=buttonTexts2.get(0);
+            url=urls2.get(0);
+            buttonTexts2.clear();
+            urls2.clear();
         } catch (Exception e) {
         }
     }
@@ -753,6 +893,133 @@ public class OrioJobScheduler extends JobService{
             myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 112, myIntent, 0);
             notification("nodata","dataNotFound",title,text,113);
+        }
+    }
+    private void saveState() {
+        try {
+            FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            limitArray(notificationHeadings);
+            arrayoutput.writeObject(notificationHeadings);
+            arrayoutput.close();
+            write.close();
+
+        } catch (Exception e) {
+        }
+        try {
+            FileOutputStream write = openFileOutput("notificationDates", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            limitArray(notificationDates);
+            arrayoutput.writeObject(notificationDates);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileOutputStream write = openFileOutput("notificationTexts", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            limitArray(notificationTexts);
+            arrayoutput.writeObject(notificationTexts);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileOutputStream write = openFileOutput("notificationUrls", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            limitArray(notificationUrls);
+            arrayoutput.writeObject(notificationUrls);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
+        }
+    }
+
+    private String notificationDate() {
+        long mydate = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy h:mm a");
+        date = sdf.format(mydate);
+        return date;
+    }
+
+    private void addToSymmery(String notifiactionText, String notificationUrl,
+                              String notificationHeading, String notificationDate) {
+        notificationTexts.add(0, notifiactionText);
+        notificationUrls.add(0, notificationUrl);
+        notificationDates.add(0, notificationDate);
+        notificationHeadings.add(0, notificationHeading);
+    }
+
+    private void clearArray() {
+        notificationTexts.clear();
+        notificationUrls.clear();
+        notificationDates.clear();
+        notificationHeadings.clear();
+    }
+
+    private void readHeading() {
+        try {
+            FileInputStream read = openFileInput("notificationHeadings");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationHeadings = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+    }
+
+    private void readDate() {
+        try {
+            FileInputStream read = openFileInput("notificationDates");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationDates = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+    }
+
+    private void readText() {
+        try {
+            FileInputStream read = openFileInput("notificationTexts");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationTexts = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+    }
+
+    private void readUrl() {
+        try {
+            FileInputStream read = openFileInput("notificationUrls");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationUrls = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+    }
+
+    private void limitArray(ArrayList<String> arrayName){
+        if(arrayName.size()>200){
+            arrayName.remove(200);
+        }
+    }
+
+    private void addToMissedNotificaton(String missedNotification) {
+        missedNotifications.add(0, missedNotification);
+    }
+
+    private void saveMissedNotificationList() {
+        try {
+            FileOutputStream write = openFileOutput("missed", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(missedNotifications);
+            arrayoutput.close();
+            write.close();
+
+        } catch (Exception e) {
         }
     }
 }

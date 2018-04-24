@@ -25,15 +25,21 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -60,6 +66,7 @@ public class MainActivity extends Activity {
     GridAdapter gridAdapter;
     HtmlParser back;
     BcpsParser bcps;
+    BpscParser bpscParser;
     DghsParser dghsParser;
     DghsParser2 dghsParser2;
     DghsParser3 dghsParser3;
@@ -67,52 +74,40 @@ public class MainActivity extends Activity {
     UpdateChecker check;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2;
-    int position, textMin, textMax, linkBegin, linkEnd, versionCode,_xDelta,_yDelta;
+    int position, textMin, textMax, linkBegin, linkEnd, versionCode, _xDelta, _yDelta;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked,
-            bmdcClicked, resultsClicked, applaunched, checkpop,checked, wifiAvailable, mobileDataAvailable;
+            bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable;
     MenuItem menuitem;
     Menu menu;
     SharedPreferences preferences;
     Intent newIntent;
     FabSpeedDial fab;
+    ImageButton notificationSummery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fab=(FabSpeedDial)findViewById(R.id.fabs);
+        fab = (FabSpeedDial) findViewById(R.id.fabs);
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                    return true;
-                }
+                return true;
+            }
+
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.settings:
                         Intent setting = new Intent(MainActivity.this, Settings.class);
                         startActivity(setting);
-                        break;
-                    case R.id.share:
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=zubayer.docsites");
-                        startActivity(Intent.createChooser(intent, "Share using.."));
                         break;
                     case R.id.about:
                         buttonTexts.add(getString(R.string.about));
                         Dialog.show();
                         progressBar.setVisibility(View.GONE);
                         Dialog.setTitle("Developer");
-                        break;
-                    case R.id.rate:
-                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites"));
-                        startActivity(i);
-                        break;
-                    case R.id.summery:
-                        Intent summery = new Intent(MainActivity.this, NotificationSummery.class);
-                        startActivity(summery);
                         break;
                     case R.id.check:
                         try {
@@ -145,11 +140,13 @@ public class MainActivity extends Activity {
                 }
                 return false;
             }
+
             @Override
             public void onMenuClosed() {
 
             }
         });
+
         createGridView();
         setFont();
         adjustScreenSize();
@@ -161,6 +158,7 @@ public class MainActivity extends Activity {
         setAlarm();
         setListView();
         buildAlertDialogue();
+        notificationSummery=(ImageButton)findViewById(R.id.notificationSumery);
         checkAppUpdates();
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -173,6 +171,13 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 listViewOptionLoader(position);
+            }
+        });
+        notificationSummery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent summery = new Intent(MainActivity.this, NotificationSummery.class);
+                startActivity(summery);
             }
         });
     }
@@ -249,6 +254,30 @@ public class MainActivity extends Activity {
         Dialog.show();
     }
 
+    public void bpscTag(String Url, String TagForText, String tagForLink,
+                              String Attr, int begin, int end, int lBegin, int lEnd) {
+
+        paramUrl = Url;
+        paramTagForLink = tagForLink;
+        paramTagForText = TagForText;
+        paramLink = Attr;
+        textMin = begin;
+        textMax = end;
+        try {
+            Document doc = Jsoup.connect(Url).get();
+            Elements links = doc.select(TagForText);
+            for (int i = begin; i < links.size(); i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.select("a").attr(Attr);
+                buttonTexts.add(btxt);
+                urls.add(url);
+            }
+            buttonTexts.add(position, newline);
+            urls.add(position, newline);
+        } catch (Exception e) {
+        }
+    }
     public void executableTag(String Url, String TagForText, String tagForLink,
                               String Attr, int begin, int end, int lBegin, int lEnd) {
 
@@ -261,7 +290,6 @@ public class MainActivity extends Activity {
         try {
             Document doc = Jsoup.connect(Url).get();
             Elements links = doc.select(TagForText);
-            Elements hrefs = doc.select(tagForLink);
             for (int i = begin; i < end; i++) {
                 Element link = links.get(i);
                 btxt = link.text();
@@ -349,6 +377,45 @@ public class MainActivity extends Activity {
 
 
         } catch (Exception e) {
+        }
+    }
+
+    class BpscParser extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            executableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            buttonTexts.clear();
+            urls.clear();
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+            if (url != null) {
+                progressBar.setVisibility(View.GONE);
+                list.setAdapter(adapter);
+            } else {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -956,7 +1023,7 @@ public class MainActivity extends Activity {
     }
 
     private void resultBCS() {
-        back = new HtmlParser();
+        bpscParser=new BpscParser();
         paramUrl = "http://bpsc.gov.bd/site/view/psc_exam/BCS%20Examination/বিসিএস-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr a";
@@ -966,28 +1033,28 @@ public class MainActivity extends Activity {
         linkBegin = 0;
         linkEnd = 123;
         position = 125;
-        back.execute();
+        bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
 
     private void resultDept() {
-        back = new HtmlParser();
+        bpscParser=new BpscParser();
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Departmental%20Examination/বিভাগীয়-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 26;
+        textMax = 40;
         linkBegin = 0;
-        linkEnd = 26;
-        position = 28;
+        linkEnd = 40;
+        position = 42;
         newline = "★ Click to download pdf:";
-        back.execute();
+        bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
 
     private void resultSenior() {
-        back = new HtmlParser();
+        bpscParser=new BpscParser();
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Senior%20Scale%20Examination/সিনিয়র-স্কেল-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
@@ -998,7 +1065,7 @@ public class MainActivity extends Activity {
         linkEnd = 38;
         position = 40;
         newline = "★ Click to download pdf:";
-        back.execute();
+        bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -1078,8 +1145,8 @@ public class MainActivity extends Activity {
     public void browser(String inurl) {
         final String uurl = inurl;
         try {
-            preferences=getSharedPreferences("setting",0);
-            checked=preferences.getBoolean("checked",false);
+            preferences = getSharedPreferences("setting", 0);
+            checked = preferences.getBoolean("checked", false);
             if (checked) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(inurl));
                 startActivity(intent);
@@ -1312,11 +1379,12 @@ public class MainActivity extends Activity {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
             }
+
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if(scrollState==0){
+                if (scrollState == 0) {
                     fab.show();
-                }else {
+                } else {
                     fab.hide();
                 }
 

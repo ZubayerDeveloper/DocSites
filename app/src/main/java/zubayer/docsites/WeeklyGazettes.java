@@ -86,7 +86,8 @@ public class WeeklyGazettes extends Activity {
             }
         });
         Dialog.setView(m);
-        parentUrl = "http://www.dpp.gov.bd/bgpress/index.php/document/weekly_gazettes/151/publication_date/";
+        parentUrl = "http://www.dpp.gov.bd/bgpress/index.php/document/weekly_gazettes/151";
+
         executeVolume();
 
         volume.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -132,7 +133,7 @@ public class WeeklyGazettes extends Activity {
             Document doc = Jsoup.connect(Url).get();
             Elements links = doc.select(TagForText);
             Elements hrefs = doc.select(tagForLink);
-            for (i = begin; i < links.size(); i++) {
+            for (i = begin; i < links.size()-3; i++) {
                 aa = i;
                 Element link = links.get(aa);
                 btxt = link.text();
@@ -286,7 +287,7 @@ public class WeeklyGazettes extends Activity {
                 gazettelist.setAdapter(gazetteAdapter);
                 progressDialog.dismiss();
                 progressBar.setVisibility(View.GONE);
-                Dialog.show();
+                browser(gazetteUrls.get(0));
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -303,7 +304,7 @@ public class WeeklyGazettes extends Activity {
     public  void executeVolume(){
         progressDialog = ProgressDialog.show(this, "", "Loading volumes...", true, true);
         volumeParser = new VolumrParser();
-        paramTagForText = "#MyResult tr text.gazette_date";
+        paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "href";
         textMin = 0;

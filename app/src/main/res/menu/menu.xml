@@ -5,33 +5,20 @@
     <item
         android:id="@+id/settings"
         android:icon="@drawable/settings"
-        android:title="Notification settings"
+        android:title="Settings"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/check"
-        android:icon="@drawable/notification"
+        android:icon="@drawable/noti"
         android:title="Check notificatons now"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/rate"
-        android:icon="@drawable/rate"
-        android:title="Rate This App"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/share"
-        android:icon="@drawable/share"
-        android:title="Share This App"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/about"
         android:icon="@drawable/about"
         android:title="About Developer"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/summery"
-        android:icon="@drawable/about"
-        android:title="Notification Summery"
-        app:showAsAction="never" />
+
 
 </menu>

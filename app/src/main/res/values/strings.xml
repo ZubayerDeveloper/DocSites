@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>3.0.0</b></string>
+    <string name="app_name">DocSites <b>3.1.0</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>
@@ -74,9 +74,8 @@
     <!--gazetteOptins-->
     <string name="seniorScaleOption"><b>সিনিয়র স্কেল পরীক্ষার গেজেট</b></string>
     <string name="departmentalOption"><b>ডিপার্টমেন্টাল পরীক্ষার গেজেট</b></string>
-    <string name="weeklyGazette"><b>সাপ্তাহিক গেজেটের ভলিউম</b></string>
     <string name="serviceConfirmOption"><b>চাকুরি স্থায়ীকরণের গেজেট</b></string>
-
+    <string name="weeklyGazette"><b>বি.জি. প্রেস থেকে প্রকাশিত চাকুরি স্থায়ীকরণের গেজেট</b></string>
     <!--buttonHints-->
     <string name="bsmmuHints">Residency, non-Residency,\nNotice</string>
     <string name="bcpsHints">Guidelines, pdf forms\nFCPS, MCPS Results</string>

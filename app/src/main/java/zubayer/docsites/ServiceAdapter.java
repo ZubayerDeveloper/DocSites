@@ -50,7 +50,7 @@ public class ServiceAdapter extends ArrayAdapter<String> {
         image.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent= new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
+                intent.setType("dels/plain");
                 intent.putExtra(Intent.EXTRA_TEXT,imageArray.get(position));
                 context.startActivity(Intent.createChooser(intent,"Share using.."));
             }

@@ -53,9 +53,9 @@
             android:theme="@style/Theme.AppCompat.DayNight"/>
         <activity
             android:name=".NotificationSummery"
-            android:theme="@style/transparent"/>
+            android:theme="@style/Theme.AppCompat.DayNight"/>
 
-
+        <!--android:theme="@style/transparent"-->
         <activity android:name=".GazetteActivity"
             android:theme="@style/Theme.AppCompat.DayNight"/>
     </application>

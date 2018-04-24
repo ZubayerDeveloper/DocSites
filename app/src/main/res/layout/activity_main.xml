@@ -8,7 +8,6 @@
     android:gravity="center"
     android:id="@+id/rootlayout"
     android:orientation="vertical">
-
     <GridView
         android:id="@+id/grid"
         android:layout_width="match_parent"
@@ -17,8 +16,16 @@
         android:paddingBottom="50dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="7dp"
+        android:paddingTop="10dp"
         android:scrollbars="none" />
+    <ImageButton
+        android:id="@+id/notificationSumery"
+        android:padding="5dp"
+        android:background="@drawable/bpsc_govt"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/notification"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
     <com.google.android.gms.ads.AdView
         android:id="@+id/adViewCard"
         android:layout_width="match_parent"
@@ -37,7 +44,10 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="70dp"
         ads:fabGravity="bottom_end"
+        ads:miniFabBackgroundTintList="@array/menu_background_color"
+        ads:miniFabTitleTextColorList="@array/menu_text_color"
         ads:fabMenu="@menu/menu"
+        ads:fabBackgroundTint="#FC0E00"
         android:layout_above="@+id/adViewCard"
         ads:miniFabBackgroundTint="#000000"
         ads:miniFabTitleBackgroundTint="#000000"
