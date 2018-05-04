@@ -13,6 +13,8 @@ import android.app.DownloadManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import java.util.ArrayList;
+
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
 
@@ -26,11 +28,15 @@ public class Browser extends Activity {
     MenuItem item2;
     private AdView mAdView;
     String driveViewer, pdfurl;
-    AlertDialog checkinternet;
+    AlertDialog Dialog;
     AlertDialog.Builder builder;
     SharedPreferences preferences;
     FabSpeedDial fab;
-
+    ListView list;
+    MyAdapter adapter;
+    ProgressBar progressBar;
+    View m;
+    ArrayList<String> buttonTexts, urlss;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +44,20 @@ public class Browser extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.browser);
 
+        buttonTexts=new ArrayList<>();
+        buttonTexts.add(getString(R.string.browseralert));
+        urlss=new ArrayList<>();
         setFont();
         setAdd();
         setProgressBar();
         initializeWebViewAndUrls();
         setFloatingActinButton();
+        setListView();
+        buildAlertDialogue();
         reloadAdviceDialogue();
         webViewSettings();
         filterUrlPDF();
+
         website.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -181,22 +193,11 @@ public class Browser extends Activity {
         });
     }
     private void reloadAdviceDialogue() {
-        builder = new AlertDialog.Builder(this);
-        checkinternet = builder.create();
-        checkinternet.setMessage(getString(R.string.browseralert));
-        checkinternet.setCancelable(false);
-        checkinternet.setButton("Got it", new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, int id) {
-                preferences = getSharedPreferences("reload", 0);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("gotit", true).apply();
-            }
-        });
         preferences = getSharedPreferences("reload", 0);
-        if (preferences.getBoolean("gotit", false)) {
+        if (preferences.getBoolean("got it", false)) {
 
         } else {
-            checkinternet.show();
+            Dialog.show();
         }
     }
     private void myToaster(String text) {
@@ -231,5 +232,32 @@ public class Browser extends Activity {
         driveViewer = "https://docs.google.com/viewer?url=";
         pdfurl = "https://docs.google.com/gview?embedded=true&url=";
         urls = getIntent().getExtras().getString("value");
+    }
+    private void buildAlertDialogue() {
+        builder = new AlertDialog.Builder(this);
+        Dialog = builder.create();
+        Dialog.setCancelable(false);
+        Dialog.setButton("Got it", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                preferences = getSharedPreferences("reload", 0);
+                preferences.edit().putBoolean("got it",true).apply();
+            }
+        });
+        Dialog.setButton3("Remind me next time", new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                preferences = getSharedPreferences("reload", 0);
+                preferences.edit().putBoolean("got it",false).apply();
+            }
+        });
+        Dialog.setView(m);
+    }
+
+    private void setListView() {
+        adapter = new MyAdapter(Browser.this, buttonTexts, urlss);
+        m = getLayoutInflater().inflate(R.layout.listview, null);
+        list = (ListView) m.findViewById(R.id.ListView);
+        list.setAdapter(adapter);
+        progressBar = (ProgressBar) m.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.GONE);
     }
 }

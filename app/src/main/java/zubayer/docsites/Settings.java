@@ -20,7 +20,7 @@ public class Settings extends Activity {
 
     CheckBox residency, notice, dghs, reultBcs, resultDept, resultSenior, regiDept, regiSenior, assistantSurgeon, juniorConsultant,
             seniorConsultant, assistantProfessor, associateProfessor, professor, civilSurgeon, adhoc, mohfw, deputation, leave, sound,
-            vibration, openInBrowser;
+            vibration, openInBrowser,connectivityAlert;
     SharedPreferences preferences;
     boolean checked, enableSound, enableVibrate;
     TextView heading;
@@ -55,6 +55,7 @@ public class Settings extends Activity {
         sound = (CheckBox) findViewById(R.id.soundSetting);
         vibration = (CheckBox) findViewById(R.id.vibrateSetting);
         openInBrowser = (CheckBox) findViewById(R.id.openInbrowser);
+        connectivityAlert = (CheckBox) findViewById(R.id.connectivity);
 
         select = (Button) findViewById(R.id.select);
         deselect = (Button) findViewById(R.id.deselect);
@@ -264,6 +265,16 @@ public class Settings extends Activity {
 
         } else {
             openInBrowser.setTextColor(Color.parseColor("#B4B4B4"));
+        }
+
+        preferences = getSharedPreferences("connectivity", 0);
+        checked = preferences.getBoolean("connectivityChecked", false);
+        connectivityAlert.setChecked(checked);
+        if (connectivityAlert.isChecked()) {
+            connectivityAlert.setTextColor(Color.parseColor("#890000"));
+
+        } else {
+            connectivityAlert.setTextColor(Color.parseColor("#B4B4B4"));
         }
 
 
@@ -642,6 +653,22 @@ public class Settings extends Activity {
                     openInBrowser.setTextColor(Color.parseColor("#B4B4B4"));
                 }
                 editor.putBoolean("checked", openInBrowser.isChecked());
+                editor.apply();
+            }
+        });
+        connectivityAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences settings = getSharedPreferences("connectivity", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                if (connectivityAlert.isChecked()) {
+                    connectivityAlert.setChecked(true);
+                    connectivityAlert.setTextColor(Color.parseColor("#890000"));
+                } else {
+                    connectivityAlert.setChecked(false);
+                    connectivityAlert.setTextColor(Color.parseColor("#B4B4B4"));
+                }
+                editor.putBoolean("connectivityChecked", connectivityAlert.isChecked());
                 editor.apply();
             }
         });

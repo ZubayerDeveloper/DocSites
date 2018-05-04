@@ -26,6 +26,14 @@
         android:src="@drawable/notification"
         android:layout_width="40dp"
         android:layout_height="40dp" />
+    <Button
+        android:textSize="12sp"
+        android:textColor="#FFFFFF"
+        android:id="@+id/notificationCount"
+        android:background="@drawable/bcps"
+        android:layout_alignParentRight="true"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
     <com.google.android.gms.ads.AdView
         android:id="@+id/adViewCard"
         android:layout_width="match_parent"

@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -38,8 +39,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -61,7 +62,8 @@ public class MainActivity extends Activity {
     ListView list;
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
-            bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions, resultOptions;
+            bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
+            resultOptions, oldNotificatinCount;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
@@ -73,8 +75,9 @@ public class MainActivity extends Activity {
     ServiceParser serviceParser;
     UpdateChecker check;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
-            updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2;
-    int position, textMin, textMax, linkBegin, linkEnd, versionCode, _xDelta, _yDelta;
+            updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2,
+            notificationNumberText;
+    int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize, finalNotificationSize, newNotification;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked,
             bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable;
     MenuItem menuitem;
@@ -83,12 +86,27 @@ public class MainActivity extends Activity {
     Intent newIntent;
     FabSpeedDial fab;
     ImageButton notificationSummery;
+    Button showNotificationNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        createGridView();
+        setFont();
+        adjustScreenSize();
+        manageSettings();
+        loadButtonOptions();
+        createAdView();
+        checkStorage();
+        checkApplaunched();
+        setAlarm();
+        setListView();
+        buildAlertDialogue();
+        checkAppUpdates();
+        initializeWidgetVariable();
+        readNotificationCount();
         fab = (FabSpeedDial) findViewById(R.id.fabs);
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
@@ -105,9 +123,10 @@ public class MainActivity extends Activity {
                         break;
                     case R.id.about:
                         buttonTexts.add(getString(R.string.about));
+                        Dialog.setTitle("App Developer:");
                         Dialog.show();
                         progressBar.setVisibility(View.GONE);
-                        Dialog.setTitle("Developer");
+
                         break;
                     case R.id.check:
                         try {
@@ -147,23 +166,10 @@ public class MainActivity extends Activity {
             }
         });
 
-        createGridView();
-        setFont();
-        adjustScreenSize();
-        manageSettings();
-        loadButtonOptions();
-        createAdView();
-        checkStorage();
-        checkApplaunched();
-        setAlarm();
-        setListView();
-        buildAlertDialogue();
-        notificationSummery=(ImageButton)findViewById(R.id.notificationSumery);
-        checkAppUpdates();
-
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                readNotificationCount();
                 gridViewOptionLoader(position);
             }
         });
@@ -174,6 +180,13 @@ public class MainActivity extends Activity {
             }
         });
         notificationSummery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent summery = new Intent(MainActivity.this, NotificationSummery.class);
+                startActivity(summery);
+            }
+        });
+        showNotificationNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent summery = new Intent(MainActivity.this, NotificationSummery.class);
@@ -255,7 +268,7 @@ public class MainActivity extends Activity {
     }
 
     public void bpscTag(String Url, String TagForText, String tagForLink,
-                              String Attr, int begin, int end, int lBegin, int lEnd) {
+                        String Attr, int begin, int end, int lBegin, int lEnd) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -278,6 +291,7 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
         }
     }
+
     public void executableTag(String Url, String TagForText, String tagForLink,
                               String Attr, int begin, int end, int lBegin, int lEnd) {
 
@@ -383,7 +397,7 @@ public class MainActivity extends Activity {
     class BpscParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            executableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            bpscTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
             return null;
         }
 
@@ -780,12 +794,6 @@ public class MainActivity extends Activity {
             } catch (Exception e) {
             }
         }
-
-        public void myToast(String toasttText) {
-            Toast toast = makeText(MainActivity.this, toasttText, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-        }
     }
 
     @Override
@@ -813,7 +821,26 @@ public class MainActivity extends Activity {
             checkinternet.show();
         } else {
             super.onBackPressed();
+            readNotificationCount();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        readNotificationCount();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        readNotificationCount();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        readNotificationCount();
     }
 
     private void bsmmuHome() {
@@ -1023,7 +1050,7 @@ public class MainActivity extends Activity {
     }
 
     private void resultBCS() {
-        bpscParser=new BpscParser();
+        bpscParser = new BpscParser();
         paramUrl = "http://bpsc.gov.bd/site/view/psc_exam/BCS%20Examination/বিসিএস-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr a";
@@ -1038,7 +1065,7 @@ public class MainActivity extends Activity {
     }
 
     private void resultDept() {
-        bpscParser=new BpscParser();
+        bpscParser = new BpscParser();
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Departmental%20Examination/বিভাগীয়-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
@@ -1054,7 +1081,7 @@ public class MainActivity extends Activity {
     }
 
     private void resultSenior() {
-        bpscParser=new BpscParser();
+        bpscParser = new BpscParser();
         paramUrl = "http://www.bpsc.gov.bd/site/view/psc_exam/Senior%20Scale%20Examination/সিনিয়র-স্কেল-পরীক্ষা";
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
@@ -1271,6 +1298,7 @@ public class MainActivity extends Activity {
         gazetteOptions = new ArrayList<>();
         bmdcOptions = new ArrayList<>();
         resultOptions = new ArrayList<>();
+        oldNotificatinCount = new ArrayList<>();
         Collections.addAll(bsmmuOptions, bsmmuOption);
         Collections.addAll(bcpsOptions, bcpsOption);
         Collections.addAll(dghsOptions, dghsOption);
@@ -1377,7 +1405,7 @@ public class MainActivity extends Activity {
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+                readNotificationCount();
             }
 
             @Override
@@ -1691,5 +1719,33 @@ public class MainActivity extends Activity {
                 check.execute();
                 break;
         }
+    }
+
+    private void readNotificationCount() {
+        try {
+            SharedPreferences oldsize=getSharedPreferences("oldNotificationCount",Context.MODE_PRIVATE);
+            oldNotificatinSize=oldsize.getInt("oldsize",0);
+
+            SharedPreferences finalsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
+            finalNotificationSize=finalsize.getInt("finalsize",0);
+
+            newNotification = finalNotificationSize - oldNotificatinSize;
+
+            notificationNumberText = Integer.toString(newNotification);
+            if (newNotification == 0) {
+                showNotificationNumber.setVisibility(View.GONE);
+            } else {
+                showNotificationNumber.setVisibility(View.VISIBLE);
+                showNotificationNumber.setText(notificationNumberText);
+            }
+
+        } catch (Exception e) {
+        }
+    }
+
+    private void initializeWidgetVariable() {
+        notificationSummery = (ImageButton) findViewById(R.id.notificationSumery);
+        showNotificationNumber = (Button) findViewById(R.id.notificationCount);
+        showNotificationNumber.setVisibility(View.GONE);
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>3.1.0</b></string>
+    <string name="app_name">DocSites <b>3.2.0</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>
@@ -118,6 +118,7 @@
     <string name="regiExpired">Oline registration date is expired</string>
     <string name="soundSetting">Allow notification sound</string>
     <string name="vibrateSetting">Allow notification vibration</string>
+    <string name="connectivity">Allow network connectin alert</string>
     <string name="noData">You missed today\'s notification.\nFollow the steps to get notifications\nStep 1. Turn on Wi-Fi or mobile data\nStep 2. click this notification or open DocSites app </string>
 
     <!--filter string-->
@@ -139,7 +140,7 @@
     <string name="adhoc">এডহক</string>
 
     <string name="weeklyGazetteHeading">সাপ্তাহিক গেজেট</string>
-    <string name="about">App Developer:\n\n<b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>
+    <string name="about"><b><font color="blue">DR. ZUBAYER AHMED</font></b>\n\nMymensingh Medical College (M42)\n\nMedical Officer\n\nGovernment of People\'s Republic of Bangladesh\n\n33rd Batch of Bangladesh Civil Service (Health)\n\nContact:\n<b>zubayer.developer@gmail.com</b>
     </string>
     <string name="settingDialog">\nManage your notifications\n</string>
     <string name="vloumeHeading">\বছর</string>
@@ -148,6 +149,6 @@
     <string name="text">\⇦ লিস্ট থেকে বছর নির্বাচন করুন</string>
     <string name="openInBrowser">Links Open in Browser</string>
 
-    <string name="browseralert">\n\n1.If the page is empty \n\n2. if you see \"no preview available\"\n\n** Press \"Reload\" button several times, it may solve the problem\n</string>
+    <string name="browseralert">খেয়াল করুনঃ \n\nযদি কোন কিছু লোড না হয় বা লোড হতে সময় লাগে সেক্ষেত্রেঃ\n\n** অপশন থেকে বারবার Reload বাটন চাপুন \n\n** কাজ না হলে অপশন থেকে Download বাটন চাপুন\n\n** এতেও কাজ না হলে অপশন থেকে Open in External browser চাপুন\n\n** পরীক্ষার ফর্ম পূরণের ক্ষেত্রে এই অ্যাপের মাধ্যমে ছবি বা সিগনেচার আপলোড সম্ভব নয়, সেক্ষেত্রে ফর্মের পেইজ ওপেন হবার পর অপশন থেকে Open in External browser চাপুন</string>
     <string name="exit">\nMail me your problems, Ideas and suggestions for more links you want\n</string>
 </resources>

@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -62,14 +63,16 @@ public class MyIntentService extends IntentService {
         super.onCreate();
         try {
             checkConnectivity();
+            readHeading();
+            readDate();
+            readText();
+            readUrl();
+            SharedPreferences oldsize=getSharedPreferences("oldNotificationCount",Context.MODE_PRIVATE);
+            oldsize.edit().putInt("oldsize",notificationUrls.size()).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        summeryIntent = new Intent(getApplicationContext(), NotificationSummery.class);
-        readHeading();
-        readDate();
-        readText();
-        readUrl();
+
     }
 
     @Override
@@ -88,8 +91,6 @@ public class MyIntentService extends IntentService {
 
             summeryPreference = getSharedPreferences("forSummery", 0);
 
-            addToSymmery(" ", " ", " ", " ");
-            saveState();
             if (checked) {
                 residency();
                 executableTag();
@@ -110,6 +111,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("residency", btxt).apply();
                     addToSymmery(btxt, url, "BSMMU:Residency/Non-Residency", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("noticeSetting", 0);
@@ -136,6 +138,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("bsmmuNotice", btxt).apply();
                     addToSymmery(btxt, url, "BSMMU Notice", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("dghsSetting", 0);
@@ -163,6 +166,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("dghs", btxt).apply();
                     addToSymmery(btxt, url, "DGHS", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("resultDeptSetting", 0);
@@ -190,6 +194,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("dept", btxt).apply();
                     addToSymmery(btxt, url, "Departmental Exam", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("resultSeniorSetting", 0);
@@ -217,6 +222,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("senior", btxt).apply();
                     addToSymmery(btxt, url, "Senior Scale Exam", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("reultBcsSetting", 0);
@@ -244,6 +250,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("bcs", btxt).apply();
                     addToSymmery(btxt, url, "BCS Exam", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("regiDeptSetting", 0);
@@ -268,6 +275,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("deptExpired", "").apply();
                     addToSymmery(getString(R.string.regideptStarted), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
                 btxt = "";
                 url="";
@@ -290,6 +298,7 @@ public class MyIntentService extends IntentService {
                         preferences.edit().putString("deptExpired", btxt).apply();
                         addToSymmery(getString(R.string.regiExpired), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
                         saveState();
+                        fianlNotificationCount();
                     }
                 }
             }
@@ -315,6 +324,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("seniorExpired", "").apply();
                     addToSymmery(getString(R.string.regiseniortext), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
                 btxt = "";
                 url="";
@@ -337,6 +347,7 @@ public class MyIntentService extends IntentService {
                         preferences.edit().putString("seniorExpired", btxt).apply();
                         addToSymmery(getString(R.string.regiExpired), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
                         saveState();
+                        fianlNotificationCount();
                     }
                 }
             }
@@ -366,6 +377,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("assistantSurgeon", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.assistantSurgeonSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("juniorConsultantSetting", 0);
@@ -394,6 +406,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("juniorConsultant", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.juniorConsultantSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("seniorConsultantSetting", 0);
@@ -423,6 +436,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("seniorConsultant", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
                 btxt = "";
                 url="";
@@ -444,6 +458,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("seniorConsultant2", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting) + ":", notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("assistantProfessorSetting", 0);
@@ -472,6 +487,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("assistantProfessor", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.assistantProfessorSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("associateProfessorSetting", 0);
@@ -500,6 +516,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("associateProfessor", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.associateProfessorSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("professorSetting", 0);
@@ -528,6 +545,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("professor", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.professorSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("civilSurgeonSetting", 0);
@@ -556,6 +574,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("civilSurgeon", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.civilSurgeonSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("adhocSetting", 0);
@@ -584,6 +603,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("adhoc", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.adhocSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
             preferences = getSharedPreferences("mohfwSetting", 0);
@@ -612,6 +632,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("mohfw", buttonTexts.get(0)).apply();
                     addToSymmery(btxt, url, getString(R.string.mohfwSetting), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
 
@@ -641,6 +662,7 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("deputation", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.deputationOrders), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
 
@@ -671,10 +693,10 @@ public class MyIntentService extends IntentService {
                     preferences.edit().putString("leave", btxt).apply();
                     addToSymmery(btxt, url, getString(R.string.leaveOpion), notificationDate());
                     saveState();
+                    fianlNotificationCount();
                 }
             }
-            addToSymmery(" ", " ", notificationDate(), " ");
-            saveState();
+
         } catch (Exception e) {
         }
     }
@@ -687,6 +709,14 @@ public class MyIntentService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        if(notificationTexts.size()!=0){
+//            addToSymmery("", "", notificationDate(), "");
+            saveState();
+            try {
+                fianlNotificationCount();
+            } catch (Exception e) {
+            }
+        }
         clearArray();
 //        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 //        Intent newIntent = new Intent(MyIntentService.this, NotificationReceiver.class);
@@ -697,12 +727,12 @@ public class MyIntentService extends IntentService {
 //        }catch (Exception e){
 //            e.printStackTrace();
 //        }
-        summeryIntent.setAction(Intent.ACTION_MAIN);
-        summeryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        summeryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        ComponentName cn = new ComponentName(this, NotificationSummery.class);
-        summeryIntent.setComponent(cn);
-        startActivity(summeryIntent);
+//        summeryIntent.setAction(Intent.ACTION_MAIN);
+//        summeryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+//        summeryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        ComponentName cn = new ComponentName(this, NotificationSummery.class);
+//        summeryIntent.setComponent(cn);
+//        startActivity(summeryIntent);
     }
 
     private void residency() {
@@ -866,6 +896,7 @@ public class MyIntentService extends IntentService {
                 .addAction(0, "Turn off notification", pendingSetting)
                 .setColor(0xff990000)
                 .setVibrate(new long[]{0, 300, 300, 300})
+                .setLights(Color.GREEN,1000,1000)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MAX)
@@ -905,46 +936,49 @@ public class MyIntentService extends IntentService {
     }
 
     private void checkConnectivity() {
-        title = "Turn on Data";
-        text = getString(R.string.noData);
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert connectivityManager != null;
-        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        wifiAvailable = networkInfo.isConnected();
-        networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        mobileDataAvailable = networkInfo.isConnected();
-        if (!wifiAvailable && !mobileDataAvailable) {
-            bigTextStyleNotification(title, text);
-            settingIntent = new Intent(this, MainActivity.class);
-            settingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            pendingSetting = PendingIntent.getActivity(this, 111, settingIntent, 0);
-            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationBuilder = new NotificationCompat.Builder(this)
-                    .setContentTitle(title)
-                    .setContentText(text)
-                    .setColor(0xff990000)
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setWhen(System.currentTimeMillis())
-                    .setPriority(Notification.PRIORITY_MAX)
-                    .setLights(0xff990000, 300, 100)
-                    .setContentIntent(pendingSetting)
-                    .setStyle(bigTextStyle)
-                    .setSmallIcon(R.mipmap.ic_launcher);
+        preferences = getSharedPreferences("connectivity", 0);
+        checked = preferences.getBoolean("connectivityChecked", false);
+        if (checked) {
+            title = "Turn on Data";
+            text = getString(R.string.noData);
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            assert connectivityManager != null;
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            wifiAvailable = networkInfo.isConnected();
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            mobileDataAvailable = networkInfo.isConnected();
+            if (!wifiAvailable && !mobileDataAvailable) {
+                bigTextStyleNotification(title, text);
+                settingIntent = new Intent(this, MainActivity.class);
+                settingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                pendingSetting = PendingIntent.getActivity(this, 111, settingIntent, 0);
+                notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationBuilder = new NotificationCompat.Builder(this)
+                        .setContentTitle(title)
+                        .setContentText(text)
+                        .setColor(0xff990000)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                        .setWhen(System.currentTimeMillis())
+                        .setPriority(Notification.PRIORITY_MAX)
+                        .setLights(0xff990000, 300, 100)
+                        .setContentIntent(pendingSetting)
+                        .setStyle(bigTextStyle)
+                        .setSmallIcon(R.mipmap.ic_launcher);
 
-            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock wakeLock = null;
-            if (pm != null) {
-                wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
-                        | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                        | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+                PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                PowerManager.WakeLock wakeLock = null;
+                if (pm != null) {
+                    wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                            | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                            | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+                }
+                if (wakeLock != null) {
+                    wakeLock.acquire(100);
+                }
+                notificationManager.notify(111, notificationBuilder.build());
             }
-            if (wakeLock != null) {
-                wakeLock.acquire(100);
-            }
-            notificationManager.notify(111, notificationBuilder.build());
         }
     }
-
     private void saveState() {
         try {
             FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
@@ -1071,6 +1105,11 @@ public class MyIntentService extends IntentService {
         if (arrayName.size() > 200) {
             arrayName.remove(200);
         }
+    }
+
+    private void fianlNotificationCount() {
+        SharedPreferences oldsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
+        oldsize.edit().putInt("finalsize",notificationUrls.size()).apply();
     }
 
 }
