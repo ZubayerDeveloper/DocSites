@@ -218,7 +218,15 @@ public class Browser extends Activity {
         if (urls.contains("pdf")) {
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
-        } else {
+        } else if(urls.contains("download")){
+            if(Build.VERSION.SDK_INT>23){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
+                startActivity(intent);
+            }else {
+                website.loadUrl(urls);
+                loadProgressBar();
+            }
+        }else{
             website.loadUrl(urls);
             loadProgressBar();
         }

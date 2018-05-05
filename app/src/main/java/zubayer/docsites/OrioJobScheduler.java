@@ -347,7 +347,7 @@ public class OrioJobScheduler extends JobService {
                         myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 71, myIntent, 0);
-                        notification("channel_71", "seniorstarts", "Senior Scale Exam", getString(R.string.regiExpired), 71);
+                        notification("channel_71", "seniorstarts", "Senior Scale Exam", getString(R.string.regiseniortext), 71);
 
                         preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                         preferences.edit().remove("regiSeniorExpired").apply();
