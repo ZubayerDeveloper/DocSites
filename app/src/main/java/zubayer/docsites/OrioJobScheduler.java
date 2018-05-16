@@ -958,7 +958,6 @@ public class OrioJobScheduler extends JobService {
             try {
                 FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
                 ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                limitArray(notificationHeadings);
                 arrayoutput.writeObject(notificationHeadings);
                 arrayoutput.close();
                 write.close();
@@ -968,7 +967,6 @@ public class OrioJobScheduler extends JobService {
             try {
                 FileOutputStream write = openFileOutput("notificationDates", Context.MODE_PRIVATE);
                 ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                limitArray(notificationDates);
                 arrayoutput.writeObject(notificationDates);
                 arrayoutput.close();
                 write.close();
@@ -977,7 +975,6 @@ public class OrioJobScheduler extends JobService {
             try {
                 FileOutputStream write = openFileOutput("notificationTexts", Context.MODE_PRIVATE);
                 ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                limitArray(notificationTexts);
                 arrayoutput.writeObject(notificationTexts);
                 arrayoutput.close();
                 write.close();
@@ -986,7 +983,6 @@ public class OrioJobScheduler extends JobService {
             try {
                 FileOutputStream write = openFileOutput("notificationUrls", Context.MODE_PRIVATE);
                 ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                limitArray(notificationUrls);
                 arrayoutput.writeObject(notificationUrls);
                 arrayoutput.close();
                 write.close();
@@ -1057,12 +1053,6 @@ public class OrioJobScheduler extends JobService {
                 readarray.close();
                 read.close();
             } catch (Exception e) {
-            }
-        }
-
-        private void limitArray (ArrayList < String > arrayName) {
-            if (arrayName.size() > 200) {
-                arrayName.remove(200);
             }
         }
 

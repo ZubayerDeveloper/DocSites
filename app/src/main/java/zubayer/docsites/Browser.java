@@ -116,9 +116,8 @@ public class Browser extends Activity {
                 switch (menuItem.getItemId()) {
                     case R.id.download:
                         if (urls.contains("pdf")) {
-                            website.loadUrl(urls);
-                            myToaster("Downloading");
-                            loadProgressBar();
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
+                            startActivity(intent);
                         } else {
                             myToaster("No PDF found to download");
                         }
@@ -219,13 +218,8 @@ public class Browser extends Activity {
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
         } else if(urls.contains("download")){
-            if(Build.VERSION.SDK_INT>23){
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
                 startActivity(intent);
-            }else {
-                website.loadUrl(urls);
-                loadProgressBar();
-            }
         }else{
             website.loadUrl(urls);
             loadProgressBar();

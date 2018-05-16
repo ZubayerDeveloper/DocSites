@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ListView
+        android:id="@+id/notificationListView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#F7EDD0"
+        android:listSelector="@drawable/bcsdept"
+        android:paddingBottom="70dp"
+        android:scrollbars="none"
+        android:textAlignment="center" />
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adViewSummery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-6830488664932459/4886118189" />
+
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/fabsummery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="70dp"
+        ads:fabGravity="bottom_start"
+        ads:miniFabBackgroundTintList="@array/menu_background_color"
+        ads:miniFabTitleTextColorList="@array/menu_text_color"
+        ads:fabMenu="@menu/notification_menu"
+        ads:fabBackgroundTint="#009900"
+        android:layout_above="@+id/adViewCard"
+        ads:miniFabBackgroundTint="#000000"
+        ads:miniFabTitleBackgroundTint="#000000"
+        ads:miniFabTitleTextColor="#FFFFFF"
+        ads:miniFabDrawableTint="#FFFFFF"
+        ads:miniFabTitlesEnabled="true"
+        ads:touchGuard="true"
+        ads:touchGuardDrawable="@color/cardview_shadow_start_color" />
+</RelativeLayout>

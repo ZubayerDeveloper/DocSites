@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/missed"
+        android:icon="@drawable/missed"
+        android:title="Check for missed notifications"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/off"
+        android:icon="@drawable/off"
+        android:title="Check for turned off notifications"
+        app:showAsAction="never" />
+</menu>
