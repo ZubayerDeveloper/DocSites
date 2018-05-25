@@ -44,7 +44,7 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
         font= Typeface.createFromAsset(context.getAssets(),"kalpurush.ttf");
         builder = new AlertDialog.Builder(context);
         checkinternet = builder.create();
-        checkinternet.setCancelable(false);
+        checkinternet.setCancelable(true);
         checkinternet.setMessage("Sure you want to delete?");
         }
 @Override

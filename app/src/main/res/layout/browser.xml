@@ -33,7 +33,34 @@
             android:gravity="center"
             ads:adSize="SMART_BANNER"
             ads:adUnitId="@string/banner_id_browser" />
-
+        <Button
+            android:id="@+id/downloadButton"
+            android:padding="10dp"
+            android:textColor="#FFFFFF"
+            android:layout_above="@+id/adViewBrowser"
+            android:layout_centerInParent="true"
+            android:theme="@style/Theme.Transparent"
+            android:layout_marginBottom="55dp"
+            android:text="Download"
+            android:alpha="0.70"
+            android:background="@drawable/download_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <!--<ImageButton-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:id="@+id/reloadButton"-->
+            <!--android:padding="10dp"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:layout_above="@+id/adViewBrowser"-->
+            <!--android:layout_toRightOf="@+id/downloadButton"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:theme="@style/Theme.Transparent"-->
+            <!--android:layout_marginBottom="55dp"-->
+            <!--android:alpha="0.70"-->
+            <!--android:src="@drawable/reload"-->
+            <!--android:background="@drawable/download_button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
         <io.github.yavski.fabspeeddial.FabSpeedDial
             android:id="@+id/fabweb"
             android:layout_width="wrap_content"

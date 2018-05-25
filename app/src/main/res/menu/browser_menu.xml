@@ -1,31 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/download"
-        android:icon="@android:drawable/stat_sys_download"
-        android:title="Download"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/reload"
         android:icon="@drawable/reload"
         android:title="Reload"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/stop"
-        android:icon="@drawable/stop"
-        android:title="Stop loading"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/copy"
         android:icon="@drawable/copy"
         android:title="Copy Link"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/exit"
-        android:icon="@drawable/exit"
-        android:title="Exit Browser"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/externalBrowser"
         android:icon="@drawable/browser"

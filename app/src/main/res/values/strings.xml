@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>3.2.1</b></string>
+    <string name="app_name">DocSites <b>3.2.3</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>

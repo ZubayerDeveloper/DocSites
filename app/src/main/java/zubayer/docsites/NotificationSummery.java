@@ -309,6 +309,7 @@ public class NotificationSummery extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 } else {
+                    manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     newIntent = new Intent(NotificationSummery.this, NotificationReceiver.class);
                     newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     pendingIntent = PendingIntent.getBroadcast(NotificationSummery.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);

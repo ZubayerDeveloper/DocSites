@@ -67,8 +67,8 @@ public class MyIntentService extends IntentService {
             readDate();
             readText();
             readUrl();
-            SharedPreferences oldsize=getSharedPreferences("oldNotificationCount",Context.MODE_PRIVATE);
-            oldsize.edit().putInt("oldsize",notificationUrls.size()).apply();
+            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
+            oldsize.edit().putInt("oldsize", notificationUrls.size()).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,6 +102,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton("BSMMU:Residency/Non-Residency");
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, "BSMMU:Residency/Non-Residency", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", url);
@@ -109,16 +112,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BSMMU:Residency/Non-Residency", btxt);
                     notification("BSMMU:Residency/Non-Residency", btxt, 0);
                     preferences.edit().putString("residency", btxt).apply();
-                    addToSymmery(btxt, url, "BSMMU:Residency/Non-Residency", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("noticeSetting", 0);
             checked = preferences.getBoolean("noticeChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 bsmmuNotice();
                 executableTag();
                 preferences = getSharedPreferences("bsmmuNotice", Context.MODE_PRIVATE);
@@ -129,6 +130,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton("M.phil, Diploma exam notice");
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, "BSMMU Notice", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", url);
@@ -136,16 +140,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BSMMU Notice", btxt);
                     notification("BSMMU Notice", btxt, 1);
                     preferences.edit().putString("bsmmuNotice", btxt).apply();
-                    addToSymmery(btxt, url, "BSMMU Notice", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("dghsSetting", 0);
             checked = preferences.getBoolean("dghsChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 dghsHomeLinks();
                 executableTag();
                 preferences = getSharedPreferences("dghs", Context.MODE_PRIVATE);
@@ -157,6 +159,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton("Notification from DGHS");
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, "DGHS", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", url);
@@ -164,16 +169,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("New from DGHS", btxt);
                     notification("New from DGHS", btxt, 2);
                     preferences.edit().putString("dghs", btxt).apply();
-                    addToSymmery(btxt, url, "DGHS", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("resultDeptSetting", 0);
             checked = preferences.getBoolean("resultDeptChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 resultDept();
                 executableTag();
                 preferences = getSharedPreferences("dept", Context.MODE_PRIVATE);
@@ -185,6 +188,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton("Notice and results for Departmental Exam");
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, "Departmental Exam", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -192,16 +198,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BPSC:Departmental Exam", btxt);
                     notification("BPSC:Departmental Exam", btxt, 3);
                     preferences.edit().putString("dept", btxt).apply();
-                    addToSymmery(btxt, url, "Departmental Exam", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("resultSeniorSetting", 0);
             checked = preferences.getBoolean("resultSeniorChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 resultSenior();
                 executableTag();
                 preferences = getSharedPreferences("senior", Context.MODE_PRIVATE);
@@ -213,6 +217,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton("Notice and results for Senior Scale Exam");
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, "Senior Scale Exam", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -220,16 +227,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BPSC:Senior Scale Exam", btxt);
                     notification("BPSC:Senior Scale Exam", btxt, 4);
                     preferences.edit().putString("senior", btxt).apply();
-                    addToSymmery(btxt, url, "Senior Scale Exam", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("reultBcsSetting", 0);
             checked = preferences.getBoolean("reultBcsChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 resultBCS();
                 executableTag();
                 preferences = getSharedPreferences("bcs", Context.MODE_PRIVATE);
@@ -241,6 +246,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton("BCS Exam");
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, "BCS Exam", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -248,22 +256,23 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification("BPSC:BCS Exam", btxt);
                     notification("BPSC:BCS Exam", btxt, 5);
                     preferences.edit().putString("bcs", btxt).apply();
-                    addToSymmery(btxt, url, "BCS Exam", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("regiDeptSetting", 0);
             checked = preferences.getBoolean("regiDeptChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 regiDeptStarts();
                 executableTag();
                 if (btxt.length() == 0) {
                     addToMissedNotificaton("Departmental exam online registration");
                     saveMissedNotificationList();
                 } else if (btxt.contains("Section 1: Personal Details")) {
+                    addToSymmery(getString(R.string.regideptStarted), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -273,12 +282,10 @@ public class MyIntentService extends IntentService {
 
                     preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
                     preferences.edit().putString("deptExpired", "").apply();
-                    addToSymmery(getString(R.string.regideptStarted), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
                 btxt = "";
-                url="";
+                url = "";
                 regiDeptExpire();
                 executableTag();
                 preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
@@ -289,6 +296,9 @@ public class MyIntentService extends IntentService {
                 } else if (btxt.contains("expired")) {
                     if (btxt.equalsIgnoreCase(previousSaved) || btxt.length() == 0) {
                     } else {
+                        addToSymmery(getString(R.string.regiExpired), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
+                        saveState();
+                        fianlNotificationCount();
                         myIntent = new Intent(this, Browser.class);
                         myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -296,9 +306,7 @@ public class MyIntentService extends IntentService {
                         bigTextStyleNotification("Departmental Exam", btxt);
                         notification("Departmental Exam", getString(R.string.regiExpired), 6);
                         preferences.edit().putString("deptExpired", btxt).apply();
-                        addToSymmery(getString(R.string.regiExpired), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
-                        saveState();
-                        fianlNotificationCount();
+
                     }
                 }
             }
@@ -306,13 +314,16 @@ public class MyIntentService extends IntentService {
             checked = preferences.getBoolean("regiSeniorChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 regiSeniorStsrts();
                 executableTag();
                 if (btxt.length() == 0) {
                     addToMissedNotificaton("Senior scale exam online registration");
                     saveMissedNotificationList();
                 } else if (btxt.contains("Section 1: Personal Details")) {
+                    addToSymmery(getString(R.string.regiseniortext), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -322,12 +333,10 @@ public class MyIntentService extends IntentService {
 
                     preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                     preferences.edit().putString("seniorExpired", "").apply();
-                    addToSymmery(getString(R.string.regiseniortext), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
                 btxt = "";
-                url="";
+                url = "";
                 regiSeniorExpre();
                 executableTag();
                 preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
@@ -338,6 +347,9 @@ public class MyIntentService extends IntentService {
                 } else if (btxt.contains("expired")) {
                     if (btxt.equalsIgnoreCase(previousSaved)) {
                     } else {
+                        addToSymmery(getString(R.string.regiExpired), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
+                        saveState();
+                        fianlNotificationCount();
                         myIntent = new Intent(this, Browser.class);
                         myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -345,9 +357,7 @@ public class MyIntentService extends IntentService {
                         bigTextStyleNotification("Senior Scale Exam", btxt);
                         notification("Senior Scale Exam", getString(R.string.regiExpired), 7);
                         preferences.edit().putString("seniorExpired", btxt).apply();
-                        addToSymmery(getString(R.string.regiExpired), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
-                        saveState();
-                        fianlNotificationCount();
+
                     }
                 }
             }
@@ -355,7 +365,7 @@ public class MyIntentService extends IntentService {
             checked = preferences.getBoolean("assistantSurgeonChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.assistantSurgeon);
                 executeService();
                 serviceConfirmTag();
@@ -368,6 +378,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.assistantSurgeonSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.assistantSurgeonSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -375,16 +388,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.assistantSurgeonSetting), btxt);
                     notification(getString(R.string.assistantSurgeonSetting), btxt, 8);
                     preferences.edit().putString("assistantSurgeon", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.assistantSurgeonSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("juniorConsultantSetting", 0);
             checked = preferences.getBoolean("juniorConsultantChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.juniorConsultant);
                 executeService();
                 serviceConfirmTag();
@@ -397,6 +408,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.juniorConsultantSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.juniorConsultantSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -404,16 +418,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.juniorConsultantSetting), btxt);
                     notification(getString(R.string.juniorConsultantSetting), btxt, 9);
                     preferences.edit().putString("juniorConsultant", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.juniorConsultantSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("seniorConsultantSetting", 0);
             checked = preferences.getBoolean("seniorConsultantChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.seniorConsultant);
                 filterContent2 = getString(R.string.seniorConsultant2);
                 executeService();
@@ -427,6 +439,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.seniorConsultantSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -434,12 +449,10 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.seniorConsultantSetting), btxt);
                     notification(getString(R.string.seniorConsultantSetting), btxt, 10);
                     preferences.edit().putString("seniorConsultant", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
                 btxt = "";
-                url="";
+                url = "";
                 serviceConfirmTag2();
                 preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
                 previousSaved2 = preferences.getString("seniorConsultant2", null);
@@ -449,6 +462,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.seniorConsultantSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting) + ":", notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -456,16 +472,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.seniorConsultantSetting), btxt);
                     notification(getString(R.string.seniorConsultantSetting), btxt, 101);
                     preferences.edit().putString("seniorConsultant2", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting) + ":", notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("assistantProfessorSetting", 0);
             checked = preferences.getBoolean("assistantProfessorChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.assistantProfessor);
                 executeService();
                 serviceConfirmTag();
@@ -478,6 +492,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.assistantProfessorSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.assistantProfessorSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -485,16 +502,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.assistantProfessorSetting), btxt);
                     notification(getString(R.string.assistantProfessorSetting), btxt, 11);
                     preferences.edit().putString("assistantProfessor", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.assistantProfessorSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("associateProfessorSetting", 0);
             checked = preferences.getBoolean("associateProfessorChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.associateProfessor);
                 executeService();
                 serviceConfirmTag();
@@ -507,6 +522,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.associateProfessorSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.associateProfessorSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -514,16 +532,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.associateProfessorSetting), btxt);
                     notification(getString(R.string.associateProfessorSetting), btxt, 12);
                     preferences.edit().putString("associateProfessor", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.associateProfessorSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("professorSetting", 0);
             checked = preferences.getBoolean("professorChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.professor);
                 executeService();
                 serviceConfirmTag();
@@ -536,6 +552,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.professorSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.professorSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -543,16 +562,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.professorSetting), btxt);
                     notification(getString(R.string.professorSetting), btxt, 13);
                     preferences.edit().putString("professor", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.professorSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("civilSurgeonSetting", 0);
             checked = preferences.getBoolean("civilSurgeonChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.civilSurgeon);
                 executeService();
                 serviceConfirmTag();
@@ -565,6 +582,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.civilSurgeonSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.civilSurgeonSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -572,16 +592,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.civilSurgeonSetting), btxt);
                     notification(getString(R.string.civilSurgeonSetting), btxt, 14);
                     preferences.edit().putString("civilSurgeon", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.civilSurgeonSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("adhocSetting", 0);
             checked = preferences.getBoolean("adhocChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = getString(R.string.adhoc);
                 executeService();
                 serviceConfirmTag();
@@ -594,6 +612,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.adhocSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.adhocSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.putExtra("value", url);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -601,16 +622,14 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.adhocSetting), btxt);
                     notification(getString(R.string.adhocSetting), btxt, 15);
                     preferences.edit().putString("adhoc", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.adhocSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
             preferences = getSharedPreferences("mohfwSetting", 0);
             checked = preferences.getBoolean("mohfwChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = "Per";
                 executeService();
                 serviceConfirmTag();
@@ -623,6 +642,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.mohfwSetting));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.mohfwSetting), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", url);
@@ -630,9 +652,7 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.mohfwSetting), btxt);
                     notification(getString(R.string.mohfwSetting), btxt, 16);
                     preferences.edit().putString("mohfw", buttonTexts.get(0)).apply();
-                    addToSymmery(btxt, url, getString(R.string.mohfwSetting), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
 
@@ -640,7 +660,7 @@ public class MyIntentService extends IntentService {
             checked = preferences.getBoolean("deputationChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = "ME-";
                 executeDeputation();
                 serviceConfirmTag();
@@ -653,6 +673,9 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.deputationOrders));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.deputationOrders), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     myIntent.putExtra("value", url);
@@ -660,9 +683,7 @@ public class MyIntentService extends IntentService {
                     bigTextStyleNotification(getString(R.string.deputationOrders), btxt);
                     notification(getString(R.string.deputationOrders), btxt, 17);
                     preferences.edit().putString("deputation", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.deputationOrders), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
 
@@ -670,7 +691,7 @@ public class MyIntentService extends IntentService {
             checked = preferences.getBoolean("leaveChecked", false);
             if (checked) {
                 btxt = "";
-                url="";
+                url = "";
                 filterContent = "HR-";
                 executeLeave();
                 serviceConfirmTag();
@@ -683,17 +704,17 @@ public class MyIntentService extends IntentService {
                     addToMissedNotificaton(getString(R.string.leaveOpion));
                     saveMissedNotificationList();
                 } else {
+                    addToSymmery(btxt, url, getString(R.string.leaveOpion), notificationDate());
+                    saveState();
+                    fianlNotificationCount();
                     myIntent = new Intent(this, Browser.class);
-
                     myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     myIntent.putExtra("value", url);
                     pendingIntent = PendingIntent.getActivity(this, 18, myIntent, 0);
                     bigTextStyleNotification(getString(R.string.leaveOpion), btxt);
                     notification(getString(R.string.leaveOpion), btxt, 18);
                     preferences.edit().putString("leave", btxt).apply();
-                    addToSymmery(btxt, url, getString(R.string.leaveOpion), notificationDate());
-                    saveState();
-                    fianlNotificationCount();
+
                 }
             }
 
@@ -709,7 +730,7 @@ public class MyIntentService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(notificationTexts.size()!=0){
+        if (notificationTexts.size() != 0) {
 //            addToSymmery("", "", notificationDate(), "");
             saveState();
             try {
@@ -843,8 +864,8 @@ public class MyIntentService extends IntentService {
                     textMax = i;
                 }
             }
-            btxt=buttonTexts.get(0);
-            url=urls.get(0);
+            btxt = buttonTexts.get(0);
+            url = urls.get(0);
             buttonTexts.clear();
             urls.clear();
         } catch (Exception e) {
@@ -866,8 +887,8 @@ public class MyIntentService extends IntentService {
                     textMax = i;
                 }
             }
-            btxt=buttonTexts2.get(0);
-            url=urls2.get(0);
+            btxt = buttonTexts2.get(0);
+            url = urls2.get(0);
             buttonTexts2.clear();
             urls.clear();
         } catch (Exception e) {
@@ -896,7 +917,7 @@ public class MyIntentService extends IntentService {
                 .addAction(0, "Turn off notification", pendingSetting)
                 .setColor(0xff990000)
                 .setVibrate(new long[]{0, 300, 300, 300})
-                .setLights(Color.GREEN,1000,1000)
+                .setLights(Color.GREEN, 1000, 1000)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MAX)
@@ -979,6 +1000,7 @@ public class MyIntentService extends IntentService {
             }
         }
     }
+
     private void saveState() {
         try {
             FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
@@ -1098,8 +1120,8 @@ public class MyIntentService extends IntentService {
     }
 
     private void fianlNotificationCount() {
-        SharedPreferences oldsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
-        oldsize.edit().putInt("finalsize",notificationUrls.size()).apply();
+        SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+        oldsize.edit().putInt("finalsize", notificationUrls.size()).apply();
     }
 
 }

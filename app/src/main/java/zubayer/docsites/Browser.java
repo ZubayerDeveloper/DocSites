@@ -25,7 +25,7 @@ public class Browser extends Activity {
     String urls;
     WebView website;
     ProgressBar progressbar;
-    MenuItem item2;
+    AlertDialog checkinternet;
     private AdView mAdView;
     String driveViewer, pdfurl;
     AlertDialog Dialog;
@@ -37,6 +37,7 @@ public class Browser extends Activity {
     ProgressBar progressBar;
     View m;
     ArrayList<String> buttonTexts, urlss;
+    Button downloadButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +45,11 @@ public class Browser extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.browser);
 
-        buttonTexts=new ArrayList<>();
+        buttonTexts = new ArrayList<>();
         buttonTexts.add(getString(R.string.browseralert));
-        urlss=new ArrayList<>();
+        urlss = new ArrayList<>();
+        downloadButton = (Button) findViewById(R.id.downloadButton);
+
         setFont();
         setAdd();
         setProgressBar();
@@ -57,7 +60,11 @@ public class Browser extends Activity {
         reloadAdviceDialogue();
         webViewSettings();
         filterUrlPDF();
-
+        if (urls.contains("pdf")) {
+            downloadButton.setVisibility(View.VISIBLE);
+        }else {
+            downloadButton.setVisibility(View.GONE);
+        }
         website.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -83,11 +90,41 @@ public class Browser extends Activity {
                 request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimetype));
                 final String filename = URLUtil.guessFileName(url, contentDisposition, mimetype);
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
-                DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                try {
+                    request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+                    DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 if (dm != null) {
                     dm.enqueue(request);
                 }
+                }catch (Exception e){
+                    try {
+                        Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        startActivity(intentNew);
+                    }catch (ActivityNotFoundException eee){
+                        builder=new AlertDialog.Builder(Browser.this);
+                        checkinternet = builder.create();
+                        checkinternet.setCancelable(true);
+                        checkinternet.setMessage("You need to download Google Chrome");
+                        checkinternet.setButton("Download", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, int id) {
+                                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
+                                startActivity(i);
+                            }
+                        });
+                        checkinternet.setButton3("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, int id) {
+
+                            }
+                        });
+                        checkinternet.show();
+                    }
+            }
+            }
+        });
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                website.loadUrl(urls);
             }
         });
     }
@@ -103,6 +140,7 @@ public class Browser extends Activity {
             super.onBackPressed();
         }
     }
+
     private void setFloatingActinButton() {
         fab = (FabSpeedDial) findViewById(R.id.fabweb);
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
@@ -114,21 +152,6 @@ public class Browser extends Activity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.download:
-                        if (urls.contains("pdf")) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
-                            startActivity(intent);
-                        } else {
-                            myToaster("No PDF found to download");
-                        }
-                        break;
-                    case R.id.exit:
-                        finish();
-                        break;
-                    case R.id.stop:
-                        website.stopLoading();
-                        progressbar.setVisibility(View.GONE);
-                        break;
                     case R.id.reload:
                         website.reload();
                         loadProgressBar();
@@ -142,8 +165,27 @@ public class Browser extends Activity {
                         myToaster("Link copied");
                         break;
                     case R.id.externalBrowser:
-                        Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
-                        startActivity(intentNew);
+                        try {
+                            Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
+                            startActivity(intentNew);
+                        }catch (ActivityNotFoundException e){
+                            builder=new AlertDialog.Builder(Browser.this);
+                            checkinternet = builder.create();
+                            checkinternet.setCancelable(true);
+                            checkinternet.setMessage("You need to download Google Chrome");
+                            checkinternet.setButton("Download", new DialogInterface.OnClickListener() {
+                                public void onClick(final DialogInterface dialog, int id) {
+                                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
+                                    startActivity(i);
+                                }
+                            });
+                            checkinternet.setButton3("Cancel", new DialogInterface.OnClickListener() {
+                                public void onClick(final DialogInterface dialog, int id) {
+
+                                }
+                            });
+                            checkinternet.show();
+                        }
                         break;
                 }
                 return false;
@@ -155,6 +197,7 @@ public class Browser extends Activity {
             }
         });
     }
+
     private void webViewSettings() {
         website.getSettings().setUseWideViewPort(true);
         website.getSettings().setDatabaseEnabled(true);
@@ -177,6 +220,7 @@ public class Browser extends Activity {
         website.getSettings().setSupportMultipleWindows(false);
         website.setVerticalScrollBarEnabled(false);
     }
+
     public void loadProgressBar() {
         website.setWebChromeClient(new WebChromeClient() {
             public void onProgressChanged(WebView view, int progress) {
@@ -191,6 +235,7 @@ public class Browser extends Activity {
             }
         });
     }
+
     private void reloadAdviceDialogue() {
         preferences = getSharedPreferences("reload", 0);
         if (preferences.getBoolean("got it", false)) {
@@ -199,42 +244,46 @@ public class Browser extends Activity {
             Dialog.show();
         }
     }
+
     private void myToaster(String text) {
         Toast toast = makeText(Browser.this, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
+
     private void setFont() {
         Calligrapher font = new Calligrapher(this);
         font.setFont(this, "kalpurush.ttf", true);
     }
+
     private void setAdd() {
         mAdView = (AdView) findViewById(R.id.adViewBrowser);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
+
     private void filterUrlPDF() {
         if (urls.contains("pdf")) {
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
-        } else if(urls.contains("download")){
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
-                startActivity(intent);
-        }else{
+        } else  {
             website.loadUrl(urls);
             loadProgressBar();
         }
     }
+
     private void setProgressBar() {
         progressbar = (ProgressBar) findViewById(R.id.progress);
         progressbar.setProgress(0);
     }
+
     private void initializeWebViewAndUrls() {
         website = (WebView) findViewById(R.id.WebView);
         driveViewer = "https://docs.google.com/viewer?url=";
         pdfurl = "https://docs.google.com/gview?embedded=true&url=";
         urls = getIntent().getExtras().getString("value");
     }
+
     private void buildAlertDialogue() {
         builder = new AlertDialog.Builder(this);
         Dialog = builder.create();
@@ -242,13 +291,13 @@ public class Browser extends Activity {
         Dialog.setButton("Got it", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
                 preferences = getSharedPreferences("reload", 0);
-                preferences.edit().putBoolean("got it",true).apply();
+                preferences.edit().putBoolean("got it", true).apply();
             }
         });
         Dialog.setButton3("Remind me next time", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
                 preferences = getSharedPreferences("reload", 0);
-                preferences.edit().putBoolean("got it",false).apply();
+                preferences.edit().putBoolean("got it", false).apply();
             }
         });
         Dialog.setView(m);
