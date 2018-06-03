@@ -1,8 +1,11 @@
 package zubayer.docsites;
 
 import android.app.*;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.*;
 import android.view.View;
 import android.widget.AdapterView;
@@ -219,7 +222,18 @@ public class WeeklyGazettes extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (btxt != null) {
                 volume.setAdapter(volumeAdapter);
                 progressDialog.dismiss();
                 executeNavigation();
@@ -231,7 +245,7 @@ public class WeeklyGazettes extends Activity {
                         finish();
                     }
                 });
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -251,7 +265,18 @@ public class WeeklyGazettes extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (btxt != null) {
                 navigation.setAdapter(navigationAdapter);
                 progressDialog.dismiss();
             } else {
@@ -263,7 +288,7 @@ public class WeeklyGazettes extends Activity {
                         finish();
                     }
                 });
-                checkinternet.setMessage("Check your network connection navigation");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -283,7 +308,18 @@ public class WeeklyGazettes extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (btxt != null) {
                 gazettelist.setAdapter(gazetteAdapter);
                 progressDialog.dismiss();
                 progressBar.setVisibility(View.GONE);
@@ -296,7 +332,7 @@ public class WeeklyGazettes extends Activity {
                         Dialog.dismiss();
                     }
                 });
-                checkinternet.setMessage("Check your network connection navigation");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -358,6 +394,22 @@ public class WeeklyGazettes extends Activity {
 
         }catch (Exception e){}
         super.onBackPressed();
+    }
+
+    private boolean dataconnected() {
+        boolean dataConnected=false;
+        boolean wifiIsAvailable,mobileDataIsAvailable;
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            wifiIsAvailable = networkInfo.isConnected();
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            mobileDataIsAvailable = networkInfo.isConnected();
+            dataConnected=wifiIsAvailable||mobileDataIsAvailable;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dataConnected;
     }
     }
 

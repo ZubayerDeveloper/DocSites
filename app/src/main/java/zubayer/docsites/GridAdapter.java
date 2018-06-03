@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ public class GridAdapter extends ArrayAdapter<String> {
     Activity context;
     LayoutInflater inflater;
     public Typeface font;
+    int density;
 
     public GridAdapter(@NonNull Activity context, ArrayList<String> heading,ArrayList<String> description,ArrayList<String> contents) {
         super(context, R.layout.grid,heading);
@@ -32,6 +34,7 @@ public class GridAdapter extends ArrayAdapter<String> {
         this.description=description;
         this.contents=contents;
         this.context=context;
+        density = context.getResources().getDisplayMetrics().densityDpi;
         font= Typeface.createFromAsset(context.getAssets(),"kalpurush.ttf");
     }
 
@@ -44,6 +47,13 @@ public class GridAdapter extends ArrayAdapter<String> {
         TextView elaborate=(TextView)row.findViewById(R.id.bsmmu2);
         TextView hint=(TextView)row.findViewById(R.id.bsmmu3);
         title.setText(heading.get(position));
+
+        if (density < DisplayMetrics.DENSITY_HIGH) {
+            title.setTextSize(25);
+            elaborate.setTextSize(8);
+            hint.setTextSize(6);
+        }
+
         elaborate.setText(description.get(position));
         hint.setText(contents.get(position));
         title.setTypeface(font);
@@ -63,10 +73,22 @@ public class GridAdapter extends ArrayAdapter<String> {
             case 5: title.setTextColor(Color.parseColor("#E8A40A"));
                 break;
             case 6: title.setTextColor(Color.parseColor("#0689BA"));
-                title.setTextSize(38);
+                if (density < DisplayMetrics.DENSITY_HIGH) {
+                    title.setTextSize(25);
+                }else {
+                    title.setTextSize(38);
+                }
+
                 break;
             case 7: title.setTextColor(Color.parseColor("#571500"));
-                    title.setTextSize(25);
+
+                    if (density < DisplayMetrics.DENSITY_HIGH) {
+                title.setText("MBBS/BDS");
+                hint.setText(" \n ");
+            }else {
+                        title.setTextSize(25);
+                    title.setText("MBBS/BDS"+"\n");
+                    }
                 break;
         }
         return row;

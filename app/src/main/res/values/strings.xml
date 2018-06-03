@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>3.2.3</b></string>
+    <string name="app_name">DocSites <b>3.2.5</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>
@@ -10,7 +10,7 @@
     <string name="hmohf">MOHFW</string>
     <string name="hbpsc">BPSC</string>
     <string name="hgazettes">Gazette</string>
-    <string name="hresult">MBBS/BDS\nAdmission</string>
+    <string name="hresult">MBBS/BDS</string>
 
     <!--button description স্বাস্থ্য ও পরিবার পরিকল্পনা\nমন্ত্রণালয়-->
     <string name="bsmmu">বঙ্গবন্ধু শেখ মুজিব মেডিকেল\nবিশ্ববিদ্যালয়</string>

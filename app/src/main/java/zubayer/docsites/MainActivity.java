@@ -29,6 +29,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
@@ -411,13 +412,28 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (url != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         buttonTexts.clear();
@@ -450,13 +466,28 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (url != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         buttonTexts.clear();
@@ -489,14 +520,29 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (url != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
                 dghsHomeLinks2();
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         buttonTexts.clear();
@@ -529,14 +575,29 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (url != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
                 dghsHomeLinks3();
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         buttonTexts.clear();
@@ -569,13 +630,28 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (url != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not Responding");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         buttonTexts.clear();
@@ -608,13 +684,28 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (btxt != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         buttonTexts.clear();
@@ -703,12 +794,27 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (uRl != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }else if (uRl != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
                 checkinternet = builder.create();
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.setCancelable(false);
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -1747,5 +1853,21 @@ public class MainActivity extends Activity {
         notificationSummery = (ImageButton) findViewById(R.id.notificationSumery);
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
         showNotificationNumber.setVisibility(View.GONE);
+    }
+
+    private boolean dataconnected() {
+        boolean dataConnected=false;
+        boolean wifiIsAvailable,mobileDataIsAvailable;
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            wifiIsAvailable = networkInfo.isConnected();
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            mobileDataIsAvailable = networkInfo.isConnected();
+            dataConnected=wifiIsAvailable||mobileDataIsAvailable;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dataConnected;
     }
 }

@@ -62,7 +62,7 @@ public class Browser extends Activity {
         filterUrlPDF();
         if (urls.contains("pdf")) {
             downloadButton.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             downloadButton.setVisibility(View.GONE);
         }
         website.setWebViewClient(new WebViewClient() {
@@ -93,15 +93,15 @@ public class Browser extends Activity {
                 try {
                     request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
                     DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                if (dm != null) {
-                    dm.enqueue(request);
-                }
-                }catch (Exception e){
+                    if (dm != null) {
+                        dm.enqueue(request);
+                    }
+                } catch (Exception e) {
                     try {
                         Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                         startActivity(intentNew);
-                    }catch (ActivityNotFoundException eee){
-                        builder=new AlertDialog.Builder(Browser.this);
+                    } catch (ActivityNotFoundException eee) {
+                        builder = new AlertDialog.Builder(Browser.this);
                         checkinternet = builder.create();
                         checkinternet.setCancelable(true);
                         checkinternet.setMessage("You need to download Google Chrome");
@@ -118,13 +118,38 @@ public class Browser extends Activity {
                         });
                         checkinternet.show();
                     }
-            }
+                }
             }
         });
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                website.loadUrl(urls);
+                if (Build.VERSION.SDK_INT > 23) {
+                    try {
+                        Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
+                        startActivity(intentNew);
+                    } catch (ActivityNotFoundException e) {
+                        builder = new AlertDialog.Builder(Browser.this);
+                        checkinternet = builder.create();
+                        checkinternet.setCancelable(true);
+                        checkinternet.setMessage("You need to download Google Chrome");
+                        checkinternet.setButton("Download", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, int id) {
+                                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
+                                startActivity(i);
+                            }
+                        });
+                        checkinternet.setButton3("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(final DialogInterface dialog, int id) {
+
+                            }
+                        });
+                        checkinternet.show();
+                    }
+                }else {
+                    website.loadUrl(urls);
+                }
+
             }
         });
     }
@@ -168,8 +193,8 @@ public class Browser extends Activity {
                         try {
                             Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
                             startActivity(intentNew);
-                        }catch (ActivityNotFoundException e){
-                            builder=new AlertDialog.Builder(Browser.this);
+                        } catch (ActivityNotFoundException e) {
+                            builder = new AlertDialog.Builder(Browser.this);
                             checkinternet = builder.create();
                             checkinternet.setCancelable(true);
                             checkinternet.setMessage("You need to download Google Chrome");
@@ -266,7 +291,31 @@ public class Browser extends Activity {
         if (urls.contains("pdf")) {
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
-        } else  {
+        } else if (urls.contains("download")) {
+            if (Build.VERSION.SDK_INT > 23) {
+                try {
+                    Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
+                    startActivity(intentNew);
+                } catch (ActivityNotFoundException e) {
+                    builder = new AlertDialog.Builder(Browser.this);
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(true);
+                    checkinternet.setMessage("You need to download Google Chrome");
+                    checkinternet.setButton("Download", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
+                            startActivity(i);
+                        }
+                    });
+                    checkinternet.setButton3("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+
+                        }
+                    });
+                    checkinternet.show();
+                }
+            }
+        } else {
             website.loadUrl(urls);
             loadProgressBar();
         }

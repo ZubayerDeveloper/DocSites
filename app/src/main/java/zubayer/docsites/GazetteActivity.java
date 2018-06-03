@@ -235,7 +235,17 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                    }
+                });
+
+                checkinternet.show();
+            }else if (btxt != null) {
                 yearUrl = yearUrlNext;
                 executeYearNext();
                 btxt = null;
@@ -248,7 +258,7 @@ public class GazetteActivity extends Activity {
                         loadYearAgain();
                     }
                 });
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -271,7 +281,18 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+
+                    }
+                });
+
+                checkinternet.show();
+            }else if (btxt != null) {
                 yearList.setAdapter(yearAdapter);
                 progressDialog.dismiss();
                 resultArray.add(getString(R.string.text));
@@ -284,7 +305,7 @@ public class GazetteActivity extends Activity {
                         loadYearAgain();
                     }
                 });
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -305,7 +326,17 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                    }
+                });
+
+                checkinternet.show();
+            }else if (btxt != null) {
                 progressDialog.dismiss();
                 it = monthUrls.iterator();
                 name = monthArray.iterator();
@@ -320,7 +351,7 @@ public class GazetteActivity extends Activity {
                         loadYearAgain();
                     }
                 });
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -343,7 +374,17 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (btxt != null) {
+            if(!dataconnected()){
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                    }
+                });
+
+                checkinternet.show();
+            }else if (btxt != null) {
                 resultList.setAdapter(resultAdapter);
                 progressDialog.dismiss();
                 if (it.hasNext()) {
@@ -367,7 +408,7 @@ public class GazetteActivity extends Activity {
                         progressDialog.dismiss();
                     }
                 });
-                checkinternet.setMessage("Check your network connection");
+                checkinternet.setMessage("Website is not responding");
                 checkinternet.show();
             }
         }
@@ -593,5 +634,21 @@ public class GazetteActivity extends Activity {
         Toast toast = makeText(GazetteActivity.this, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    private boolean dataconnected() {
+        boolean dataConnected=false;
+        boolean wifiIsAvailable,mobileDataIsAvailable;
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            wifiIsAvailable = networkInfo.isConnected();
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            mobileDataIsAvailable = networkInfo.isConnected();
+            dataConnected=wifiIsAvailable||mobileDataIsAvailable;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dataConnected;
     }
 }
