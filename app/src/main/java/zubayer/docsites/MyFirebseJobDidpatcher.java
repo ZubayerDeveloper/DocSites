@@ -1,16 +1,13 @@
 package zubayer.docsites;
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.job.JobParameters;
-import android.app.job.JobService;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,6 +16,9 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
+
+import com.firebase.jobdispatcher.JobParameters;
+import com.firebase.jobdispatcher.JobService;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,15 +32,14 @@ import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-public class OrioJobScheduler extends JobService {
+public class MyFirebseJobDidpatcher extends JobService {
     String btxt, url, paramUrl, paramTagForText, paramTagForLink, paramLink, previousSaved, previousSaved2,
             filterContent, filterContent2, driveViewer, title, text, date;
     int textMin, linkBegin;
     SharedPreferences preferences;
     boolean checked, enableSound, enableVibrate, wifiAvailable, mobileDataAvailable;
-    PendingIntent pendingIntent;
-    Intent myIntent, summeryIntent;
-    NotificationParser notificationParser = new NotificationParser();
+    PendingIntent pendingIntent, pendingSetting;
+    Intent myIntent, settingIntent;
     ArrayList<String> buttonTexts2 = new ArrayList<>();
     ArrayList<String> urls2 = new ArrayList<>();
     ArrayList<String> buttonTexts = new ArrayList<>();
@@ -50,6 +49,7 @@ public class OrioJobScheduler extends JobService {
     ArrayList<String> notificationTexts = new ArrayList<>();
     ArrayList<String> notificationUrls = new ArrayList<>();
     ArrayList<String> missedNotifications = new ArrayList<>();
+    NotificationParser notificationParser;
 
     @Override
     public void onCreate() {
@@ -60,30 +60,27 @@ public class OrioJobScheduler extends JobService {
             readDate();
             readText();
             readUrl();
-            SharedPreferences oldsize=getSharedPreferences("oldNotificationCount",Context.MODE_PRIVATE);
-            oldsize.edit().putInt("oldsize",notificationUrls.size()).apply();
+            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
+            oldsize.edit().putInt("oldsize", notificationUrls.size()).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
     @Override
-    public boolean onStartJob(final JobParameters jobParameters) {
+    public boolean onStartJob(final JobParameters job) {
         notificationParser = new NotificationParser() {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                jobFinished(jobParameters, false);
+                jobFinished(job, true);
                 try {
-                    AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    Intent newIntent = new Intent(OrioJobScheduler.this, NotificationReceiver.class);
-                    pendingIntent = PendingIntent.getBroadcast(OrioJobScheduler.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    manager.cancel(pendingIntent);
-                    if(notificationTexts.size()!=0){
+                    if (notificationTexts.size() != 0) {
 //                        addToSymmery("", "", notificationDate(), "");
                         saveState();
-                        SharedPreferences oldsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
-                        oldsize.edit().putInt("finalsize",notificationUrls.size()).apply();
+                        SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+                        oldsize.edit().putInt("finalsize", notificationUrls.size()).apply();
                     }
                     clearArray();
                 } catch (Exception e) {
@@ -95,16 +92,8 @@ public class OrioJobScheduler extends JobService {
     }
 
     @Override
-    public boolean onStopJob(JobParameters jobParameters) {
-        notificationParser.cancel(true);
-
-//        summeryIntent.setAction(Intent.ACTION_MAIN);
-//        summeryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-//        summeryIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        ComponentName cn=new ComponentName(this,NotificationSummery.class);
-//        summeryIntent.setComponent(cn);
-//        startActivity(summeryIntent);
-        return false;
+    public boolean onStopJob(JobParameters job) {
+        return true;
     }
 
     public class NotificationParser extends AsyncTask<Void, Void, Void> {
@@ -140,10 +129,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, "BSMMU:Residency/Non-Residency", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 0, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 0, myIntent, 0);
                         notification("channel_0", "res", "Residency/Non-Residency", btxt, 0);
                         preferences.edit().putString("residency", btxt).apply();
 
@@ -168,10 +157,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, "BSMMU Notice", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 1, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 1, myIntent, 0);
                         notification("channel_1", "notice", "BSMMU Notice", btxt, 1);
                         preferences.edit().putString("bsmmuNotice", btxt).apply();
 
@@ -196,10 +185,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, "DGHS", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 2, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 2, myIntent, 0);
                         notification("channel_2", "dghs", "New from DGHS", btxt, 2);
                         preferences.edit().putString("dghs", btxt).apply();
 
@@ -224,10 +213,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, "Departmental Exam", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 3, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 3, myIntent, 0);
                         notification("channel_3", "dept", "Departmental Exam Notice", btxt, 3);
                         preferences.edit().putString("dept", btxt).apply();
 
@@ -252,10 +241,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, "Senior Scale Exam", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 4, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 4, myIntent, 0);
                         notification("channel_4", "senior", "Senior Scale Exam Notice", btxt, 4);
                         preferences.edit().putString("senior", btxt).apply();
 
@@ -280,10 +269,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, "BCS Exam", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", driveViewer + url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 5, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 5, myIntent, 0);
                         notification("channel_5", "bcs", "BPSC:BCS Exam", btxt, 5);
                         preferences.edit().putString("bcs", btxt).apply();
 
@@ -303,10 +292,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(getString(R.string.regideptStarted), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 61, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 61, myIntent, 0);
                         notification("channel_61", "deptstarts", "Departmental Exam", getString(R.string.regideptStarted), 61);
 
                         preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
@@ -328,10 +317,10 @@ public class OrioJobScheduler extends JobService {
                             addToSymmery(getString(R.string.regiExpired), "http://dept.bpsc.gov.bd/node/apply", "Departmental Exam", notificationDate());
                             saveState();
                             finalNotificationCount();
-                            myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                            myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                             myIntent.putExtra("value", "http://dept.bpsc.gov.bd/node/apply");
                             myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 6, myIntent, 0);
+                            pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 6, myIntent, 0);
                             notification("channel_6", "deptexpires", "Departmental Exam", getString(R.string.regiExpired), 6);
                             preferences.edit().putString("deptExpired", btxt).apply();
 
@@ -352,10 +341,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(getString(R.string.regiseniortext), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 71, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 71, myIntent, 0);
                         notification("channel_71", "seniorstarts", "Senior Scale Exam", getString(R.string.regiseniortext), 71);
 
                         preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
@@ -377,10 +366,10 @@ public class OrioJobScheduler extends JobService {
                             addToSymmery(getString(R.string.regiExpired), "http://snsc.bpsc.gov.bd/node/apply", "Senior Scale Exam", notificationDate());
                             saveState();
                             finalNotificationCount();
-                            myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                            myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                             myIntent.putExtra("value", "http://snsc.bpsc.gov.bd/node/apply");
                             myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 7, myIntent, 0);
+                            pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 7, myIntent, 0);
                             notification("channel_7", "seniorexires", "Senior Scale Exam", getString(R.string.regiExpired), 7);
                             preferences.edit().putString("seniorExpired", btxt).apply();
 
@@ -407,10 +396,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.assistantSurgeonSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 8, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 8, myIntent, 0);
                         notification("channel_8", "assistantSurgeon", getString(R.string.assistantSurgeonSetting), btxt, 8);
                         preferences.edit().putString("assistantSurgeon", btxt).apply();
 
@@ -436,10 +425,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.juniorConsultantSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 9, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 9, myIntent, 0);
                         notification("channel_9", "juniorConsultant", getString(R.string.juniorConsultantSetting), btxt, 9);
                         preferences.edit().putString("juniorConsultant", btxt).apply();
 
@@ -467,10 +456,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 10, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 10, myIntent, 0);
                         notification("channel_10", "seniorConsultant", getString(R.string.seniorConsultantSetting), btxt, 10);
                         preferences.edit().putString("seniorConsultant", btxt).apply();
 
@@ -489,10 +478,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting) + ":", notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 101, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 101, myIntent, 0);
                         notification("channel_101", "seniorConsultant2", getString(R.string.seniorConsultantSetting), btxt, 101);
                         preferences.edit().putString("seniorConsultant2", btxt).apply();
 
@@ -518,10 +507,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.assistantProfessorSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 11, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 11, myIntent, 0);
                         notification("channel_11", "assistantProfessor", getString(R.string.assistantProfessorSetting), btxt, 11);
                         preferences.edit().putString("assistantProfessor", btxt).apply();
 
@@ -547,10 +536,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.associateProfessorSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 12, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 12, myIntent, 0);
                         notification("channel_12", "associateProfessor", getString(R.string.associateProfessorSetting), btxt, 12);
                         preferences.edit().putString("associateProfessor", btxt).apply();
 
@@ -576,10 +565,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.professorSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 13, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 13, myIntent, 0);
                         notification("channel_13", "professor", getString(R.string.professorSetting), btxt, 13);
                         preferences.edit().putString("professor", btxt).apply();
 
@@ -605,10 +594,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.civilSurgeonSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 14, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 14, myIntent, 0);
                         notification("channel_14", "civilSurgeon", getString(R.string.civilSurgeonSetting), btxt, 14);
                         preferences.edit().putString("civilSurgeon", btxt).apply();
 
@@ -634,10 +623,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.adhocSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.putExtra("value", url);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 15, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 15, myIntent, 0);
                         notification("channel_15", "adhoc", getString(R.string.adhocSetting), btxt, 15);
                         preferences.edit().putString("adhoc", btxt).apply();
 
@@ -664,10 +653,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.mohfwSetting), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 16, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 16, myIntent, 0);
                         notification("channel_16", "mohfw", getString(R.string.mohfwSetting), btxt, 16);
                         preferences.edit().putString("mohfw", btxt).apply();
 
@@ -693,10 +682,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.deputationOrders), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 17, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 17, myIntent, 0);
                         notification("channel_17", "deputation", getString(R.string.deputationOrders), btxt, 17);
                         preferences.edit().putString("deputation", btxt).apply();
 
@@ -723,10 +712,10 @@ public class OrioJobScheduler extends JobService {
                         addToSymmery(btxt, url, getString(R.string.leaveOpion), notificationDate());
                         saveState();
                         finalNotificationCount();
-                        myIntent = new Intent(OrioJobScheduler.this, Browser.class);
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
-                        pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 18, myIntent, 0);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 18, myIntent, 0);
                         notification("channel_18", "leave", getString(R.string.leaveOpion), btxt, 18);
                         preferences.edit().putString("leave", btxt).apply();
 
@@ -744,8 +733,8 @@ public class OrioJobScheduler extends JobService {
         paramTagForText = "a";
         paramTagForLink = "a";
         paramLink = "abs:href";
-        textMin = 146;
-        linkBegin = 146;
+        textMin = 147;
+        linkBegin = 147;
     }
 
     private void bsmmuNotice() {
@@ -914,7 +903,7 @@ public class OrioJobScheduler extends JobService {
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
-            Notification notification = new NotificationCompat.Builder(OrioJobScheduler.this)
+            Notification notification = new NotificationCompat.Builder(MyFirebseJobDidpatcher.this)
                     .setContentTitle(title)
                     .setContentText(text)
                     .setColor(0xff990000)
@@ -949,7 +938,58 @@ public class OrioJobScheduler extends JobService {
                 wakeLock.acquire(100);
             }
             notificationManager.notify(notify_id, notification);
+        } else {
+            notification2(title, text, notify_id);
         }
+    }
+
+    private void notification2(String title, String text, int id) {
+        NotificationCompat.BigTextStyle bigTextStyle;
+        bigTextStyle = new NotificationCompat.BigTextStyle();
+        bigTextStyle.setBigContentTitle(title);
+        bigTextStyle.bigText(text);
+
+        settingIntent = new Intent(this, Settings.class);
+        settingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pendingSetting = PendingIntent.getActivity(this, 1, settingIntent, 0);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle(title)
+                .setContentText(text)
+                .addAction(0, "Turn off notification", pendingSetting)
+                .setColor(0xff990000)
+                .setVibrate(new long[]{0, 300, 300, 300})
+                .setLights(Color.GREEN, 1000, 1000)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setWhen(System.currentTimeMillis())
+                .setPriority(Notification.PRIORITY_MAX)
+                .setContentIntent(pendingIntent)
+                .setStyle(bigTextStyle)
+                .setSmallIcon(R.mipmap.ic_launcher);
+        notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
+        if (enableSound) {
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
+            mp.start();
+        }
+
+        if (enableVibrate) {
+            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+            if (vibrator != null) {
+                vibrator.vibrate(1000);
+                vibrator.vibrate(1000);
+            }
+        }
+        PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = null;
+        if (pm != null) {
+            wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                    | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                    | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+        }
+        if (wakeLock != null) {
+            wakeLock.acquire(100);
+        }
+        notificationManager.notify(id, notificationBuilder.build());
     }
 
     public void checkConnectivity() {
@@ -965,133 +1005,134 @@ public class OrioJobScheduler extends JobService {
             networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             mobileDataAvailable = networkInfo.isConnected();
             if (!wifiAvailable && !mobileDataAvailable) {
-                myIntent = new Intent(OrioJobScheduler.this, MainActivity.class);
+                myIntent = new Intent(MyFirebseJobDidpatcher.this, MainActivity.class);
                 myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                pendingIntent = PendingIntent.getActivity(OrioJobScheduler.this, 112, myIntent, 0);
+                pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 112, myIntent, 0);
                 notification("nodata", "dataNotFound", title, text, 113);
             }
         }
     }
-        private void saveState () {
-            try {
-                FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
-                ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                arrayoutput.writeObject(notificationHeadings);
-                arrayoutput.close();
-                write.close();
 
-            } catch (Exception e) {
-            }
-            try {
-                FileOutputStream write = openFileOutput("notificationDates", Context.MODE_PRIVATE);
-                ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                arrayoutput.writeObject(notificationDates);
-                arrayoutput.close();
-                write.close();
-            } catch (Exception e) {
-            }
-            try {
-                FileOutputStream write = openFileOutput("notificationTexts", Context.MODE_PRIVATE);
-                ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                arrayoutput.writeObject(notificationTexts);
-                arrayoutput.close();
-                write.close();
-            } catch (Exception e) {
-            }
-            try {
-                FileOutputStream write = openFileOutput("notificationUrls", Context.MODE_PRIVATE);
-                ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                arrayoutput.writeObject(notificationUrls);
-                arrayoutput.close();
-                write.close();
-            } catch (Exception e) {
-            }
+    private void saveState() {
+        try {
+            FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(notificationHeadings);
+            arrayoutput.close();
+            write.close();
+
+        } catch (Exception e) {
         }
-
-        private String notificationDate () {
-            long mydate = System.currentTimeMillis();
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy h:mm a");
-            date = sdf.format(mydate);
-            return date;
+        try {
+            FileOutputStream write = openFileOutput("notificationDates", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(notificationDates);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
         }
-
-        private void addToSymmery (String notifiactionText, String notificationUrl,
-                String notificationHeading, String notificationDate){
-            notificationTexts.add(0, notifiactionText);
-            notificationUrls.add(0, notificationUrl);
-            notificationDates.add(0, notificationDate);
-            notificationHeadings.add(0, notificationHeading);
+        try {
+            FileOutputStream write = openFileOutput("notificationTexts", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(notificationTexts);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
         }
-
-        private void clearArray () {
-            notificationTexts.clear();
-            notificationUrls.clear();
-            notificationDates.clear();
-            notificationHeadings.clear();
+        try {
+            FileOutputStream write = openFileOutput("notificationUrls", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(notificationUrls);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
         }
+    }
 
-        private void readHeading () {
-            try {
-                FileInputStream read = openFileInput("notificationHeadings");
-                ObjectInputStream readarray = new ObjectInputStream(read);
-                notificationHeadings = (ArrayList<String>) readarray.readObject();
-                readarray.close();
-                read.close();
-            } catch (Exception e) {
-            }
+    private String notificationDate() {
+        long mydate = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE dd MMM yyyy h:mm a");
+        date = sdf.format(mydate);
+        return date;
+    }
+
+    private void addToSymmery(String notifiactionText, String notificationUrl,
+                              String notificationHeading, String notificationDate) {
+        notificationTexts.add(0, notifiactionText);
+        notificationUrls.add(0, notificationUrl);
+        notificationDates.add(0, notificationDate);
+        notificationHeadings.add(0, notificationHeading);
+    }
+
+    private void clearArray() {
+        notificationTexts.clear();
+        notificationUrls.clear();
+        notificationDates.clear();
+        notificationHeadings.clear();
+    }
+
+    private void readHeading() {
+        try {
+            FileInputStream read = openFileInput("notificationHeadings");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationHeadings = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
         }
+    }
 
-        private void readDate () {
-            try {
-                FileInputStream read = openFileInput("notificationDates");
-                ObjectInputStream readarray = new ObjectInputStream(read);
-                notificationDates = (ArrayList<String>) readarray.readObject();
-                readarray.close();
-                read.close();
-            } catch (Exception e) {
-            }
+    private void readDate() {
+        try {
+            FileInputStream read = openFileInput("notificationDates");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationDates = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
         }
+    }
 
-        private void readText () {
-            try {
-                FileInputStream read = openFileInput("notificationTexts");
-                ObjectInputStream readarray = new ObjectInputStream(read);
-                notificationTexts = (ArrayList<String>) readarray.readObject();
-                readarray.close();
-                read.close();
-            } catch (Exception e) {
-            }
+    private void readText() {
+        try {
+            FileInputStream read = openFileInput("notificationTexts");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationTexts = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
         }
+    }
 
-        private void readUrl () {
-            try {
-                FileInputStream read = openFileInput("notificationUrls");
-                ObjectInputStream readarray = new ObjectInputStream(read);
-                notificationUrls = (ArrayList<String>) readarray.readObject();
-                readarray.close();
-                read.close();
-            } catch (Exception e) {
-            }
+    private void readUrl() {
+        try {
+            FileInputStream read = openFileInput("notificationUrls");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationUrls = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
         }
+    }
 
-        private void addToMissedNotificaton (String missedNotification){
-            missedNotifications.add(0, missedNotification);
+    private void addToMissedNotificaton(String missedNotification) {
+        missedNotifications.add(0, missedNotification);
+    }
+
+    private void saveMissedNotificationList() {
+        try {
+            FileOutputStream write = openFileOutput("missed", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(missedNotifications);
+            arrayoutput.close();
+            write.close();
+
+        } catch (Exception e) {
         }
-
-        private void saveMissedNotificationList () {
-            try {
-                FileOutputStream write = openFileOutput("missed", Context.MODE_PRIVATE);
-                ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-                arrayoutput.writeObject(missedNotifications);
-                arrayoutput.close();
-                write.close();
-
-            } catch (Exception e) {
-            }
-        }
+    }
 
     private void finalNotificationCount() {
-        SharedPreferences oldsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
-        oldsize.edit().putInt("finalsize",notificationUrls.size()).apply();
+        SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+        oldsize.edit().putInt("finalsize", notificationUrls.size()).apply();
     }
-    }
+}

@@ -32,6 +32,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -88,6 +95,7 @@ public class MainActivity extends Activity {
     FabSpeedDial fab;
     ImageButton notificationSummery;
     Button showNotificationNumber;
+    FirebaseJobDispatcher jobDispatcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +110,9 @@ public class MainActivity extends Activity {
         createAdView();
         checkStorage();
         checkApplaunched();
-        setAlarm();
+//        setAlarm();
+        stopFirebaseJobDispatcher();
+        setFirebaseJobDispatcher();
         setListView();
         buildAlertDialogue();
         checkAppUpdates();
@@ -152,9 +162,12 @@ public class MainActivity extends Activity {
                             checkinternet.show();
                             progressBar.setVisibility(View.GONE);
                         } else {
-                            pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                            manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-                            myToaster("Checking Notifications");
+                            try {
+                                stopFirebaseJobDispatcher();
+                                setFirebaseJobDispatcher();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                         break;
                 }
@@ -195,6 +208,29 @@ public class MainActivity extends Activity {
             }
         });
     }
+
+    private void stopFirebaseJobDispatcher() {
+        jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        try {
+            jobDispatcher.cancel("tags");
+        } catch (Exception e) {
+        }
+    }
+
+    private void setFirebaseJobDispatcher() {
+        jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Job job = jobDispatcher.newJobBuilder()
+                .setService(MyFirebseJobDidpatcher.class)
+                .setLifetime(Lifetime.FOREVER)
+                .setRecurring(true)
+                .setTag("tags")
+                .setTrigger(Trigger.executionWindow(5, 60 * 6))
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setReplaceCurrent(false)
+                .setConstraints(Constraint.ON_ANY_NETWORK).build();
+        jobDispatcher.mustSchedule(job);
+    }
+
 
     public boolean checkStorage() {
         if (Build.VERSION.SDK_INT >= 23) {
@@ -412,7 +448,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -427,7 +463,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (url != null) {
+            } else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
@@ -466,7 +502,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -481,7 +517,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (url != null) {
+            } else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
@@ -520,7 +556,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -535,7 +571,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (url != null) {
+            } else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
                 dghsHomeLinks2();
@@ -575,7 +611,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -590,7 +626,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (url != null) {
+            } else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
                 dghsHomeLinks3();
@@ -630,7 +666,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -645,7 +681,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (url != null) {
+            } else if (url != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
@@ -684,7 +720,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -699,7 +735,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (btxt != null) {
+            } else if (btxt != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
@@ -794,7 +830,7 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
@@ -809,7 +845,7 @@ public class MainActivity extends Activity {
 
                 checkinternet.show();
                 progressBar.setVisibility(View.GONE);
-            }else if (uRl != null) {
+            } else if (uRl != null) {
                 progressBar.setVisibility(View.GONE);
                 list.setAdapter(adapter);
             } else {
@@ -960,10 +996,10 @@ public class MainActivity extends Activity {
         paramTagForText = "a";
         paramTagForLink = "a";
         paramLink = "abs:href";
-        textMin = 146;
-        linkBegin = 146;
-        textMax = 153;
-        linkEnd = 153;
+        textMin = 147;
+        linkBegin = 147;
+        textMax = 154;
+        linkEnd = 154;
         position = 15;
         newline = "★★★";
         back.execute();
@@ -1829,11 +1865,11 @@ public class MainActivity extends Activity {
 
     private void readNotificationCount() {
         try {
-            SharedPreferences oldsize=getSharedPreferences("oldNotificationCount",Context.MODE_PRIVATE);
-            oldNotificatinSize=oldsize.getInt("oldsize",0);
+            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
+            oldNotificatinSize = oldsize.getInt("oldsize", 0);
 
-            SharedPreferences finalsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
-            finalNotificationSize=finalsize.getInt("finalsize",0);
+            SharedPreferences finalsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+            finalNotificationSize = finalsize.getInt("finalsize", 0);
 
             newNotification = finalNotificationSize - oldNotificatinSize;
 
@@ -1856,18 +1892,19 @@ public class MainActivity extends Activity {
     }
 
     private boolean dataconnected() {
-        boolean dataConnected=false;
-        boolean wifiIsAvailable,mobileDataIsAvailable;
+        boolean dataConnected = false;
+        boolean wifiIsAvailable, mobileDataIsAvailable;
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             wifiIsAvailable = networkInfo.isConnected();
             networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             mobileDataIsAvailable = networkInfo.isConnected();
-            dataConnected=wifiIsAvailable||mobileDataIsAvailable;
+            dataConnected = wifiIsAvailable || mobileDataIsAvailable;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return dataConnected;
     }
+
 }

@@ -7,8 +7,8 @@ android {
         applicationId "zubayer.docsites"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 33
-        versionName "3.2.5"
+        versionCode 34
+        versionName "3.2.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,6 +31,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.google.firebase:firebase-ads:15.0.1'
     implementation 'com.google.firebase:firebase-messaging:15.0.2'
+    implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     implementation 'me.anwarshahriar:calligrapher:1.0'
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
     testImplementation 'junit:junit:4.12'

@@ -27,6 +27,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.firebase.jobdispatcher.Constraint;
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -62,6 +69,7 @@ public class NotificationSummery extends Activity {
     AlarmManager manager;
     Intent newIntent;
     boolean wifiAvailable, mobileDataAvailable;
+    FirebaseJobDispatcher jobDispatcher;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -309,11 +317,12 @@ public class NotificationSummery extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 } else {
-                    manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    newIntent = new Intent(NotificationSummery.this, NotificationReceiver.class);
-                    newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    pendingIntent = PendingIntent.getBroadcast(NotificationSummery.this, 11, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                    try{
+                        stopFirebaseJobDispatcher();
+                        setFirebaseJobDispatcher();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                     myToaster("Checking Notifications");
                     finish();
                 }
@@ -340,5 +349,26 @@ public class NotificationSummery extends Activity {
         if (arrayName.size() > 200) {
             arrayName.remove(200);
         }
+    }
+
+    private void stopFirebaseJobDispatcher() {
+        jobDispatcher=new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        try{
+            jobDispatcher.cancel("tags");
+        }catch (Exception e){}
+    }
+
+    private void setFirebaseJobDispatcher() {
+        jobDispatcher=new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Job job=jobDispatcher.newJobBuilder()
+                .setService(MyFirebseJobDidpatcher.class)
+                .setLifetime(Lifetime.FOREVER)
+                .setRecurring(true)
+                .setTag("tags")
+                .setTrigger(Trigger.executionWindow(5,60*6))
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                .setReplaceCurrent(false)
+                .setConstraints(Constraint.ON_ANY_NETWORK).build();
+        jobDispatcher.mustSchedule(job);
     }
 }
