@@ -29,7 +29,6 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -47,8 +46,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -71,7 +68,7 @@ public class MainActivity extends Activity {
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
-            resultOptions, oldNotificatinCount;
+            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
@@ -81,12 +78,14 @@ public class MainActivity extends Activity {
     DghsParser2 dghsParser2;
     DghsParser3 dghsParser3;
     ServiceParser serviceParser;
+    CcdParser ccdParser;
+    CcdParser2 ccdParser2;
     UpdateChecker check;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2,
             notificationNumberText;
     int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize, finalNotificationSize, newNotification;
-    boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked,
+    boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
             bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable;
     MenuItem menuitem;
     Menu menu;
@@ -108,11 +107,11 @@ public class MainActivity extends Activity {
         manageSettings();
         loadButtonOptions();
         createAdView();
-        checkStorage();
+        checkStoragePermission();
         checkApplaunched();
 //        setAlarm();
         stopFirebaseJobDispatcher();
-        setFirebaseJobDispatcher();
+        setFirebaseJobDispatcher(300,21600);
         setListView();
         buildAlertDialogue();
         checkAppUpdates();
@@ -164,7 +163,8 @@ public class MainActivity extends Activity {
                         } else {
                             try {
                                 stopFirebaseJobDispatcher();
-                                setFirebaseJobDispatcher();
+                                setFirebaseJobDispatcher(0,21600);
+                                myToaster("Checking Notifications");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -217,14 +217,14 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void setFirebaseJobDispatcher() {
+    private void setFirebaseJobDispatcher(int when, int interval) {
         jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
         Job job = jobDispatcher.newJobBuilder()
                 .setService(MyFirebseJobDidpatcher.class)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
                 .setTag("tags")
-                .setTrigger(Trigger.executionWindow(5, 60 * 6))
+                .setTrigger(Trigger.executionWindow(when, interval))
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setReplaceCurrent(false)
                 .setConstraints(Constraint.ON_ANY_NETWORK).build();
@@ -232,7 +232,7 @@ public class MainActivity extends Activity {
     }
 
 
-    public boolean checkStorage() {
+    public boolean checkStoragePermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 return true;
@@ -255,13 +255,23 @@ public class MainActivity extends Activity {
             checkinternet.setCancelable(false);
             checkinternet.setButton("Allow permission", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    if (checkStorage()) {
+                    if (checkStoragePermission()) {
                         ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                     }
                 }
             });
             checkinternet.show();
         }
+    }
+
+    private void loadccdOptions() {
+        buttonTexts.addAll(ccdOptions);
+        Dialog.show();
+    }
+
+    private void loaddgfpOptions() {
+        buttonTexts.addAll(dgfpOptions);
+        Dialog.show();
     }
 
     private void loadResultOptions() {
@@ -302,6 +312,54 @@ public class MainActivity extends Activity {
     private void loadBsmmuOptions() {
         buttonTexts.addAll(bsmmuOptions);
         Dialog.show();
+    }
+
+    public void ccdExecutableTag(String Url, String TagForText, String tagForLink,
+                              String Attr, int begin, int end, int lBegin, int lEnd) {
+
+        paramUrl = Url;
+        paramTagForLink = tagForLink;
+        paramTagForText = TagForText;
+        paramLink = Attr;
+        textMin = begin;
+        textMax = end;
+        try {
+            Document doc = Jsoup.connect(Url).get();
+            Elements links = doc.select(TagForText);
+            for (int i = begin; i < end; i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.select("a").attr(Attr);
+                buttonTexts.add(btxt);
+                urls.add(url);
+            }
+            buttonTexts.add(0,getString(R.string.homePage));
+            urls.add(0,"http://www.badas-dlp.org/");
+        } catch (Exception e) {
+        }
+    }
+
+    public void ccdExecutableTag2(String Url, String TagForText, String tagForLink,
+                                 String Attr, int begin, int end, int lBegin, int lEnd) {
+
+        paramUrl = Url;
+        paramTagForLink = tagForLink;
+        paramTagForText = TagForText;
+        paramLink = Attr;
+        textMin = begin;
+        textMax = end;
+        try {
+            Document doc = Jsoup.connect(Url).get();
+            Elements links = doc.select(TagForText);
+            for (int i = begin; i < end; i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = "http://www.badas-dlp.org/";
+                buttonTexts.add(btxt);
+                urls.add(url);
+            }
+        } catch (Exception e) {
+        }
     }
 
     public void bpscTag(String Url, String TagForText, String tagForLink,
@@ -428,6 +486,117 @@ public class MainActivity extends Activity {
 
 
         } catch (Exception e) {
+        }
+    }
+
+    class CcdParser extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            ccdExecutableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            buttonTexts.clear();
+            urls.clear();
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+
+            if (!dataconnected()) {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            } else if (url != null) {
+                progressBar.setVisibility(View.GONE);
+                list.setAdapter(adapter);
+                ccdNotices2();
+            } else {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    class CcdParser2 extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            ccdExecutableTag2(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            buttonTexts.clear();
+            urls.clear();
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+
+            if (!dataconnected()) {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            } else if (url != null) {
+                progressBar.setVisibility(View.GONE);
+                list.setAdapter(adapter);
+            } else {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        buttonTexts.clear();
+                        urls.clear();
+                        url = null;
+                        Dialog.dismiss();
+                    }
+                });
+
+                checkinternet.show();
+                progressBar.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -1311,6 +1480,91 @@ public class MainActivity extends Activity {
         browser(pdfFilter);
     }
 
+    private void dgfpHome() {
+        pdfFilter = "http://dgfp.gov.bd/";
+        browser(pdfFilter);
+    }
+
+    private void ccdHome() {
+        pdfFilter = "http://www.badas-dlp.org/";
+        browser(pdfFilter);
+    }
+
+    private void ccdNotices1() {
+        ccdParser = new CcdParser();
+        paramUrl = "http://www.badas-dlp.org/";
+        paramTagForText = "tr td a";
+        paramTagForLink = "tr td a";
+        paramLink = "abs:href";
+        textMin = 9;
+        linkBegin = 9;
+        textMax = 12;
+        linkEnd = 12;
+        ccdParser.execute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void ccdNotices2() {
+        ccdParser2 = new CcdParser2();
+        paramUrl = "http://www.badas-dlp.org/";
+        paramTagForText = "tr td p";
+        paramTagForLink = "tr td p";
+        paramLink = "abs:href";
+        textMin = 2;
+        textMax = 3;
+        linkBegin = 2;
+        linkEnd = 3;
+        position = 5;
+        ccdParser2.execute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void dgfpOrder() {
+        bpscParser = new BpscParser();
+        paramUrl = "http://dgfp.gov.bd/site/view/office_order/অফিস-আদেশ";
+        paramTagForText = "tr";
+        paramTagForLink = "tr td a";
+        paramLink = "abs:href";
+        textMin = 0;
+        textMax = 122;
+        linkBegin = 0;
+        linkEnd = 123;
+        position = 125;
+        bpscParser.execute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void dgfpNotice() {
+        bpscParser = new BpscParser();
+        paramUrl = "http://dgfp.gov.bd/site/view/notices/নোটিশ";
+        paramTagForText = "tr";
+        paramTagForLink = "tr td a";
+        paramLink = "abs:href";
+        textMin = 0;
+        textMax = 122;
+        linkBegin = 0;
+        linkEnd = 123;
+        position = 125;
+        bpscParser.execute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void dgfpNOC() {
+        bpscParser = new BpscParser();
+        paramUrl = "http://dgfp.gov.bd/site/view/publications/এনওসি /এনওসি";
+        paramTagForText = "tr";
+        paramTagForLink = "tr td a";
+        paramLink = "abs:href";
+        textMin = 1;
+        textMax = 122;
+        linkBegin = 0;
+        linkEnd = 123;
+        position = 125;
+        bpscParser.execute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+
     public void browser(String inurl) {
         final String uurl = inurl;
         try {
@@ -1364,6 +1618,8 @@ public class MainActivity extends Activity {
         selectDeselect("adhocSetting", "adhocChecked");
         selectDeselect("mohfwSetting", "mohfwChecked");
         selectDeselect("deputationSetting", "deputationChecked");
+        selectDeselect("dgfpSetting", "dgfpChecked");
+        selectDeselect("ccdSetting", "ccdChecked");
         selectDeselect("leaveSetting", "leaveChecked");
         selectDeselect("appLaunched", "appLaunchedchecked");
     }
@@ -1428,6 +1684,8 @@ public class MainActivity extends Activity {
         String[] gazetteOption = getResources().getStringArray(R.array.gazetteOptions);
         String[] bmdcOption = getResources().getStringArray(R.array.bmdcOptions);
         String[] resultsOption = getResources().getStringArray(R.array.resultsOption);
+        String[] dgfpOption = getResources().getStringArray(R.array.dgfpOptions);
+//        String[] ccdOption = getResources().getStringArray(R.array.ccdOptions);
         driveViewer = "https://docs.google.com/viewer?url=";
         buttonTexts = new ArrayList<>();
         buttonTexts2 = new ArrayList<>();
@@ -1440,6 +1698,8 @@ public class MainActivity extends Activity {
         gazetteOptions = new ArrayList<>();
         bmdcOptions = new ArrayList<>();
         resultOptions = new ArrayList<>();
+        dgfpOptions = new ArrayList<>();
+        ccdOptions = new ArrayList<>();
         oldNotificatinCount = new ArrayList<>();
         Collections.addAll(bsmmuOptions, bsmmuOption);
         Collections.addAll(bcpsOptions, bcpsOption);
@@ -1449,6 +1709,8 @@ public class MainActivity extends Activity {
         Collections.addAll(gazetteOptions, gazetteOption);
         Collections.addAll(bmdcOptions, bmdcOption);
         Collections.addAll(resultOptions, resultsOption);
+        Collections.addAll(dgfpOptions, dgfpOption);
+//        Collections.addAll(ccdOptions, ccdOption);
     }
 
     private void manageSettings() {
@@ -1514,7 +1776,7 @@ public class MainActivity extends Activity {
         Dialog.setCancelable(false);
         Dialog.setButton("Close", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
-                bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked = false;
+                bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked=ccdClicked=dgfpClicked = false;
                 buttonTexts.clear();
                 urls.clear();
                 progressBar.setVisibility(View.GONE);
@@ -1530,7 +1792,7 @@ public class MainActivity extends Activity {
     }
 
     private void setListView() {
-        bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked = false;
+        bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked=ccdClicked=dgfpClicked = false;
         adapter = new MyAdapter(MainActivity.this, buttonTexts, urls);
         m = getLayoutInflater().inflate(R.layout.listview, null);
         list = (ListView) m.findViewById(R.id.ListView);
@@ -1803,6 +2065,26 @@ public class MainActivity extends Activity {
                         break;
                 }
             }
+            if (dgfpClicked) {
+                switch (position) {
+                    case 0:
+                        dgfpHome();
+                        break;
+                    case 1:
+                        buttonTexts.clear();
+                        dgfpOrder();
+                        break;
+                    case 2:
+                        buttonTexts.clear();
+                        dgfpNotice();
+                        break;
+                    case 3:
+                        buttonTexts.clear();
+                        dgfpNOC();
+                        break;
+                }
+            }
+
         } else {
             try {
                 for (int i = 0; i < urls.size(); i++) {
@@ -1851,15 +2133,28 @@ public class MainActivity extends Activity {
                 check.execute();
                 break;
             case 6:
+                loaddgfpOptions();
+                dgfpClicked = true;
+                check.execute();
+                break;
+            case 7:
+                loadccdOptions();
+                ccdClicked = true;
+                ccdNotices1();
+                check.execute();
+
+                break;
+            case 8:
                 loadBMDCOptions();
                 bmdcClicked = true;
                 check.execute();
                 break;
-            case 7:
+            case 9:
                 loadResultOptions();
                 resultsClicked = true;
                 check.execute();
                 break;
+
         }
     }
 

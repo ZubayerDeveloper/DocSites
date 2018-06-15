@@ -72,7 +72,11 @@ public class GridAdapter extends ArrayAdapter<String> {
                 break;
             case 5: title.setTextColor(Color.parseColor("#E8A40A"));
                 break;
-            case 6: title.setTextColor(Color.parseColor("#0689BA"));
+            case 6: title.setTextColor(Color.parseColor("#009990"));
+                break;
+            case 7: title.setTextColor(Color.parseColor("#0005f0"));
+                break;
+            case 8: title.setTextColor(Color.parseColor("#0689BA"));
                 if (density < DisplayMetrics.DENSITY_HIGH) {
                     title.setTextSize(25);
                 }else {
@@ -80,7 +84,7 @@ public class GridAdapter extends ArrayAdapter<String> {
                 }
 
                 break;
-            case 7: title.setTextColor(Color.parseColor("#571500"));
+            case 9: title.setTextColor(Color.parseColor("#571500"));
 
                     if (density < DisplayMetrics.DENSITY_HIGH) {
                 title.setText("MBBS/BDS");

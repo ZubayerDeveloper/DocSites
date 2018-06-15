@@ -11,6 +11,8 @@
     <string name="hbpsc">BPSC</string>
     <string name="hgazettes">Gazette</string>
     <string name="hresult">MBBS/BDS</string>
+    <string name="hdgfp">DGFP</string>
+    <string name="hccd">CCD</string>
 
     <!--button description স্বাস্থ্য ও পরিবার পরিকল্পনা\nমন্ত্রণালয়-->
     <string name="bsmmu">বঙ্গবন্ধু শেখ মুজিব মেডিকেল\nবিশ্ববিদ্যালয়</string>
@@ -21,8 +23,22 @@
     <string name="result">মেডিকেল ও ডেন্টাল\nভর্তি পরীক্ষার ফলাফল</string>
     <string name="bcps">Bangladesh College of\nPhysicians and Surgeons</string>
     <string name="bmdc">Bangladesh Medical and\nDental Council</string>
+    <string name="dgpf">পরিবার পরিকল্পনা অধিদপ্তর\n</string>
+    <string name="ccd">Certificate Course\non Diabetology</string>
 
     <string name="homePage">Home page</string>
+
+    <!--buttonHints-->
+    <string name="bsmmuHints">Residency, non-Residency,\nNotice</string>
+    <string name="bcpsHints">Guidelines, pdf forms\nFCPS, MCPS Results</string>
+    <string name="dghsHints">বদলি/পদায়ন, HRM,\nবুনিয়াদি প্রশিক্ষণ</string>
+    <string name="mohfwHints">ডেপুটেশন নীতিমালা ২০১৩\nবিভিন্ন কোর্সে আসন সংখ্যা</string>
+    <string name="bpscHints">BCS, Departmental exam,\nSenior Scale Exam</string>
+    <string name="gazetteHints">সিনিয়র স্কেল, ডিপার্টমেন্টাল,\nচাকুরি স্থায়ীকরণ</string>
+    <string name="bmdcHints">Find Registered Doctor\nRegistration/renewal forms</string>
+    <string name="resultsHints"> </string>
+    <string name="dgfpHints">অফিস আদেশ, নোটিশ\nএনওসি</string>
+    <string name="ccdHints">Admission, Exam and\nother Notices</string>
 
     <!--bsmmuOptions-->
     <string name="residency">Residency/Non Residency</string>
@@ -71,20 +87,20 @@
     <string name="mbbs">Results of MBBS</string>
     <string name="bds">Results of BDS</string>
 
+    <!--dgfpOption-->
+    <string name="dgfporder">অফিস আদেশ</string>
+    <string name="dgfpnotice">নোটিশ</string>
+    <string name="dgfpnoc">এনওসি</string>
+
+    <!--ccdOption-->
+    <string name="ccdHome">Results of MBBS</string>
+    <string name="ccdNotices">Admission, Exam and Class Schedule</string>
+
     <!--gazetteOptins-->
     <string name="seniorScaleOption"><b>সিনিয়র স্কেল পরীক্ষার গেজেট</b></string>
     <string name="departmentalOption"><b>ডিপার্টমেন্টাল পরীক্ষার গেজেট</b></string>
     <string name="serviceConfirmOption"><b>চাকুরি স্থায়ীকরণের গেজেট</b></string>
     <string name="weeklyGazette"><b>বি.জি. প্রেস থেকে প্রকাশিত চাকুরি স্থায়ীকরণের গেজেট</b></string>
-    <!--buttonHints-->
-    <string name="bsmmuHints">Residency, non-Residency,\nNotice</string>
-    <string name="bcpsHints">Guidelines, pdf forms\nFCPS, MCPS Results</string>
-    <string name="dghsHints">বদলি/পদায়ন, HRM,\nবুনিয়াদি প্রশিক্ষণ</string>
-    <string name="mohfwHints">ডেপুটেশন নীতিমালা ২০১৩\nবিভিন্ন কোর্সে আসন সংখ্যা</string>
-    <string name="bpscHints">BCS, Departmental exam,\nSenior Scale Exam</string>
-    <string name="gazetteHints">সিনিয়র স্কেল, ডিপার্টমেন্টাল,\nচাকুরি স্থায়ীকরণ</string>
-    <string name="bmdcHints">Find Registered Doctor\nRegistration/renewal forms</string>
-    <string name="resultsHints"> </string>
 
     <!--addMob add unit id-->
     <string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>
@@ -112,6 +128,8 @@
     <string name="adhocSetting">16. এডহকঃ নিয়মিতকরণ</string>
     <string name="mohfwSetting">17. স্বাস্থ্য ও পরিবার কল্যাণ মন্ত্রণালয়ে নতুন বদলি/পদায়ন/প্রজ্ঞাপন</string>
     <string name="leaveSetting">18. অর্জিত ছুটি, বহিরাগমন, লিয়েন</string>
+    <string name="dgfpSetting">19. পরিবার পরিকল্পনা অধিদপ্তর (আদেশ, নোটিশ, এনওসি)</string>
+    <string name="ccdSetting">20. CCD- Admission, exam, notice</string>
     <string name="leaveOpion">অর্জিত ছুটি, বহিরাগমন, লিয়েন</string>
     <string name="regideptStarted">Registration for Departmental Exam has been started. Click to go for Registration</string>
     <string name="regiseniortext">11. Registration for Senior Scale Exam has been started. Click to go for Registration</string>
@@ -120,6 +138,9 @@
     <string name="vibrateSetting">Allow notification vibration</string>
     <string name="connectivity">Allow network connectin alert</string>
     <string name="noData">You missed today\'s notification.\nFollow the steps to get notifications\nStep 1. Turn on Wi-Fi or mobile data\nStep 2. click this notification or open DocSites app </string>
+    <string name="dgfpOrderTitle">পরিবার পরিকল্পনা অধিদপ্তর\n(আদেশ)</string>
+    <string name="dgfpNoticeTitle">পরিবার পরিকল্পনা অধিদপ্তর\n(নোটিশ)</string>
+    <string name="dgfpNOCTitle">পরিবার পরিকল্পনা অধিদপ্তর\n(এনওসি)</string>
 
     <!--filter string-->
     <string name="seniorGazette">সিনিয়র স্কেল</string>

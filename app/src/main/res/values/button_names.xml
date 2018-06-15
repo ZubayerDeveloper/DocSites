@@ -7,6 +7,8 @@
         <item>@string/hmohf</item>
         <item>@string/hbpsc</item>
         <item>@string/hgazettes</item>
+        <item>@string/hdgfp</item>
+        <item>@string/hccd</item>
         <item>@string/hbmdc</item>
         <item>@string/hresult</item>
     </array>
@@ -17,6 +19,8 @@
         <item>@string/mohf</item>
         <item>@string/bpsc</item>
         <item>@string/gazettes</item>
+        <item>@string/dgpf</item>
+        <item>@string/ccd</item>
         <item>@string/bmdc</item>
         <item>@string/result</item>
     </array>
@@ -27,6 +31,8 @@
         <item>@string/mohfwHints</item>
         <item>@string/bpscHints</item>
         <item>@string/gazetteHints</item>
+        <item>@string/dgfpHints</item>
+        <item>@string/ccdHints</item>
         <item>@string/bmdcHints</item>
         <item>@string/resultsHints</item>
     </array>
@@ -94,5 +100,11 @@
     <array name="bpscFormsOptions">
         <item>@string/seniorScaleOption</item>
         <item>@string/serviceConfirmOption</item>
+    </array>
+    <array name="dgfpOptions">
+        <item>@string/homePage</item>
+        <item>@string/dgfporder</item>
+        <item>@string/dgfpnotice</item>
+        <item>@string/dgfpnoc</item>
     </array>
 </resources>

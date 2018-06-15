@@ -365,7 +365,7 @@ public class NotificationSummery extends Activity {
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
                 .setTag("tags")
-                .setTrigger(Trigger.executionWindow(5,60*6))
+                .setTrigger(Trigger.executionWindow(0,21600))
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setReplaceCurrent(false)
                 .setConstraints(Constraint.ON_ANY_NETWORK).build();

@@ -248,6 +248,24 @@
                 android:checked="true"
                 android:text="@string/leaveSetting" />
 
+            <CheckBox
+                android:id="@+id/dgfpSetting"
+                android:textSize="16sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/dgfpSetting" />
+
+            <CheckBox
+                android:id="@+id/ccdSetting"
+                android:textSize="16sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:checked="true"
+                android:text="@string/ccdSetting" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

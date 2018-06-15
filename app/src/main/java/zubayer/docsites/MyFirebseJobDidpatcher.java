@@ -721,7 +721,138 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-            } catch (Exception ignored) {
+
+                preferences = getSharedPreferences("ccdSetting", 0);
+                checked = preferences.getBoolean("ccdChecked", false);
+
+                if (checked) {
+                    btxt = "";
+                    url = "";
+                    executeCCD1();
+                    executableTag();
+                    preferences = getSharedPreferences("ccd", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("ccd", null);
+
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
+                    } else if (btxt.length() == 0) {
+                        addToMissedNotificaton("CCD Notice");
+                        saveMissedNotificationList();
+                    } else {
+                        addToSymmery(btxt, url, "CCD Notice", notificationDate());
+                        saveState();
+                        finalNotificationCount();
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", url);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 19, myIntent, 0);
+                        notification("channel_19", "ccd", "CCD Notice", btxt, 19);
+                        preferences.edit().putString("ccd", btxt).apply();
+
+                    }
+
+                    btxt = "";
+                    url = "";
+                    executeCCD2();
+                    executableTag();
+                    preferences = getSharedPreferences("ccd2", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("ccd2", null);
+
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
+                    } else if (btxt.length() == 0) {
+                        addToMissedNotificaton("CCD Notice");
+                        saveMissedNotificationList();
+                    } else {
+                        addToSymmery(btxt, url, "CCD Notice", notificationDate());
+                        saveState();
+                        finalNotificationCount();
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", url);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 20, myIntent, 0);
+                        notification("channel_20", "ccd2", "CCD Notice", btxt, 20);
+                        preferences.edit().putString("ccd2", btxt).apply();
+
+                    }
+                }
+
+                preferences = getSharedPreferences("dgfpSetting", 0);
+                checked = preferences.getBoolean("dgfpChecked", false);
+
+                if (checked) {
+                    btxt = "";
+                    url = "";
+                    dgfpOrder();
+                    executableTag();
+                    preferences = getSharedPreferences("dgfp1", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("dgfp1", null);
+
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
+                    } else if (btxt.length() == 0) {
+                        addToMissedNotificaton(getString(R.string.dgfpOrderTitle));
+                        saveMissedNotificationList();
+                    } else {
+                        addToSymmery(btxt, url, getString(R.string.dgfpOrderTitle), notificationDate());
+                        saveState();
+                        finalNotificationCount();
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", url);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 21, myIntent, 0);
+                        notification("channel_21", "dgfp1", getString(R.string.dgfpOrderTitle), btxt, 21);
+                        preferences.edit().putString("dgfp1", btxt).apply();
+
+                    }
+
+                    btxt = "";
+                    url = "";
+                    dgfpNotice();
+                    executableTag();
+                    preferences = getSharedPreferences("dgfp2", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("dgfp2", null);
+
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
+                    } else if (btxt.length() == 0) {
+                        addToMissedNotificaton(getString(R.string.dgfpNoticeTitle));
+                        saveMissedNotificationList();
+                    } else {
+                        addToSymmery(btxt, url, getString(R.string.dgfpNoticeTitle), notificationDate());
+                        saveState();
+                        finalNotificationCount();
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", url);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 22, myIntent, 0);
+                        notification("channel_22", "dgfp2", getString(R.string.dgfpNoticeTitle), btxt, 22);
+                        preferences.edit().putString("dgfp2", btxt).apply();
+
+                    }
+
+                    btxt = "";
+                    url = "";
+                    dgfpNOC();
+                    executableTag();
+                    preferences = getSharedPreferences("dgfp3", Context.MODE_PRIVATE);
+                    previousSaved = preferences.getString("dgfp3", null);
+
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
+                    } else if (btxt.length() == 0) {
+                        addToMissedNotificaton(getString(R.string.dgfpNOCTitle));
+                        saveMissedNotificationList();
+                    } else {
+                        addToSymmery(btxt, url, getString(R.string.dgfpNOCTitle), notificationDate());
+                        saveState();
+                        finalNotificationCount();
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", url);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 23, myIntent, 0);
+                        notification("channel_23", "dgfp3", getString(R.string.dgfpNOCTitle), btxt, 23);
+                        preferences.edit().putString("dgfp3", btxt).apply();
+
+                    }
+                }
+
+                } catch (Exception ignored) {
             }
             return null;
         }
@@ -831,6 +962,41 @@ public class MyFirebseJobDidpatcher extends JobService {
         textMin = 29;
     }
 
+    private void executeCCD1() {
+        paramUrl = "http://www.badas-dlp.org/";
+        paramTagForText = "tr td a";
+        paramLink = "abs:href";
+        textMin = 9;
+    }
+
+    private void executeCCD2() {
+        paramUrl = "http://www.badas-dlp.org/";
+        paramTagForText = "tr td p";
+        paramLink = "abs:href";
+        textMin = 2;
+    }
+
+    private void dgfpOrder() {
+        paramUrl = "http://dgfp.gov.bd/site/view/office_order/অফিস-আদেশ";
+        paramTagForText = "tr";
+        paramLink = "abs:href";
+        textMin = 0;
+    }
+
+    private void dgfpNotice() {
+        paramUrl = "http://dgfp.gov.bd/site/view/notices/নোটিশ";
+        paramTagForText = "tr";
+        paramLink = "abs:href";
+        textMin = 0;
+    }
+
+    private void dgfpNOC() {
+        paramUrl = "http://dgfp.gov.bd/site/view/publications/এনওসি /এনওসি";
+        paramTagForText = "tr";
+        paramLink = "abs:href";
+        textMin = 1;
+    }
+
     public void serviceConfirmTag() {
         try {
             Document doc = Jsoup.connect(paramUrl).get();
@@ -881,13 +1047,9 @@ public class MyFirebseJobDidpatcher extends JobService {
         try {
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
-            Elements hrefs = doc.select(paramTagForLink);
-
             Element link = links.get(textMin);
             btxt = link.text();
-
-            Element li = hrefs.get(linkBegin);
-            url = li.attr(paramLink);
+            url = links.get(textMin).select("a").attr(paramLink);
 
         } catch (Exception e) {
         }

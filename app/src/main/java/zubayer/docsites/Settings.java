@@ -20,7 +20,7 @@ public class Settings extends Activity {
 
     CheckBox residency, notice, dghs, reultBcs, resultDept, resultSenior, regiDept, regiSenior, assistantSurgeon, juniorConsultant,
             seniorConsultant, assistantProfessor, associateProfessor, professor, civilSurgeon, adhoc, mohfw, deputation, leave, sound,
-            vibration, openInBrowser,connectivityAlert;
+            vibration, openInBrowser, connectivityAlert, dgfp, ccdBirdem;
     SharedPreferences preferences;
     boolean checked, enableSound, enableVibrate;
     TextView heading;
@@ -56,6 +56,8 @@ public class Settings extends Activity {
         vibration = (CheckBox) findViewById(R.id.vibrateSetting);
         openInBrowser = (CheckBox) findViewById(R.id.openInbrowser);
         connectivityAlert = (CheckBox) findViewById(R.id.connectivity);
+        dgfp = (CheckBox) findViewById(R.id.dgfpSetting);
+        ccdBirdem = (CheckBox) findViewById(R.id.ccdSetting);
 
         select = (Button) findViewById(R.id.select);
         deselect = (Button) findViewById(R.id.deselect);
@@ -235,6 +237,36 @@ public class Settings extends Activity {
 
         } else {
             leave.setTextColor(Color.parseColor("#B4B4B4"));
+        }
+
+        preferences = getSharedPreferences("leaveSetting", 0);
+        checked = preferences.getBoolean("leaveChecked", false);
+        leave.setChecked(checked);
+        if (leave.isChecked()) {
+            leave.setTextColor(Color.parseColor("#000000"));
+
+        } else {
+            leave.setTextColor(Color.parseColor("#B4B4B4"));
+        }
+
+        preferences = getSharedPreferences("ccdSetting", 0);
+        checked = preferences.getBoolean("ccdChecked", false);
+        ccdBirdem.setChecked(checked);
+        if (ccdBirdem.isChecked()) {
+            ccdBirdem.setTextColor(Color.parseColor("#000000"));
+
+        } else {
+            ccdBirdem.setTextColor(Color.parseColor("#B4B4B4"));
+        }
+
+        preferences = getSharedPreferences("dgfpSetting", 0);
+        checked = preferences.getBoolean("dgfpChecked", false);
+        dgfp.setChecked(checked);
+        if (dgfp.isChecked()) {
+            dgfp.setTextColor(Color.parseColor("#000000"));
+
+        } else {
+            dgfp.setTextColor(Color.parseColor("#B4B4B4"));
         }
 
         preferences = getSharedPreferences("notificationSounds", 0);
@@ -601,6 +633,40 @@ public class Settings extends Activity {
                 editor.apply();
             }
         });
+
+        ccdBirdem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences settings = getSharedPreferences("ccdSetting", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                if (ccdBirdem.isChecked()) {
+                    ccdBirdem.setChecked(true);
+                    ccdBirdem.setTextColor(Color.parseColor("#000000"));
+                } else {
+                    ccdBirdem.setChecked(false);
+                    ccdBirdem.setTextColor(Color.parseColor("#B4B4B4"));
+                }
+                editor.putBoolean("ccdChecked", ccdBirdem.isChecked());
+                editor.apply();
+            }
+        });
+
+        dgfp.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                SharedPreferences settings = getSharedPreferences("dgfpSetting", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                if (dgfp.isChecked()) {
+                    dgfp.setChecked(true);
+                    dgfp.setTextColor(Color.parseColor("#000000"));
+                } else {
+                    dgfp.setChecked(false);
+                    dgfp.setTextColor(Color.parseColor("#B4B4B4"));
+                }
+                editor.putBoolean("dgfpChecked", dgfp.isChecked());
+                editor.apply();
+            }
+        });
         sound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -721,6 +787,8 @@ public class Settings extends Activity {
         selectDeselect("mohfwSetting", mohfw, true, "mohfwChecked");
         selectDeselect("deputationSetting", deputation, true, "deputationChecked");
         selectDeselect("leaveSetting", leave, true, "leaveChecked");
+        selectDeselect("ccdSetting", ccdBirdem, true, "ccdChecked");
+        selectDeselect("dgfpSetting", dgfp, true, "dgfpChecked");
 
     }
 
@@ -744,6 +812,8 @@ public class Settings extends Activity {
         selectDeselect("mohfwSetting", mohfw, false, "mohfwChecked");
         selectDeselect("deputationSetting", deputation, false, "deputationChecked");
         selectDeselect("leaveSetting", leave, false, "leaveChecked");
+        selectDeselect("ccdSetting", ccdBirdem, false, "ccdChecked");
+        selectDeselect("dgfpSetting", dgfp, false, "dgfpChecked");
     }
 }
 
