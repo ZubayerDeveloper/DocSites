@@ -210,7 +210,6 @@ public class MainActivity extends Activity {
                 startActivity(summery);
             }
         });
-        // ATTENTION: This was auto-generated to handle app links.
 
         Intent appLinkIntent = getIntent();
         Uri appLinkData = appLinkIntent.getData();
