@@ -95,6 +95,7 @@ public class GridAdapter extends ArrayAdapter<String> {
                     }
                 break;
         }
+
         return row;
     }
 }

@@ -57,8 +57,7 @@ class MyAdapter extends ArrayAdapter<String> {
 			image.setVisibility(View.VISIBLE);
 		}
 		//pica.with(activity).load(imageArray.get(position)).into(image);
-		
-		
+
 		return row;
 	}
 }

@@ -3,6 +3,7 @@ package zubayer.docsites;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -60,7 +61,6 @@ public class MainActivity extends Activity {
     AlertDialog.Builder builder;
     View m;
     Calendar calendar;
-    private AdView mAdView;
     AlarmManager manager;
     PendingIntent pendingIntent;
     ProgressBar progressBar;
@@ -72,6 +72,8 @@ public class MainActivity extends Activity {
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
+    BSMMU parsebsmmu;
+    BSMMU2 parsebsmmu2;
     BcpsParser bcps;
     BpscParser bpscParser;
     DghsParser dghsParser;
@@ -84,7 +86,8 @@ public class MainActivity extends Activity {
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2,
             notificationNumberText;
-    int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize, finalNotificationSize, newNotification;
+    int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize,
+            finalNotificationSize, newNotification,bsmmubegin,bsmmuend;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
             bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable;
     MenuItem menuitem;
@@ -111,7 +114,7 @@ public class MainActivity extends Activity {
         checkApplaunched();
 //        setAlarm();
         stopFirebaseJobDispatcher();
-        setFirebaseJobDispatcher(300,21600);
+        setFirebaseJobDispatcher(300, 21600);
         setListView();
         buildAlertDialogue();
         checkAppUpdates();
@@ -163,7 +166,7 @@ public class MainActivity extends Activity {
                         } else {
                             try {
                                 stopFirebaseJobDispatcher();
-                                setFirebaseJobDispatcher(0,21600);
+                                setFirebaseJobDispatcher(0, 21600);
                                 myToaster("Checking Notifications");
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -207,6 +210,14 @@ public class MainActivity extends Activity {
                 startActivity(summery);
             }
         });
+        // ATTENTION: This was auto-generated to handle app links.
+
+        Intent appLinkIntent = getIntent();
+        Uri appLinkData = appLinkIntent.getData();
+        if(appLinkIntent!=null&&appLinkData!=null){
+            browser(appLinkData.toString());
+        }
+
     }
 
     private void stopFirebaseJobDispatcher() {
@@ -506,42 +517,43 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                    ccdNotices2();
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-                ccdNotices2();
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
-
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -562,41 +574,42 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
-
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -617,40 +630,42 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -671,40 +686,188 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
+        }
+    }
+
+    class BSMMU extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            try {
+                Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
+                Elements links = doc.select("a");
+                bsmmubegin=0;
+                for (int i = bsmmubegin; i < links.size(); i++) {
+                    Element link = links.get(i);
+                    btxt = link.text();
+                    url = link.select("a").attr("abs:href");
+                    if (btxt.contains("Residency/Non Res.")) {
+                        bsmmubegin=i+1;
+                        bsmmuend=bsmmubegin+8;
+                        break;
+                    }
+                }
+                for (int i = bsmmubegin; i < bsmmuend; i++) {
+                    Element link = links.get(i);
+                    btxt = link.text();
+                    url = link.select("a").attr("abs:href");
+                    buttonTexts.add(btxt);
+                    urls.add(url);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
+
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
+
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
+        }
+    }
+
+    class BSMMU2 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            try {
+                Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
+                Elements links = doc.select("a");
+                bsmmubegin=0;
+                for (int i = bsmmubegin; i < links.size(); i++) {
+                    Element link = links.get(i);
+                    btxt = link.text();
+                    url = link.select("a").attr("abs:href");
+                    if (btxt.contains("Admission and e-Reg.")) {
+                        bsmmubegin=i+1;
+                        bsmmuend=bsmmubegin+3;
+                        break;
+                    }
+                }
+                for (int i = bsmmubegin; i < bsmmuend; i++) {
+                    Element link = links.get(i);
+                    btxt = link.text();
+                    url = link.select("a").attr("abs:href");
+                    buttonTexts.add(btxt);
+                    urls.add(url);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
+
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
+
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -725,41 +888,43 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-                dghsHomeLinks2();
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                    dghsHomeLinks2();
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -780,41 +945,43 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-                dghsHomeLinks3();
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                    dghsHomeLinks3();
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -835,40 +1002,42 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (url != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not Responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (url != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not Responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -889,40 +1058,42 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (btxt != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (btxt != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            }
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                }
+            }catch (Exception e){}
         }
     }
 
@@ -999,43 +1170,45 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if (!dataconnected()) {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        url = null;
-                        Dialog.dismiss();
-                    }
-                });
+            try {
+                if (!dataconnected()) {
+                    checkinternet = builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage("Check your network connection");
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            Dialog.dismiss();
+                        }
+                    });
 
-                checkinternet.show();
-                progressBar.setVisibility(View.GONE);
-            } else if (uRl != null) {
-                progressBar.setVisibility(View.GONE);
-                list.setAdapter(adapter);
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setMessage("Website is not responding");
-                checkinternet.setCancelable(false);
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        buttonTexts.clear();
-                        urls.clear();
-                        Dialog.dismiss();
-                        btxt = null;
-                    }
-                });
-                try {
+                    checkinternet.show();
+                    progressBar.setVisibility(View.GONE);
+                } else if (uRl != null) {
+                    progressBar.setVisibility(View.GONE);
+                    list.setAdapter(adapter);
+                } else {
+                    checkinternet = builder.create();
+                    checkinternet.setMessage("Website is not responding");
+                    checkinternet.setCancelable(false);
+                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            Dialog.dismiss();
+                            btxt = null;
+                        }
+                    });
+                    try {
 
-                } catch (Exception e) {
+                    } catch (Exception e) {
+                    }
+                    checkinternet.setCancelable(false);
+                    checkinternet.show();
                 }
-                checkinternet.setCancelable(false);
-                checkinternet.show();
-            }
+            }catch (Exception e){}
         }
     }
 
@@ -1115,8 +1288,8 @@ public class MainActivity extends Activity {
             checkinternet.setButton("Send mail", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + "zubayer.developer@gmail.com"));
-                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ": " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
-                    i.putExtra(Intent.EXTRA_TEXT, "Write here:");
+                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ": ");
+                    i.putExtra(Intent.EXTRA_TEXT, "Write here:"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"Sent from: " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
                     startActivity(i);
                 }
             });
@@ -1160,34 +1333,14 @@ public class MainActivity extends Activity {
     }
 
     private void residency() {
-        back = new HtmlParser();
-        paramUrl = "http://www.bsmmu.edu.bd";
-        paramTagForText = "a";
-        paramTagForLink = "a";
-        paramLink = "abs:href";
-        textMin = 147;
-        linkBegin = 147;
-        textMax = 154;
-        linkEnd = 154;
-        position = 15;
-        newline = "★★★";
-        back.execute();
+        parsebsmmu = new BSMMU();
+        parsebsmmu.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
 
     private void admission() {
-        back = new HtmlParser();
-        paramUrl = "http://www.bsmmu.edu.bd";
-        paramTagForText = "a";
-        paramTagForLink = "a";
-        paramLink = "abs:href";
-        textMin = 155;
-        linkBegin = 155;
-        textMax = 159;
-        linkEnd = 159;
-        position = 5;
-        newline = "★★★";
-        back.execute();
+        parsebsmmu2 = new BSMMU2();
+        parsebsmmu2.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -1825,7 +1978,7 @@ public class MainActivity extends Activity {
     }
 
     private void createAdView() {
-        mAdView = (AdView) findViewById(R.id.adViewCard);
+        AdView mAdView = (AdView) findViewById(R.id.adViewCard);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
@@ -1837,8 +1990,6 @@ public class MainActivity extends Activity {
 
     private void listViewOptionLoader(int position) {
         Dialog.setTitle(buttonTexts.get(position));
-        check = new UpdateChecker();
-        check.execute();
         if (urls.isEmpty()) {
             if (bsmmuClicked) {
                 switch (position) {
@@ -1930,7 +2081,7 @@ public class MainActivity extends Activity {
                         break;
                     case 5:
                         buttonTexts.clear();
-                        filterContent = getString(R.string.seniorConsultant2);
+                        filterContent = "uuuuuuuu";
                         filterContent2 = getString(R.string.seniorConsultant);
                         serviceConfirmGazette();
                         Dialog.show();
@@ -2100,59 +2251,48 @@ public class MainActivity extends Activity {
 
     private void gridViewOptionLoader(int position) {
         Dialog.setTitle(buttonHeadidng.get(position));
-        check = new UpdateChecker();
         switch (position) {
             case 0:
-                check.execute();
                 loadBsmmuOptions();
                 bsmmuClicked = true;
                 break;
             case 1:
                 loadBcpsOptions();
                 bcpsClicked = true;
-                check.execute();
                 break;
             case 2:
                 loadDghsOptions();
                 dghsClicked = true;
-                check.execute();
                 break;
             case 3:
                 loadMohfwOptions();
                 mohfwClicked = true;
-                check.execute();
                 break;
             case 4:
                 loadBpscOptions();
                 bpscClicked = true;
-                check.execute();
                 break;
             case 5:
                 loadGazetteOptions();
                 gazetteClicked = true;
-                check.execute();
                 break;
             case 6:
                 loaddgfpOptions();
                 dgfpClicked = true;
-                check.execute();
                 break;
             case 7:
                 loadccdOptions();
                 ccdClicked = true;
                 ccdNotices1();
-                check.execute();
 
                 break;
             case 8:
                 loadBMDCOptions();
                 bmdcClicked = true;
-                check.execute();
                 break;
             case 9:
                 loadResultOptions();
                 resultsClicked = true;
-                check.execute();
                 break;
 
         }

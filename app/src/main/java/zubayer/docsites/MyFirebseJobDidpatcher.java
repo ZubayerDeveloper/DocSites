@@ -115,8 +115,7 @@ public class MyFirebseJobDidpatcher extends JobService {
                 if (checked) {
                     btxt = "";
                     url = "";
-                    residency();
-                    executableTag();
+                    bsmmuTag();
                     preferences = getSharedPreferences("residency", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("residency", null);
 
@@ -440,7 +439,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                     btxt = "";
                     url = "";
                     filterContent = getString(R.string.seniorConsultant);
-                    filterContent2 = getString(R.string.seniorConsultant2);
                     executeService();
                     serviceConfirmTag();
                     preferences = getSharedPreferences("seniorConsultant", Context.MODE_PRIVATE);
@@ -462,28 +460,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                         pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 10, myIntent, 0);
                         notification("channel_10", "seniorConsultant", getString(R.string.seniorConsultantSetting), btxt, 10);
                         preferences.edit().putString("seniorConsultant", btxt).apply();
-
-                    }
-                    btxt = "";
-                    url = "";
-                    serviceConfirmTag2();
-                    preferences = getSharedPreferences("seniorConsultant2", Context.MODE_PRIVATE);
-                    previousSaved2 = preferences.getString("seniorConsultant2", null);
-                    if (btxt.equalsIgnoreCase(previousSaved2)) {
-
-                    } else if (btxt.length() == 0) {
-                        addToMissedNotificaton(getString(R.string.seniorConsultantSetting));
-                        saveMissedNotificationList();
-                    } else {
-                        addToSymmery(btxt, url, getString(R.string.seniorConsultantSetting) + ":", notificationDate());
-                        saveState();
-                        finalNotificationCount();
-                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
-                        myIntent.putExtra("value", url);
-                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 101, myIntent, 0);
-                        notification("channel_101", "seniorConsultant2", getString(R.string.seniorConsultantSetting), btxt, 101);
-                        preferences.edit().putString("seniorConsultant2", btxt).apply();
 
                     }
                 }
@@ -1052,6 +1028,32 @@ public class MyFirebseJobDidpatcher extends JobService {
             url = links.get(textMin).select("a").attr(paramLink);
 
         } catch (Exception e) {
+        }
+    }
+
+    private  void bsmmuTag() {
+        try {
+            Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
+            Elements links = doc.select("a");
+            linkBegin = 0;
+            for (int i = linkBegin; i < links.size(); i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.select("a").attr("abs:href");
+                if (btxt.contains("Residency/Non Res.")) {
+                    linkBegin = i + 1;
+                    break;
+                }
+            }
+            for (int i = linkBegin; i < linkBegin+1; i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.select("a").attr("abs:href");
+                buttonTexts.add(btxt);
+                urls.add(url);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

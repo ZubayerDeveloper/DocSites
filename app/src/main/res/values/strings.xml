@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DocSites <b>3.2.6</b></string>
+    <string name="app_name">DocSites\n<b>3.2.8</b></string>
 
     <!--button heading-->
     <string name="hbsmmu">BSMMU</string>
@@ -64,7 +64,7 @@
     <string name="assistantProfessorOption">সহকারী অধ্যাপকঃ পদোন্নতি/পদায়ন </string>
     <string name="associateProfessorOption">সহযোগী অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
     <string name="juniorConsultantOption">জুনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
-    <string name="seniorConsultantOption">সিনিয়র কনসালট্যান্টঃ পদোন্নতি/পদায়ন</string>
+    <string name="seniorConsultantOption">সিনিয়র কনসালট্যান্টঃ/সিনিয়র স্কেল পদোন্নতি/পদায়ন</string>
     <string name="professorOption">অধ্যাপকঃ পদোন্নতি/পদায়ন</string>
     <string name="assistantSurgeonOption">(বিসিএস) সহকারী সার্জন পদে পদায়ন</string>
     <string name="civilSurgeonOption">সহকারী পরিচালক/সিভিল সার্জন/সমমান পদের বিজ্ঞপ্তি</string>
@@ -153,8 +153,8 @@
     <string name="assistantProfessor">সহকারী অধ্যাপক</string>
     <string name="associateProfessor">সহযোগী অধ্যাপক</string>
     <string name="juniorConsultant">জুনিয়র</string>
-    <string name="seniorConsultant">(সিনিয়র ও</string>
-    <string name="seniorConsultant2">সিনিয়র কন</string>
+    <string name="seniorConsultant">সিনিয়র</string>
+    <string name="seniorConsultant2">সিনিয়র</string>
     <string name="professor">(অধ্যাপক পদে</string>
     <string name="assistantSurgeon">সহকারী সার্জন</string>
     <string name="civilSurgeon">সিভিল সার্জন</string>
