@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:background="#dadada"
+    android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#dadada"
+            android:orientation="vertical"
+            android:padding="2dp">
+
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/reply_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:civ_border_color="#123456"
+                app:civ_border_width="0.2dp" />
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardview"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@+id/reply_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="2dp">
+            <LinearLayout
+
+                android:background="#FFFFFF"
+                android:padding="10dp"
+                android:layout_toRightOf="@+id/reply_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/reply_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFFFFF"
+                    android:paddingBottom="10dp"
+                    android:text="User name"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+                    android:textColor="#000099"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/reply_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autoLink="all"
+                    android:background="#FFFFFF"
+                    android:text="User text"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:gravity="right"
+                    android:id="@+id/reply_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:autoLink="all"
+                    android:background="#FFFFFF"
+                    android:text="time"
+                    android:textColor="#916E00"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+            </android.support.v7.widget.CardView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/cardview"
+                android:padding="1.5dp" />
+        </RelativeLayout>
+
+
+</RelativeLayout>

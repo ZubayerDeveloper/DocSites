@@ -23,8 +23,100 @@
           }
         },
         {
+          "client_id": "399890254913-itr1h9p2cdneo3v4qeikohb4eipajpfd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "zubayer.docsites",
+            "certificate_hash": "03fee162996f2b082087ec453a5edf5fe8b78d37"
+          }
+        },
+        {
           "client_id": "399890254913-m5ltm1sq1rh4vvsruoutd8bkad24h2vv.apps.googleusercontent.com",
           "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXiSKk0K_yjypV7cfkha2fPTcOl9ZSgT0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "399890254913-m5ltm1sq1rh4vvsruoutd8bkad24h2vv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:399890254913:android:c7e2bf99e865154e",
+        "android_client_info": {
+          "package_name": "zubayer.fcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "399890254913-3nb4jh15vupq6f6mjietea5o2oc865sk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "zubayer.fcm",
+            "certificate_hash": "276918ce6aa13fb95b8f8dbe896d01d00c83d17c"
+          }
+        },
+        {
+          "client_id": "399890254913-m5ltm1sq1rh4vvsruoutd8bkad24h2vv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXiSKk0K_yjypV7cfkha2fPTcOl9ZSgT0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "399890254913-m5ltm1sq1rh4vvsruoutd8bkad24h2vv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:399890254913:android:c21927b9c8fa1756",
+        "android_client_info": {
+          "package_name": "zubayer.note"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "399890254913-48d33tba74hmonlvprc15ptca01gqb3a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "zubayer.note",
+            "certificate_hash": "276918ce6aa13fb95b8f8dbe896d01d00c83d17c"
+          }
         },
         {
           "client_id": "399890254913-m5ltm1sq1rh4vvsruoutd8bkad24h2vv.apps.googleusercontent.com",

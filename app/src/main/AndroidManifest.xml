@@ -20,7 +20,7 @@
         android:supportsRtl="true">
         <activity
             android:name=".Browser"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -39,8 +39,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="bsmmu.edu.bd" />
+                    android:host="bsmmu.edu.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -49,8 +49,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="www.bcpsbd.org" />
+                    android:host="www.bcpsbd.org"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -59,8 +59,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="dghs.gov.bd" />
+                    android:host="dghs.gov.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -69,8 +69,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="www.mohfw.gov.bd" />
+                    android:host="www.mohfw.gov.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -79,8 +79,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="www.bpsc.gov.bd" />
+                    android:host="www.bpsc.gov.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -89,8 +89,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="bpsc.teletalk.com.bd" />
+                    android:host="bpsc.teletalk.com.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -99,8 +99,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="dept.bpsc.gov.bd" />
+                    android:host="dept.bpsc.gov.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -109,8 +109,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="snsc.bpsc.gov.bd" />
+                    android:host="snsc.bpsc.gov.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -119,8 +119,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="bmdc.org.bd" />
+                    android:host="bmdc.org.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -129,8 +129,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="dgfp.gov.bd" />
+                    android:host="dgfp.gov.bd"
+                    android:scheme="http" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -139,11 +139,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
-                    android:host="www.badas-dlp.org" />
+                    android:host="www.badas-dlp.org"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Settings"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
@@ -154,43 +153,49 @@
             android:name=".NotificationSummery"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
 
-        <!--android:theme="@style/transparent"-->
+        <!-- android:theme="@style/transparent" -->
         <activity
             android:name=".GazetteActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
-        <receiver
-            android:name=".NotificationReceiver"
-            android:enabled="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".OrioJobScheduler"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service android:name=".MyIntentService" />
-        <service android:name=".FirebseBackgroundMessage">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
         <service android:name=".FirebaseForegroundMessage">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
         <service
-            android:exported="false"
-            android:name=".MyFirebseJobDidpatcher">
+            android:name=".MyFirebseJobDidpatcher"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorPrimaryDark" />
+
+        <activity android:name=".Forum" />
+        <activity android:name=".Reply" />
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

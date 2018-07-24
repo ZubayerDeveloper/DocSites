@@ -2,12 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/tools"
+    android:id="@+id/rootlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/stetho1"
     android:gravity="center"
-    android:id="@+id/rootlayout"
     android:orientation="vertical">
+
     <GridView
         android:id="@+id/grid"
         android:layout_width="match_parent"
@@ -19,22 +20,42 @@
         android:paddingTop="10dp"
         android:scrollbars="none" />
     <ImageButton
+        android:id="@+id/forum"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_above="@+id/adViewCard"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="70dp"
+        android:layout_marginEnd="17dp"
+        android:layout_marginRight="17dp"
+        android:alpha=".85"
+        android:background="@drawable/forum_button"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="10dp"
+        android:src="@drawable/forum" />
+    <ImageButton
         android:id="@+id/notificationSumery"
-        android:padding="5dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:alpha=".85"
         android:background="@drawable/bpsc_govt"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/notification"
-        android:layout_width="40dp"
-        android:layout_height="40dp" />
+        android:padding="5dp"
+        android:src="@drawable/notification" />
+
     <Button
-        android:textSize="12sp"
-        android:textColor="#FFFFFF"
         android:id="@+id/notificationCount"
-        android:background="@drawable/bcps"
-        android:layout_alignParentRight="true"
         android:layout_width="20dp"
-        android:layout_height="20dp" />
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/bcps"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adViewCard"
         android:layout_width="match_parent"
@@ -44,27 +65,29 @@
         android:gravity="center"
         ads:adSize="SMART_BANNER"
         ads:adUnitId="@string/banner_id_home" />
+
     <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/fabs"
-        android:alpha=".85"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/forum"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="70dp"
-        ads:fabGravity="bottom_end"
-        ads:miniFabBackgroundTintList="@array/menu_background_color"
-        ads:miniFabTitleTextColorList="@array/menu_text_color"
-        ads:fabMenu="@menu/menu"
+        android:alpha=".85"
         ads:fabBackgroundTint="#FC0E00"
-        android:layout_above="@+id/adViewCard"
+        ads:fabGravity="bottom_end"
+        ads:fabMenu="@menu/menu"
         ads:miniFabBackgroundTint="#000000"
+        ads:miniFabBackgroundTintList="@array/menu_background_color"
+        ads:miniFabDrawableTint="#FFFFFF"
         ads:miniFabTitleBackgroundTint="#000000"
         ads:miniFabTitleTextColor="#FFFFFF"
-        ads:miniFabDrawableTint="#FFFFFF"
+        ads:miniFabTitleTextColorList="@array/menu_text_color"
         ads:miniFabTitlesEnabled="true"
         ads:touchGuard="true"
         ads:touchGuardDrawable="@color/cardview_shadow_start_color" />
+
+
+
 </RelativeLayout>
 

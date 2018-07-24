@@ -1,24 +1,31 @@
 package zubayer.docsites;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static android.widget.Toast.makeText;
 
 class MyAdapter extends ArrayAdapter<String> {
 
 	public Typeface font;
 	private ArrayList<String> titleArray;
 	private ArrayList<String> imageArray;
-	private ImageView image;
+	private TextView image;
 	private Activity context;
 
 
@@ -42,7 +49,8 @@ class MyAdapter extends ArrayAdapter<String> {
 		myTitle.setTypeface(font);
 		myTitle.setText(titleArray.get(position));
 		myTitle.setTextColor(Color.parseColor("#123456"));
-		image=(ImageView)row.findViewById(R.id.ImageView);
+		image=(TextView)row.findViewById(R.id.ImageView);
+		TextView copy=(TextView)row.findViewById(R.id.copy) ;
 		image.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent intent= new Intent(Intent.ACTION_SEND);
@@ -51,12 +59,27 @@ class MyAdapter extends ArrayAdapter<String> {
 				context.startActivity(Intent.createChooser(intent,"Share using.."));
 			}
 		});
+		copy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("",imageArray.get(position));
+                if(clipboard!=null){
+                    clipboard.setPrimaryClip(clip);
+                    Toast toast = makeText(context, "Link copied", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+            }
+        });
 		if(imageArray.isEmpty()){
 			image.setVisibility(View.GONE);
+			copy.setVisibility(View.GONE);
 		}else {
 			image.setVisibility(View.VISIBLE);
+			copy.setVisibility(View.VISIBLE);
 		}
-		//pica.with(activity).load(imageArray.get(position)).into(image);
 
 		return row;
 	}

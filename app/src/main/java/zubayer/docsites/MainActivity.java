@@ -3,7 +3,6 @@ package zubayer.docsites;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,13 +15,18 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -31,7 +35,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -41,6 +44,9 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,12 +65,11 @@ import static android.widget.Toast.makeText;
 public class MainActivity extends Activity {
     AlertDialog Dialog, checkinternet;
     AlertDialog.Builder builder;
+    AdView mAdView;
     View m;
-    Calendar calendar;
-    AlarmManager manager;
-    PendingIntent pendingIntent;
     ProgressBar progressBar;
     ListView list;
+    LinearLayoutManager manager;
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
@@ -93,11 +98,15 @@ public class MainActivity extends Activity {
     MenuItem menuitem;
     Menu menu;
     SharedPreferences preferences;
-    Intent newIntent;
     FabSpeedDial fab;
-    ImageButton notificationSummery;
+    ImageButton notificationSummery,forum;
     Button showNotificationNumber;
     FirebaseJobDispatcher jobDispatcher;
+    RecyclerView recyclerView;
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +129,7 @@ public class MainActivity extends Activity {
         checkAppUpdates();
         initializeWidgetVariable();
         readNotificationCount();
+        subscribeTopic("forum");
         fab = (FabSpeedDial) findViewById(R.id.fabs);
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
@@ -182,7 +192,12 @@ public class MainActivity extends Activity {
 
             }
         });
-
+        forum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, Forum.class));
+            }
+        });
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -624,6 +639,7 @@ public class MainActivity extends Activity {
             buttonTexts.clear();
             urls.clear();
             super.onCancelled();
+
         }
 
         @Override
@@ -1903,26 +1919,6 @@ public class MainActivity extends Activity {
         font.setFont(MainActivity.this, "kalpurush.ttf", true);
     }
 
-    private void setAlarm() {
-        manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        try {
-            assert manager != null;
-            manager.cancel(pendingIntent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        calendar = Calendar.getInstance();
-        calendar.getTimeInMillis();
-        calendar.set(Calendar.HOUR_OF_DAY, 18);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 1);
-        newIntent = new Intent(MainActivity.this, NotificationReceiver.class);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
-
-    }
-
     private void buildAlertDialogue() {
         Dialog = builder.create();
         Dialog.setCancelable(false);
@@ -1948,6 +1944,7 @@ public class MainActivity extends Activity {
         adapter = new MyAdapter(MainActivity.this, buttonTexts, urls);
         m = getLayoutInflater().inflate(R.layout.listview, null);
         list = (ListView) m.findViewById(R.id.ListView);
+        manager=new LinearLayoutManager(MainActivity.this);
         list.setAdapter(adapter);
         progressBar = (ProgressBar) m.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
@@ -1977,7 +1974,7 @@ public class MainActivity extends Activity {
     }
 
     private void createAdView() {
-        AdView mAdView = (AdView) findViewById(R.id.adViewCard);
+        mAdView = (AdView) findViewById(R.id.adViewCard);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
@@ -2321,6 +2318,7 @@ public class MainActivity extends Activity {
 
     private void initializeWidgetVariable() {
         notificationSummery = (ImageButton) findViewById(R.id.notificationSumery);
+        forum = (ImageButton) findViewById(R.id.forum);
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
         showNotificationNumber.setVisibility(View.GONE);
     }
@@ -2340,5 +2338,12 @@ public class MainActivity extends Activity {
         }
         return dataConnected;
     }
+    private void subscribeTopic(String topic) {
+        FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
 
+            }
+        });
+    }
 }

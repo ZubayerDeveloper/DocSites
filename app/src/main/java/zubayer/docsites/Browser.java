@@ -314,6 +314,9 @@ public class Browser extends Activity {
                     });
                     checkinternet.show();
                 }
+            }else {
+                website.loadUrl(urls);
+                loadProgressBar();
             }
         } else {
             website.loadUrl(urls);

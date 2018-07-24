@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#dadada"
+    tools:context=".Forum">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/forum_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp" />
+    <com.mikhaellopez.circularimageview.CircularImageView
+        android:id="@+id/post_image"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="17dp"
+        android:layout_width="40dp"
+        android:layout_marginLeft="5dp"
+        android:layout_height="40dp"
+        app:civ_border_color="#123456"
+        app:civ_border_width="0.2dp" />
+    <EditText
+        android:layout_toRightOf="@+id/post_image"
+        android:id="@+id/edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/gap"
+        android:layout_marginLeft="3dp"
+        android:layout_toLeftOf="@+id/send"
+        android:background="@drawable/forum_post"
+        android:hint="Post your query"
+        android:padding="5dp"
+        android:textColor="#000000"
+        android:textColorHint="#B4B4B4"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/gap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
+    <ImageView
+        android:id="@+id/send"
+        android:padding="8dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="17dp"
+        android:background="@drawable/forum_button"
+        android:src="@drawable/sendwhite" />
+</RelativeLayout>
