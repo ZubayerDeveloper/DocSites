@@ -24,7 +24,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     ArrayList<String> doc_name,doc_text,post_Time,user_id,post_id;
     Activity context;
     Typeface forum_font;
-    ProgressBar propic_progressBar;
 
     public ForumAdapter(Activity context,
                         ArrayList<String> doc_name,
