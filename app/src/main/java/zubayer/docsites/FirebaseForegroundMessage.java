@@ -14,6 +14,7 @@ import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -33,9 +34,8 @@ public class FirebaseForegroundMessage extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
-            mp.start();
-
+//            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
+//            mp.start();
             notification("firebase","firebase_channel",remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody(),101);
 
         }
@@ -60,7 +60,7 @@ public class FirebaseForegroundMessage extends FirebaseMessagingService {
                     .setColor(0xff990000)
                     .setWhen(System.currentTimeMillis())
                     .setVibrate(new long[]{0, 300, 300, 300})
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                     .setChannelId(channel_id).build();
             notification.ledARGB = 0xff990000;
@@ -100,7 +100,7 @@ public class FirebaseForegroundMessage extends FirebaseMessagingService {
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MAX)
                 .setStyle(bigTextStyle)
-                .setSmallIcon(R.mipmap.ic_launcher);
+                .setSmallIcon(R.mipmap.ic_launcher_foreground);
         notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = null;

@@ -50,7 +50,7 @@ public class Browser extends Activity {
         urlss = new ArrayList<>();
         downloadButton = (Button) findViewById(R.id.downloadButton);
 
-        setFont();
+//        setFont();
         setAdd();
         setProgressBar();
         initializeWebViewAndUrls();

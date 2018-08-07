@@ -39,7 +39,6 @@
             android:textColor="#FFFFFF"
             android:layout_above="@+id/adViewBrowser"
             android:layout_centerInParent="true"
-            android:theme="@style/Theme.Transparent"
             android:layout_marginBottom="55dp"
             android:text="Download"
             android:alpha="0.70"

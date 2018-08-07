@@ -1074,7 +1074,7 @@ public class MyFirebseJobDidpatcher extends JobService {
                     .setWhen(System.currentTimeMillis())
                     .setVibrate(new long[]{0, 300, 300, 300})
                     .setContentIntent(pendingIntent)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_launcher_foreground)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                     .setChannelId(channel_id).build();
             notification.ledARGB = 0xff990000;
@@ -1129,7 +1129,7 @@ public class MyFirebseJobDidpatcher extends JobService {
                 .setPriority(Notification.PRIORITY_MAX)
                 .setContentIntent(pendingIntent)
                 .setStyle(bigTextStyle)
-                .setSmallIcon(R.mipmap.ic_launcher);
+                .setSmallIcon(R.mipmap.ic_launcher_foreground);
         notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
         if (enableSound) {
             MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);

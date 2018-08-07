@@ -14,17 +14,29 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
+import android.support.design.internal.NavigationMenu;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -51,6 +63,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.json.JSONException;
@@ -62,7 +77,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
+import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
 
 import static android.widget.Toast.makeText;
@@ -75,22 +93,22 @@ public class Forum extends Activity {
     CircularImageView post_image;
     ImageView send;
     ForumAdapter adapter;
+    FabSpeedDial forum_subscription;
     GraphRequest request;
     LinearLayoutManager manager;
     RecyclerView recyclerView;
-    ArrayList<String> namess, textss, times, post_id, user_id;
+    ArrayList<String> namess, textss, times, user_id, post_id, get_post_id_serially,comment_count,total_comments_each_post,
+            preview_replierID, preview_replierText,preview_replierName, user_device_token;
     EditText edit_text;
-    SharedPreferences loginPreference, myIDpreference;
+    SharedPreferences loginPreference, myIDpreference,notificationPreference;
     FirebaseDatabase database;
-    DatabaseReference rootReference;
+    DatabaseReference rootReference, reply_preview_reference,unsubscribeReference,blockReference;
     HashMap<String, Object> post;
-    boolean isLoggedIn;
     FirebaseAuth mAuth;
     ProgressDialog progressDialog;
-    String facebookAuth, facebook_id, facebook_user_name, facebook_user_text, facebook_post_time;
-    TextView fbname;
-
-
+    String facebookAuth, facebook_id, facebook_user_name, postID,blocked,
+            replierID,replierName, facebook_post_time, snapshotKey,myDeviceToken;
+    long postSize;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -112,13 +130,55 @@ public class Forum extends Activity {
         } else {
             alertMessage("Turn on data", "Try again", "Exit");
         }
-
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postQuery();
+                postQuery(currentPostTime());
             }
         });
+        forum_subscription.setMenuListener(new FabSpeedDial.MenuListener() {
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.forum_on:
+                        FirebaseMessaging.getInstance().subscribeToTopic("forum").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                myToaster("Notification turned on");
+                                notificationPreference.edit().putBoolean("unsubscribed_post_noti",false).apply();
+                            }
+                        });
+                        break;
+                    case R.id.forum_off:
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("forum").addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                myToaster("Notification turned off");
+                                notificationPreference.edit().putBoolean("unsubscribed_post_noti",true).apply();
+                            }
+                        });
+                        break;
+                }
+                return false;
+            }
+
+            @Override
+            public void onMenuClosed() {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        adapter.notifyDataSetChanged();
+//        loadForumPost();
     }
 
     private void loadForumPost() {
@@ -130,15 +190,32 @@ public class Forum extends Activity {
                 times.clear();
                 user_id.clear();
                 post_id.clear();
+                get_post_id_serially.clear();
+                preview_replierID.clear();
+                preview_replierText.clear();
+                preview_replierName.clear();
+                user_device_token.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     post_id.add(0, snapshot.getKey());
+                    get_post_id_serially.add(snapshot.getKey());
+                    user_id.add(0, snapshot.child("id").getValue(String.class));
                     namess.add(0, snapshot.child("name").getValue(String.class));
                     textss.add(0, snapshot.child("text").getValue(String.class));
-                    times.add(0, snapshot.child("time").getValue(String.class));
-                    user_id.add(0, snapshot.child("id").getValue(String.class));
+                    times.add(0, elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
+                    user_device_token.add(0, snapshot.child("devicetoken").getValue(String.class));
+                    replyPreview(snapshot.getKey());
                 }
+
+//                Iterator iterator = get_post_id_serially.iterator();
+//
+//                for (int i = 0; i < get_post_id_serially.size(); i++) {
+//                    if (iterator.hasNext()) {
+//                        replyPreview(get_post_id_serially.get(i));
+//                    }
+//                }
                 progressDialog.dismiss();
-                recyclerView.setAdapter(adapter);
+                loadBlocklist();
+                getMaxPostNuber();
             }
 
             @Override
@@ -147,6 +224,46 @@ public class Forum extends Activity {
             }
         });
 
+    }
+
+    private void replyPreview(final String post_ID) {
+        reply_preview_reference = database.getReference().child("user").child(post_ID).child("reply");
+        reply_preview_reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                replierID = "blank";
+                postID = "blank";
+                replierName="blank";
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshotKey = snapshot.getKey();
+                    total_comments_each_post.add(snapshot.getKey());
+                    replierID = snapshot.child("myID").getValue(String.class);
+                    postID = snapshot.child("text").getValue(String.class);
+                    replierName = snapshot.child("name").getValue(String.class);
+                }
+                if(total_comments_each_post.size()!=0){
+                    if(total_comments_each_post.size()>1){
+                        comment_count.add(0,Integer.toString(total_comments_each_post.size())+" comments");
+                    }else {
+                        comment_count.add(0,Integer.toString(total_comments_each_post.size())+" comment");
+                    }
+
+                }else {
+                    comment_count.add(0,"Reply");
+                }
+
+                total_comments_each_post.clear();
+                preview_replierText.add(0, postID);
+                preview_replierName.add(0,replierName);
+                preview_replierID.add(0, replierID);
+                recyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void graphRequest() {
@@ -161,7 +278,7 @@ public class Forum extends Activity {
                     Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
                     loadForumPost();
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    myToaster(e.getMessage());
                 }
 
             }
@@ -241,15 +358,19 @@ public class Forum extends Activity {
         myToaster("uid got");
     }
 
-    private void postQuery() {
+    private void postQuery(String current_post_time) {
+        String post_text=edit_text.getText().toString();
         if (edit_text.getText().toString().length() != 0) {
             post.put("name", facebook_user_name);
-            post.put("text", edit_text.getText().toString());
+            post.put("text",post_text );
             post.put("time", postDate());
             post.put("id", facebook_id);
-            rootReference.child(currentPostTime()).setValue(post).addOnSuccessListener(new OnSuccessListener<Void>() {
+            myDeviceToken= current_post_time+facebook_id ;
+            post.put("devicetoken", myDeviceToken);
+            rootReference.child(current_post_time).setValue(post).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
+                    myToaster("Posted succesfully");
                     edit_text.setText(null);
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -258,6 +379,8 @@ public class Forum extends Activity {
                     myToaster("failed");
                 }
             });
+            workSequence(post_text);
+
         } else {
             myToaster("Empty text");
         }
@@ -267,23 +390,33 @@ public class Forum extends Activity {
         alertBuilder = new AlertDialog.Builder(Forum.this);
         alert = alertBuilder.create();
         Calligrapher replyFont = new Calligrapher(Forum.this);
+        forum_subscription=(FabSpeedDial)findViewById(R.id.forum_subscription);
         replyFont.setFont(Forum.this, "kalpurush.ttf", true);
         namess = new ArrayList<>();
         textss = new ArrayList<>();
         times = new ArrayList<>();
         post_id = new ArrayList<>();
         user_id = new ArrayList<>();
+        preview_replierID = new ArrayList<>();
+        preview_replierText = new ArrayList<>();
+        preview_replierName= new ArrayList<>();
+        get_post_id_serially = new ArrayList<>();
+        user_device_token = new ArrayList<>();
+        comment_count= new ArrayList<>();
+        total_comments_each_post= new ArrayList<>();
         mAuth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
         loginPreference = getSharedPreferences("loggedin", Context.MODE_PRIVATE);
         myIDpreference = getSharedPreferences("myID", Context.MODE_PRIVATE);
+        notificationPreference = getSharedPreferences("forum_notification", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
         rootReference = database.getReference().child("user");
         post = new HashMap<>();
         edit_text = (EditText) findViewById(R.id.edit_text);
         recyclerView = (RecyclerView) findViewById(R.id.forum_recyclerView);
         send = (ImageView) findViewById(R.id.send);
-        adapter = new ForumAdapter(Forum.this, namess, textss, times, user_id, post_id);
+        adapter = new ForumAdapter(Forum.this, namess, textss, times, user_id,
+                post_id, preview_replierText,preview_replierName, preview_replierID, user_device_token,comment_count);
         manager = new LinearLayoutManager(Forum.this);
         post_image = (CircularImageView) findViewById(R.id.post_image);
         recyclerView.setLayoutManager(manager);
@@ -325,12 +458,48 @@ public class Forum extends Activity {
         return facebook_post_time;
     }
 
-    private String calculatePostTime(String post_time, int divide) {
-        Long current_time = System.currentTimeMillis();
-        Long postTime = Long.parseLong(post_time);
+    private String elapsedTime(String postTimeMillis, String genuine_pot_time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy h:mm a");
+        String ago;
+        long one_second = 1000;
+        long one_minute = one_second * 60;
+        long one_hour = one_minute * 60;
+        long day = one_hour * 24;
+        long post_time = Long.parseLong(postTimeMillis);
+        String post_time_DateFormat = sdf.format(post_time).substring(0, 11);
+        long current_time = System.currentTimeMillis();
+        String current_time_DateFormat = sdf.format(current_time).substring(0, 11);
+        long elapse_time = current_time - post_time;
 
-        Long difference = ((current_time - postTime) / divide);
-        String ago = Long.toString(difference);
+        if (elapse_time < one_second) {
+            ago = "jut now";
+        } else if (elapse_time >= one_second && elapse_time < one_minute) {
+            if (elapse_time / one_second == 1) {
+                ago = "1 second";
+            } else {
+                ago = Long.toString(elapse_time / one_second) + " seconds ago";
+            }
+
+        } else if (elapse_time >= one_minute && elapse_time < one_hour) {
+            if (elapse_time / one_minute == 1) {
+                ago = "1 min";
+            } else {
+                ago = Long.toString(elapse_time / one_minute) + " minutes ago";
+            }
+
+        } else if (elapse_time >= one_hour && elapse_time < day) {
+            if (elapse_time / one_hour == 1) {
+                ago = "1 hour";
+            } else if (elapse_time / one_hour > 1 && post_time_DateFormat.equals(current_time_DateFormat)) {
+                ago = Long.toString(elapse_time / one_hour) + " hours ago";
+            } else {
+                ago = "Yesterday at " + sdf.format(post_time).substring(12);
+            }
+        } else if (elapse_time >= day && elapse_time < day * 1.5) {
+            ago = "Yesterday at " + sdf.format(post_time).substring(12);
+        } else {
+            ago = genuine_pot_time;
+        }
         return ago;
 
     }
@@ -370,6 +539,191 @@ public class Forum extends Activity {
             }
         });
         alert.show();
+    }
+
+    private void subscribeTopic(String topic) {
+        FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+
+            }
+        });
+    }
+
+    private void sendFCMPush(String title, String message) {
+
+        JSONObject obj = null;
+        JSONObject objData;
+        JSONObject dataobjData;
+
+        try {
+            obj = new JSONObject();
+            objData = new JSONObject();
+
+            objData.put("body", message);
+            objData.put("title", title);
+            objData.put("sound", "default");
+            objData.put("icon", "ic_launcher_foreground"); //   icon_name
+            objData.put("tag", "tg");
+//            JSONObject put = objData.put("priority", "high");
+
+            dataobjData = new JSONObject();
+            dataobjData.put("text", message);
+            dataobjData.put("title", title);
+//            "/topics/"+salary.getText().toString()
+            obj.put("to", "/topics/forum");
+            obj.put("priority", "high");
+
+            obj.put("notification", objData);
+            obj.put("data", dataobjData);
+            Log.e("return here>>", obj.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, "https://fcm.googleapis.com/fcm/send", obj,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("True", response + "");
+                        if(!notificationPreference.getBoolean("unsubscribed_post_noti",false)) {
+                            subscribeTopic("forum");
+                        }
+                        subscribeTopic(myDeviceToken);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("False", error.getMessage());
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", "key=" + getString(R.string.serverKey));
+                params.put("Content-Type", "application/json");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        int socketTimeout = 1000 * 60;// 60 seconds
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        jsObjRequest.setRetryPolicy(policy);
+        requestQueue.add(jsObjRequest);
+    }
+
+    private void workSequence(final String post_text) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic("forum").addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                sendFCMPush(facebook_user_name,post_text);
+            }
+        });
+    }
+
+    private void loadBlocklist() {
+        blockReference = database.getReference().child("block");
+        blockReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if(snapshot.getKey().equals(facebook_id)){
+                        blocked=snapshot.getKey();
+                    }
+                    if(blocked!=null){
+                        edit_text.setEnabled(false);
+                        AlertDialog.Builder builder=new AlertDialog.Builder(Forum.this);
+                        AlertDialog dialog=builder.create();
+                        dialog.setMessage("You are permanently blocked from forum. You still can red forum posts but cannot post anything");
+                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        try {
+                            dialog.show();
+                        }catch (WindowManager.BadTokenException e){}
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void loadReportlist() {
+        DatabaseReference reportReference = database.getReference().child("reportID");
+        reportReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    if(snapshot.getKey().equals(facebook_id)){
+                        blocked=snapshot.getKey();
+                    }
+                    if(blocked!=null){
+                        edit_text.setEnabled(false);
+                        AlertDialog.Builder builder=new AlertDialog.Builder(Forum.this);
+                        AlertDialog dialog=builder.create();
+                        dialog.setMessage("You are permanently blocked from forum. You still can red forum posts but cannot post anything");
+                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        try {
+                            dialog.show();
+                        }catch (WindowManager.BadTokenException e){}
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void getMaxPostNuber() {
+        DatabaseReference postReference = database.getReference().child("postSize");
+
+        postReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                postSize=dataSnapshot.getValue(Long.class);
+                if(post_id.size()>postSize){
+                    HashMap<String, Object> unsubscribeList=new HashMap<>();
+                    unsubscribeList.put(post_id.get(post_id.size()-1),"");
+                    unsubscribeList.put(user_device_token.get(user_device_token.size()-1),"");
+                    unsubscribeReference = database.getReference().child("unsubscribe");
+                    unsubscribeReference.updateChildren(unsubscribeList).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                        }
+                    });
+                    rootReference.child(post_id.get(post_id.size()-1)).setValue(null,null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/tools"
     android:id="@+id/rootlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,29 +13,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="2"
-        android:paddingBottom="50dp"
+        android:layout_above="@+id/adViewCard"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:paddingTop="10dp"
         android:scrollbars="none" />
-    <ImageButton
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/forum"
         android:layout_width="55dp"
         android:layout_height="55dp"
         android:layout_above="@+id/adViewCard"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginEnd="17dp"
         android:layout_marginRight="17dp"
+        android:layout_marginTop="7dp"
         android:alpha=".85"
-        android:background="@drawable/forum_button"
+        android:background="#FC0E00"
         android:clickable="true"
         android:focusable="true"
         android:padding="10dp"
         android:src="@drawable/forum" />
     <ImageButton
+        android:layout_marginTop="4dp"
         android:id="@+id/notificationSumery"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -48,6 +48,7 @@
         android:src="@drawable/notification" />
 
     <Button
+        android:layout_marginTop="4dp"
         android:id="@+id/notificationCount"
         android:layout_width="20dp"
         android:layout_height="20dp"
@@ -74,7 +75,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:alpha=".85"
-        ads:fabBackgroundTint="#FC0E00"
+        ads:fabBackgroundTint="#000099"
         ads:fabGravity="bottom_end"
         ads:fabMenu="@menu/menu"
         ads:miniFabBackgroundTint="#000000"

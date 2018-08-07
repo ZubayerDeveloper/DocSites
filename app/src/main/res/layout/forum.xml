@@ -4,14 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:background="#dadada"
     tools:context=".Forum">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/forum_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp" />
+        android:layout_above="@+id/post_image"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp" />
+
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/post_image"
         android:layout_alignParentBottom="true"
@@ -55,4 +58,25 @@
         android:layout_marginBottom="17dp"
         android:background="@drawable/forum_button"
         android:src="@drawable/sendwhite" />
+    <io.github.yavski.fabspeeddial.FabSpeedDial
+        android:id="@+id/forum_subscription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/post_image"
+        android:layout_alignParentRight="true"
+        android:alpha=".95"
+        android:padding="5dp"
+        android:layout_marginBottom="4dp"
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+        ads:fabBackgroundTint="#123456"
+        app:fabGravity="bottom_end"
+        ads:miniFabBackgroundTint="#000000"
+        ads:miniFabBackgroundTintList="@array/menu_background_color"
+        ads:miniFabDrawableTint="#FFFFFF"
+        ads:miniFabTitleBackgroundTint="#000000"
+        ads:miniFabTitleTextColor="#FFFFFF"
+        ads:miniFabTitlesEnabled="true"
+        ads:touchGuard="true"
+        ads:touchGuardDrawable="@color/cardview_shadow_start_color"
+        app:fabMenu="@menu/forum_subscription_menu" />
 </RelativeLayout>

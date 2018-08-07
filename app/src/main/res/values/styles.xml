@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="@style/Theme.AppCompat.DayNight">
-	</style>
+    <style name="AppTheme" parent="@style/Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorAccent">#990000</item>
+    </style>
 
-    <style name="Theme.Transparent" parent="android:Theme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+    <style name="AppTheme.Launcher" parent="android:Theme.DeviceDefault.Light.DarkActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
+        <item name="windowActionBar">false</item>
+        <!--<item name="android:windowFullscreen">true</item>-->
     </style>
 	<style name="transparent" parent="@android:style/Theme.Dialog">
 		<item name="android:windowBackground">@android:color/transparent</item>

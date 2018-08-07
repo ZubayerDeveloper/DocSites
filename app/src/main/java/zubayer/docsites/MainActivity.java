@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -17,10 +18,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +38,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -45,7 +49,15 @@ import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jsoup.Jsoup;
@@ -70,10 +82,12 @@ public class MainActivity extends Activity {
     ProgressBar progressBar;
     ListView list;
     LinearLayoutManager manager;
+    FirebaseDatabase database;
+    DatabaseReference rootReference, reply_preview_reference;
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
-            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount;
+            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount,unsubscribe_list;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
@@ -92,17 +106,18 @@ public class MainActivity extends Activity {
             updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2,
             notificationNumberText;
     int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize,
-            finalNotificationSize, newNotification,bsmmubegin,bsmmuend;
+            finalNotificationSize, newNotification, bsmmubegin, bsmmuend;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
             bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable;
     MenuItem menuitem;
     Menu menu;
-    SharedPreferences preferences;
+    SharedPreferences preferences, notificationPreference;
     FabSpeedDial fab;
-    ImageButton notificationSummery,forum;
+    ImageButton notificationSummery;
+    FloatingActionButton forum;
     Button showNotificationNumber;
     FirebaseJobDispatcher jobDispatcher;
-    RecyclerView recyclerView;
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -110,6 +125,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -121,7 +137,6 @@ public class MainActivity extends Activity {
         createAdView();
         checkStoragePermission();
         checkApplaunched();
-//        setAlarm();
         stopFirebaseJobDispatcher();
         setFirebaseJobDispatcher(300, 21600);
         setListView();
@@ -129,7 +144,8 @@ public class MainActivity extends Activity {
         checkAppUpdates();
         initializeWidgetVariable();
         readNotificationCount();
-        subscribeTopic("forum");
+        forumSubscription();
+        loadUnsubscriber();
         fab = (FabSpeedDial) findViewById(R.id.fabs);
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
@@ -189,9 +205,9 @@ public class MainActivity extends Activity {
 
             @Override
             public void onMenuClosed() {
-
             }
         });
+
         forum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,11 +244,12 @@ public class MainActivity extends Activity {
 
         Intent appLinkIntent = getIntent();
         Uri appLinkData = appLinkIntent.getData();
-        if(appLinkIntent!=null&&appLinkData!=null){
+        if (appLinkIntent != null && appLinkData != null) {
             browser(appLinkData.toString());
         }
 
     }
+
 
     private void stopFirebaseJobDispatcher() {
         jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
@@ -340,7 +357,7 @@ public class MainActivity extends Activity {
     }
 
     public void ccdExecutableTag(String Url, String TagForText, String tagForLink,
-                              String Attr, int begin, int end, int lBegin, int lEnd) {
+                                 String Attr, int begin, int end, int lBegin, int lEnd) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -358,14 +375,14 @@ public class MainActivity extends Activity {
                 buttonTexts.add(btxt);
                 urls.add(url);
             }
-            buttonTexts.add(0,getString(R.string.homePage));
-            urls.add(0,"http://www.badas-dlp.org/");
+            buttonTexts.add(0, getString(R.string.homePage));
+            urls.add(0, "http://www.badas-dlp.org/");
         } catch (Exception e) {
         }
     }
 
     public void ccdExecutableTag2(String Url, String TagForText, String tagForLink,
-                                 String Attr, int begin, int end, int lBegin, int lEnd) {
+                                  String Attr, int begin, int end, int lBegin, int lEnd) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -567,7 +584,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -623,7 +641,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -680,7 +699,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -736,7 +756,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -748,14 +769,14 @@ public class MainActivity extends Activity {
             try {
                 Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
                 Elements links = doc.select("a");
-                bsmmubegin=0;
+                bsmmubegin = 0;
                 for (int i = bsmmubegin; i < links.size(); i++) {
                     Element link = links.get(i);
                     btxt = link.text();
                     url = link.select("a").attr("abs:href");
                     if (btxt.contains("Residency/Non Res.")) {
-                        bsmmubegin=i+1;
-                        bsmmuend=bsmmubegin+8;
+                        bsmmubegin = i + 1;
+                        bsmmuend = bsmmubegin + 8;
                         break;
                     }
                 }
@@ -771,6 +792,7 @@ public class MainActivity extends Activity {
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
@@ -809,7 +831,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -821,14 +844,14 @@ public class MainActivity extends Activity {
             try {
                 Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
                 Elements links = doc.select("a");
-                bsmmubegin=0;
+                bsmmubegin = 0;
                 for (int i = bsmmubegin; i < links.size(); i++) {
                     Element link = links.get(i);
                     btxt = link.text();
                     url = link.select("a").attr("abs:href");
                     if (btxt.contains("Admission and e-Reg.")) {
-                        bsmmubegin=i+1;
-                        bsmmuend=bsmmubegin+3;
+                        bsmmubegin = i + 1;
+                        bsmmuend = bsmmubegin + 3;
                         break;
                     }
                 }
@@ -844,6 +867,7 @@ public class MainActivity extends Activity {
             }
             return null;
         }
+
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
@@ -882,7 +906,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -939,7 +964,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -996,7 +1022,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -1052,7 +1079,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -1108,7 +1136,8 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -1223,7 +1252,8 @@ public class MainActivity extends Activity {
                     checkinternet.setCancelable(false);
                     checkinternet.show();
                 }
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -1304,7 +1334,7 @@ public class MainActivity extends Activity {
                 public void onClick(DialogInterface dialog, int id) {
                     Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + "zubayer.developer@gmail.com"));
                     i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ": ");
-                    i.putExtra(Intent.EXTRA_TEXT, "Write here:"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"\n"+"Sent from: " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
+                    i.putExtra(Intent.EXTRA_TEXT, "Write here:" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "Sent from: " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
                     startActivity(i);
                 }
             });
@@ -1914,6 +1944,15 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void forumSubscription() {
+        boolean unsubscribed;
+        notificationPreference = getSharedPreferences("forum_notification", Context.MODE_PRIVATE);
+        unsubscribed = notificationPreference.getBoolean("unsubscribed_post_noti", false);
+        if (!unsubscribed) {
+            subscribeTopic();
+        }
+    }
+
     private void setFont() {
         Calligrapher font = new Calligrapher(MainActivity.this);
         font.setFont(MainActivity.this, "kalpurush.ttf", true);
@@ -1924,7 +1963,7 @@ public class MainActivity extends Activity {
         Dialog.setCancelable(false);
         Dialog.setButton("Close", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
-                bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked=ccdClicked=dgfpClicked = false;
+                bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked = ccdClicked = dgfpClicked = false;
                 buttonTexts.clear();
                 urls.clear();
                 progressBar.setVisibility(View.GONE);
@@ -1940,11 +1979,11 @@ public class MainActivity extends Activity {
     }
 
     private void setListView() {
-        bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked=ccdClicked=dgfpClicked = false;
+        bsmmuClicked = bcpsClicked = dghsClicked = mohfwClicked = bpscClicked = gazetteClicked = bmdcClicked = resultsClicked = ccdClicked = dgfpClicked = false;
         adapter = new MyAdapter(MainActivity.this, buttonTexts, urls);
         m = getLayoutInflater().inflate(R.layout.listview, null);
         list = (ListView) m.findViewById(R.id.ListView);
-        manager=new LinearLayoutManager(MainActivity.this);
+        manager = new LinearLayoutManager(MainActivity.this);
         list.setAdapter(adapter);
         progressBar = (ProgressBar) m.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
@@ -1965,8 +2004,11 @@ public class MainActivity extends Activity {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState == 0) {
                     fab.show();
+                    forum.show();
+
                 } else {
                     fab.hide();
+                    forum.hide();
                 }
 
             }
@@ -2318,7 +2360,7 @@ public class MainActivity extends Activity {
 
     private void initializeWidgetVariable() {
         notificationSummery = (ImageButton) findViewById(R.id.notificationSumery);
-        forum = (ImageButton) findViewById(R.id.forum);
+        forum = (FloatingActionButton) findViewById(R.id.forum);
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
         showNotificationNumber.setVisibility(View.GONE);
     }
@@ -2338,12 +2380,42 @@ public class MainActivity extends Activity {
         }
         return dataConnected;
     }
-    private void subscribeTopic(String topic) {
-        FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+    private void subscribeTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic("forum").addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
             }
         });
     }
+
+    private void unSubscribeTopic(String topic) {
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+    }
+
+    private void loadUnsubscriber() {
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference().child("unsubscribe");
+        rootReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                unsubscribe_list=new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    unsubscribe_list.add(snapshot.getKey());
+                    unSubscribeTopic(snapshot.getKey());
+                }
+                if(unsubscribe_list.size()>1000){
+                    rootReference.child(unsubscribe_list.get(unsubscribe_list.size()-1)).setValue(null,null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/forum_on"
+        android:icon="@drawable/noti"
+        android:title="Turn on forum notification"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/forum_off"
+        android:icon="@drawable/off"
+        android:title="Turn off forum notification"
+        app:showAsAction="never" />
+</menu>

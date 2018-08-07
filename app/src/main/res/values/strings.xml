@@ -179,9 +179,10 @@
 
     <string name="browseralert">খেয়াল করুনঃ \n\nযদি কোন কিছু লোড না হয় বা লোড হতে সময় লাগে সেক্ষেত্রেঃ\n\n** অপশন থেকে বারবার Reload বাটন চাপুন \n\n** কাজ না হলে অপশন থেকে Download বাটন চাপুন\n\n** এতেও কাজ না হলে অপশন থেকে Open in External browser চাপুন\n\n** পরীক্ষার ফর্ম পূরণের ক্ষেত্রে এই অ্যাপের মাধ্যমে ছবি বা সিগনেচার আপলোড সম্ভব নয়, সেক্ষেত্রে ফর্মের পেইজ ওপেন হবার পর অপশন থেকে Open in External browser চাপুন</string>
     <string name="exit">\nMail me your problems, Ideas and suggestions for more links you want\n</string>
-<!--facebook app id-->
+    <!--facebook app id-->
     <string name="facebook_app_id">2166278010315392</string>
     <string name="fb_login_protocol_scheme">fb2166278010315392</string>
+    <string name="serverKey">AAAAXRtRDEE:APA91bEfnj7Ma-jAbSliHsHO9CrML88o8F90vV3QM0RLlLzWsYs-5gobWCi7MXDEMoK2dPHO2Yiwao9TAw0n8WBbmrFFa_TAC7LXE4ubdnJvjiUkRsWlZPCfUxlbNsmZjaHSUPNoWdSJ</string>
 
 
 </resources>
