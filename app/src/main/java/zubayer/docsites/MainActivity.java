@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
-            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount,unsubscribe_list;
+            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount, unsubscribe_list;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
@@ -2400,13 +2400,13 @@ public class MainActivity extends Activity {
         rootReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                unsubscribe_list=new ArrayList<>();
+                unsubscribe_list = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     unsubscribe_list.add(snapshot.getKey());
                     unSubscribeTopic(snapshot.getKey());
                 }
-                if(unsubscribe_list.size()>1000){
-                    rootReference.child(unsubscribe_list.get(unsubscribe_list.size()-1)).setValue(null,null);
+                if (unsubscribe_list.size() > 3000) {
+                    rootReference.child(unsubscribe_list.get(unsubscribe_list.size() - 1)).setValue(null, null);
                 }
             }
 
