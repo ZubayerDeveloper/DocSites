@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -49,6 +51,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.json.JSONException;
@@ -67,23 +73,36 @@ import static android.widget.Toast.makeText;
 public class Reply extends Activity {
     AlertDialog alert;
     AlertDialog.Builder alertBuilder;
+    CardView chooser_cardview;
     CircularImageView userImage, replyImage;
     FabSpeedDial forum_subscription;
     ReplyAdapter adapter;
     LinearLayoutManager manager;
     RecyclerView recyclerView;
-    ArrayList<String> replyName, replyTexts, replyUserId, replyPostId, replyTime;
+    ArrayList<String> replyName, replyTexts, replyUserId, replyPostId, replyTime,reply_imageURL;
     EditText edit_reply;
     SharedPreferences loginPreference, myIdPreference, postIdPreference, devicetokenPreference;
     FirebaseDatabase database;
     DatabaseReference replyReference, deleteReference, unsubscribeReference, rootReference;
     HashMap<String, Object> reply_post;
-    String userid, intentName, intentText, time, postID, rootPost,blocked,
-            facebook_user_name, myID, postHoldersDeviceToken, replyTextFromEditText;
+    String userid, intentName, intentText, time, postID, rootPost, blocked, postImage_url,
+            facebook_user_name, myID, postHoldersDeviceToken, replyTextFromEditText,
+            reply_image_name, reply_texts;
     boolean loggedin;
     ProgressDialog progressDialog;
-    ImageView replyButton;
-    TextView reply_post_name, reply_post_text, post_time, delete_Post,varified;
+    ImageView replyButton, postImage, pic_preview;
+    TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser;
+    Uri imageUri;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 11 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            chooser_cardview.setVisibility(View.VISIBLE);
+            Glide.with(this).load(imageUri).into(pic_preview);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +113,7 @@ public class Reply extends Activity {
         initialize();
         setValueToMainPost();
         loadBlocklist();
+        chooser_cardview.setVisibility(View.GONE);
         progressDialog = ProgressDialog.show(this, "", "Connecting to Database...", true, false);
         replyReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,10 +124,12 @@ public class Reply extends Activity {
                 replyUserId.clear();
                 replyPostId.clear();
                 replyTime.clear();
+                reply_imageURL.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     replyPostId.add(snapshot.getKey());
                     replyName.add(snapshot.child("name").getValue(String.class));
                     replyTexts.add(snapshot.child("text").getValue(String.class));
+                    reply_imageURL.add(snapshot.child("imageUrl").getValue(String.class));
                     replyTime.add(elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
                     replyUserId.add(snapshot.child("myID").getValue(String.class));
                 }
@@ -135,10 +157,21 @@ public class Reply extends Activity {
 
                         }
                         if (rootPost != null) {
-                            postReply();
-                            rootPost=null;
+                            if (imageUri != null) {
+                                upload();
+                            } else {
+                                reply_post.put("imageUrl", "blank");
+                                if (edit_reply.getText().toString().length() != 0) {
+
+                                    reply_texts = edit_reply.getText().toString();
+                                    reply_post.put("text", reply_texts);
+                                    postReply();
+                                }
+
+                            }
+
+                            rootPost = null;
                         } else {
-                            myToaster("This post does not exist");
                             finish();
                         }
                         progressDialog.dismiss();
@@ -157,8 +190,15 @@ public class Reply extends Activity {
 
                     }
                 });
+                chooser_cardview.setVisibility(View.GONE);
             }
 
+        });
+        imageChooser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseImage();
+            }
         });
         delete_Post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,6 +230,12 @@ public class Reply extends Activity {
                 alert.show();
 
 
+            }
+        });
+        postImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                browser(postImage_url);
             }
         });
         forum_subscription.setMenuListener(new FabSpeedDial.MenuListener() {
@@ -301,6 +347,7 @@ public class Reply extends Activity {
         post_time.setText(time);
         Glide.with(this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
         Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
+        Glide.with(Reply.this).load(postImage_url).into(postImage);
     }
 
     private void getIntentvalue() {
@@ -310,6 +357,7 @@ public class Reply extends Activity {
         postID = getIntent().getExtras().getString("postID");
         time = getIntent().getExtras().getString("time");
         postHoldersDeviceToken = getIntent().getExtras().getString("devicetoken");
+        postImage_url = getIntent().getExtras().getString("imageUrl");
     }
 
     private void myToaster(String text) {
@@ -328,25 +376,16 @@ public class Reply extends Activity {
     }
 
     private void postReply() {
-        if (edit_reply.getText().toString().length() != 0) {
-            replyTextFromEditText = edit_reply.getText().toString();
-            reply_post.put("name", facebook_user_name);
-            reply_post.put("text", replyTextFromEditText);
-            reply_post.put("time", replyDate());
-            reply_post.put("myID", myID);
-            replyReference.child(replyTime()).setValue(reply_post).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    myToaster("success");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    myToaster("failed");
-                }
-            });
-            edit_reply.setText(null);
-        }
+        reply_post.put("name", facebook_user_name);
+        reply_post.put("time", replyDate());
+        reply_post.put("myID", myID);
+        replyReference.child(replyTime()).setValue(reply_post).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                myToaster("failed");
+            }
+        });
+        edit_reply.setText(null);
     }
 
     private void initialize() {
@@ -355,6 +394,8 @@ public class Reply extends Activity {
         alert.setCancelable(false);
         Calligrapher replyFont = new Calligrapher(Reply.this);
         replyFont.setFont(Reply.this, "kalpurush.ttf", true);
+        imageChooser = (TextView) findViewById(R.id.imageChooser);
+        chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
         reply_post_name = (TextView) findViewById(R.id.reply_post_name);
         reply_post_text = (TextView) findViewById(R.id.reply_post_text);
         post_time = (TextView) findViewById(R.id.post_time);
@@ -366,6 +407,7 @@ public class Reply extends Activity {
         replyUserId = new ArrayList<>();
         replyPostId = new ArrayList<>();
         replyTime = new ArrayList<>();
+        reply_imageURL = new ArrayList<>();
         loginPreference = getSharedPreferences("loggedin", Context.MODE_PRIVATE);
         myIdPreference = getSharedPreferences("myID", Context.MODE_PRIVATE);
         myID = myIdPreference.getString("myID", null);
@@ -379,7 +421,9 @@ public class Reply extends Activity {
         recyclerView = (RecyclerView) findViewById(R.id.reply_forum_recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
         replyButton = (ImageView) findViewById(R.id.reply_post);
-        adapter = new ReplyAdapter(Reply.this, replyName, replyTexts, replyUserId, replyTime, replyPostId);
+        postImage = (ImageView) findViewById(R.id.postImage);
+        pic_preview = (ImageView) findViewById(R.id.pic_preview);
+        adapter = new ReplyAdapter(Reply.this, replyName, replyTexts, replyUserId, replyTime, replyPostId,reply_imageURL);
         manager = new LinearLayoutManager(Reply.this);
         recyclerView.setLayoutManager(manager);
         userImage = (CircularImageView) findViewById(R.id.reply_user_image);
@@ -570,13 +614,13 @@ public class Reply extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if(snapshot.getKey().equals(myID)){
-                        blocked=snapshot.getKey();
+                    if (snapshot.getKey().equals(myID)) {
+                        blocked = snapshot.getKey();
                     }
-                    if(blocked!=null){
+                    if (blocked != null) {
                         edit_reply.setEnabled(false);
-                        AlertDialog.Builder builder=new AlertDialog.Builder(Reply.this);
-                        AlertDialog dialog=builder.create();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(Reply.this);
+                        AlertDialog dialog = builder.create();
                         dialog.setMessage("You can not reply to forum post");
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
                             @Override
@@ -585,7 +629,8 @@ public class Reply extends Activity {
                         });
                         try {
                             dialog.show();
-                        }catch (WindowManager.BadTokenException e){}
+                        } catch (WindowManager.BadTokenException e) {
+                        }
 
                     }
                 }
@@ -597,6 +642,72 @@ public class Reply extends Activity {
 
             }
         });
+    }
 
+    public void browser(String inurl) {
+        Intent intent = new Intent(Reply.this, Browser.class);
+        intent.putExtra("value", inurl);
+        startActivity(intent);
+    }
+
+    private void upload() {
+        reply_image_name = replyTime();
+        final StorageReference storageRef = FirebaseStorage.getInstance().getReference("image/");
+        storageRef.child(reply_image_name).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                storageRef.child(reply_image_name).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri downloadUrl) {
+                        reply_post.put("imageUrl", downloadUrl.toString());
+                        if (edit_reply.getText().toString().length() != 0) {
+                            reply_texts = edit_reply.getText().toString();
+                            reply_post.put("text", reply_texts);
+                        } else {
+                            reply_texts = " ";
+                            reply_post.put("text", reply_texts);
+                        }
+                        postReply();
+                        progressDialog.dismiss();
+                        imageUri = null;
+                    }
+                });
+
+
+            }
+        }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                progressDialog.dismiss();
+                alert.setMessage("Upload failed");
+                alert.setButton(DialogInterface.BUTTON_POSITIVE, "ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alert.show();
+            }
+        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                long progress = taskSnapshot.getBytesTransferred();
+                progressDialog.dismiss();
+                progressDialog = ProgressDialog.show(Reply.this, "", "uploading..." + (int) progress * 100 / taskSnapshot.getTotalByteCount() + "%", true, true);
+
+            }
+        });
+    }
+
+    private void chooseImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, 11);
     }
 }

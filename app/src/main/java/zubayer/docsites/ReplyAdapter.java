@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +28,7 @@ import java.util.HashMap;
 import static android.widget.Toast.makeText;
 
 public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
-    ArrayList<String> reply_doc_name,reply_doc_text,reply_user_id, post_reply_time,reply_id;
+    ArrayList<String> reply_doc_name,reply_doc_text,reply_user_id, post_reply_time,reply_id,repy_image_url;
     Activity context;
     Typeface forum_font;
     FirebaseDatabase database;
@@ -40,12 +41,14 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
                         ArrayList<String> reply_doc_text,
                         ArrayList<String> reply_user_id,
                         ArrayList<String> post_reply_time,
-                        ArrayList<String> reply_id) {
+                        ArrayList<String> reply_id,
+                        ArrayList<String> repy_image_url) {
         this.reply_doc_name = reply_doc_name;
         this.reply_doc_text = reply_doc_text;
         this.reply_user_id=reply_user_id;
         this.post_reply_time =post_reply_time;
         this.reply_id=reply_id;
+        this.repy_image_url=repy_image_url;
         this.context=context;
         database= FirebaseDatabase.getInstance();
         postIdPreference=context.getSharedPreferences("postid",Context.MODE_PRIVATE);
@@ -70,8 +73,13 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         holder.docText.setTypeface(forum_font);
         holder.postTime.setText(post_reply_time.get(position));
         holder.postTime.setTypeface(forum_font);
-        Glide.with(context).load("https://graph.facebook.com/" + reply_user_id.get(position) + "/picture?width=800").into(holder.pic);
 
+        try {
+            Glide.with(context).load("https://graph.facebook.com/" + reply_user_id.get(position) + "/picture?width=800").into(holder.pic);
+            Glide.with(context).load(repy_image_url.get(position)).into(holder.replyImage);
+
+        } catch (IndexOutOfBoundsException e) {
+        }
         delete_reply_Reference=database.getReference().child("user").child(postID).child("reply");
         myIDpreference = context.getSharedPreferences("myID",Context.MODE_PRIVATE);
         myID=myIDpreference.getString("myID",null);
@@ -122,6 +130,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
 
         TextView docName,docText,postTime,reply,delete_reply,varified;
         CircularImageView pic;
+        ImageView replyImage;
         private VHolder(View itemView) {
             super(itemView);
             docName=(TextView)itemView.findViewById(R.id.reply_name);
@@ -130,6 +139,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
             delete_reply=(TextView)itemView.findViewById(R.id.delete_reply);
             varified = (TextView) itemView.findViewById(R.id.varified);
             pic=(CircularImageView)itemView.findViewById(R.id.reply_image);
+            replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
 
         }
     }

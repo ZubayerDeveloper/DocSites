@@ -29,12 +29,22 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                      <entry key="clipartAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_camera_alt_black_24dp.xml" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="image">
                                         <value>
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="paddingPercent" value="-10" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -47,7 +57,7 @@
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
                                       <entry key="iconShape" value="CIRCLE" />
-                                      <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\var.PNG" />
+                                      <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\fb.png" />
                                       <entry key="outputName" value="varified2" />
                                     </map>
                                   </option>
@@ -64,7 +74,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_delete_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_camera_alt_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -75,7 +85,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\images.png" />
-                                      <entry key="outputName" value="dels" />
+                                      <entry key="outputName" value="imag_chooser" />
                                     </map>
                                   </option>
                                 </PersistentState>

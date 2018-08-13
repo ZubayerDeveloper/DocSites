@@ -14,6 +14,7 @@ import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -55,7 +57,7 @@ import static android.widget.Toast.makeText;
 
 public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     ArrayList<String> doc_name, doc_text, post_Time, user_id, post_id, reply_preview, reply_preview_name,
-            replier_id, user_device_token, commentCount;
+            replier_id, user_device_token, commentCount, postImageUrl;
     Activity context;
     Typeface forum_font;
     SharedPreferences myIDpreference;
@@ -75,7 +77,8 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                         ArrayList<String> reply_preview_name,
                         ArrayList<String> replier_id,
                         ArrayList<String> user_device_token,
-                        ArrayList<String> commentCount) {
+                        ArrayList<String> commentCount,
+                        ArrayList<String> postImageUrl) {
         this.doc_name = doc_name;
         this.doc_text = doc_text;
         this.post_Time = post_Time;
@@ -85,6 +88,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         this.reply_preview_name = reply_preview_name;
         this.replier_id = replier_id;
         this.commentCount = commentCount;
+        this.postImageUrl = postImageUrl;
         this.user_device_token = user_device_token;
 
         this.context = context;
@@ -108,47 +112,50 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     @Override
     public void onBindViewHolder(@NonNull final VHolder holder, final int position) {
 //        try {
-            holder.docName.setText(doc_name.get(position));
-            holder.docName.setTypeface(forum_font);
-            if (doc_text.get(position).length() > 200) {
-                holder.docText.setText(doc_text.get(position).substring(0, 200) + "...." + " continue reading");
+        holder.docName.setText(doc_name.get(position));
+        holder.docName.setTypeface(forum_font);
+        if (doc_text.get(position).length() > 200) {
+            holder.docText.setText(doc_text.get(position).substring(0, 200) + "...." + " continue reading");
+        } else {
+            holder.docText.setText(doc_text.get(position));
+
+        }
+        holder.docText.setTypeface(forum_font);
+        try {
+            holder.comment_count.setText(commentCount.get(position));
+            if (reply_preview.get(position).equals("blank")) {
+                holder.preview_reply.setVisibility(View.GONE);
+                holder.preview_reply_name.setVisibility(View.GONE);
+                holder.preview_pic.setVisibility(View.GONE);
+                holder.varified_reply.setVisibility(View.GONE);
             } else {
-                holder.docText.setText(doc_text.get(position));
-
-            }
-            holder.docText.setTypeface(forum_font);
-            try {
-                holder.comment_count.setText(commentCount.get(position));
-                if (reply_preview.get(position).contains("blank")) {
-                    holder.preview_reply.setVisibility(View.GONE);
-                    holder.preview_reply_name.setVisibility(View.GONE);
-                    holder.preview_pic.setVisibility(View.GONE);
-                    holder.varified_reply.setVisibility(View.GONE);
+                if (reply_preview.get(position).length() > 100) {
+                    holder.preview_reply.setText(reply_preview.get(position).substring(0, 100) + "....");
                 } else {
-                    if (reply_preview.get(position).length() > 100) {
-                        holder.preview_reply.setText(reply_preview.get(position).substring(0, 100) + "....");
-                    } else {
-                        holder.preview_reply.setText(reply_preview.get(position));
-                    }
-
-                    holder.preview_reply_name.setText(reply_preview_name.get(position));
-                    holder.preview_reply.setTypeface(forum_font);
-                    holder.preview_reply_name.setTypeface(forum_font);
-                    if (!replier_id.get(position).equals("1335608633238560")) {
-                        holder.varified_reply.setVisibility(View.GONE);
-                    }
-                    Glide.with(context).load("https://graph.facebook.com/" + replier_id.get(position) + "/picture?width=800").into(holder.preview_pic);
+                    holder.preview_reply.setText(reply_preview.get(position));
                 }
-            }catch (IndexOutOfBoundsException e){}
-            holder.postTime.setText(post_Time.get(position));
-            holder.postTime.setTypeface(forum_font);
+
+                holder.preview_reply_name.setText(reply_preview_name.get(position));
+                holder.preview_reply.setTypeface(forum_font);
+                holder.preview_reply_name.setTypeface(forum_font);
+                if (!replier_id.get(position).equals("1335608633238560")) {
+                    holder.varified_reply.setVisibility(View.GONE);
+                }
+                Glide.with(context).load("https://graph.facebook.com/" + replier_id.get(position) + "/picture?width=800").into(holder.preview_pic);
+            }
+        } catch (IndexOutOfBoundsException e) {
+        }
+        holder.postTime.setText(post_Time.get(position));
+        holder.postTime.setTypeface(forum_font);
 
 //        } catch (IndexOutOfBoundsException e) {
 //            context.startActivity(new Intent(context, Forum.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 //        }
-
-        Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
-
+        try {
+            Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
+            Glide.with(context).load(postImageUrl.get(position)).into(holder.postImage);
+        } catch (IndexOutOfBoundsException e) {
+        }
         holder.preview_reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -253,7 +260,12 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 return true;
             }
         });
-
+        holder.postImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                browser(postImageUrl.get(position));
+            }
+        });
         try {
             if (user_id.get(position).equals("1335608633238560")) {
                 holder.varified.setVisibility(View.VISIBLE);
@@ -269,11 +281,11 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             } else {
                 holder.block.setVisibility(View.GONE);
             }
-//            if(user_id.get(position).equals(myID)){
-//                holder.report.setVisibility(View.GONE);
-//            }else {
-//                holder.report.setVisibility(View.VISIBLE);
-//            }
+            if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
+                holder.report.setVisibility(View.GONE);
+            } else {
+                holder.report.setVisibility(View.VISIBLE);
+            }
 
             if (user_id.get(position).equals(myID) || myID.equals("1335608633238560")) {
                 rootReference = database.getReference().child("user");
@@ -344,6 +356,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         intent.putExtra("time", post_Time.get(position));
         intent.putExtra("postID", post_id.get(position));
         intent.putExtra("devicetoken", user_device_token.get(position));
+        intent.putExtra("imageUrl", postImageUrl.get(position));
         context.startActivity(intent);
     }
 
@@ -358,6 +371,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 preview_reply_name, block, comment_count, report;
         CircularImageView pic, preview_pic;
         CardView cardView;
+        ImageView postImage;
 
         private VHolder(View itemView) {
             super(itemView);
@@ -373,6 +387,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             block = (TextView) itemView.findViewById(R.id.block);
             comment_count = (TextView) itemView.findViewById(R.id.comment_count);
             report = (TextView) itemView.findViewById(R.id.report);
+            postImage = (ImageView) itemView.findViewById(R.id.postImage);
             pic = (CircularImageView) itemView.findViewById(R.id.user_image);
             preview_pic = (CircularImageView) itemView.findViewById(R.id.reply_preview_image);
 
@@ -406,6 +421,10 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         request.executeAsync();
     }
 
-
+    public void browser(String inurl) {
+        Intent intent = new Intent(context, Browser.class);
+        intent.putExtra("value", inurl);
+        context.startActivity(intent);
+    }
 }
 
