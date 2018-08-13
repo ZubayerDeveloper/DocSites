@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,6 +79,9 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         try {
             Glide.with(context).load("https://graph.facebook.com/" + reply_user_id.get(position) + "/picture?width=800").into(holder.pic);
             Glide.with(context).load(repy_image_url.get(position)).into(holder.replyImage);
+            if(repy_image_url.get(position).equals("blank")){
+                holder.progressBar.setVisibility(View.GONE);
+            }
 
         } catch (IndexOutOfBoundsException e) {
         }
@@ -138,6 +142,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         TextView docName,docText,postTime,reply,delete_reply,varified;
         CircularImageView pic;
         ImageView replyImage;
+        ProgressBar progressBar;
         private VHolder(View itemView) {
             super(itemView);
             docName=(TextView)itemView.findViewById(R.id.reply_name);
@@ -147,7 +152,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
             varified = (TextView) itemView.findViewById(R.id.varified);
             pic=(CircularImageView)itemView.findViewById(R.id.reply_image);
             replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
-
+            progressBar=(ProgressBar)itemView.findViewById(R.id.reply_layout_progressbar);
         }
     }
     private void myToast(String text) {

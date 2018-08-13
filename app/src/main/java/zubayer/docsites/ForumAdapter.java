@@ -156,9 +156,13 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         try {
             Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
             Glide.with(context).load(postImageUrl.get(position)).into(holder.postImage);
+            if(postImageUrl.get(position).equals("blank")){
+                holder.progressBar.setVisibility(View.GONE);
+            }
             if (!replyImageUrl.get(position).equals("blank")) {
                 Glide.with(context).load(replyImageUrl.get(position)).into(holder.replyImage);
                 holder.replyImage.setVisibility(View.VISIBLE);
+
             } else {
                 holder.replyImage.setVisibility(View.GONE);
             }
@@ -198,7 +202,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         holder.replyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                browser(postImageUrl.get(position));
+                browser(replyImageUrl.get(position));
             }
         });
         holder.block.setOnClickListener(new View.OnClickListener() {
@@ -263,7 +267,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                     dialog.show();
                 } catch (WindowManager.BadTokenException e) {
                 }
-
             }
         });
         holder.docText.setOnLongClickListener(new View.OnLongClickListener() {
@@ -387,6 +390,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         CircularImageView pic, preview_pic;
         CardView cardView;
         ImageView postImage, replyImage;
+        ProgressBar progressBar;
 
         private VHolder(View itemView) {
             super(itemView);
@@ -406,6 +410,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
             pic = (CircularImageView) itemView.findViewById(R.id.user_image);
             preview_pic = (CircularImageView) itemView.findViewById(R.id.reply_preview_image);
+            progressBar=(ProgressBar)itemView.findViewById(R.id.forum_layout_progressbar);
 
         }
     }

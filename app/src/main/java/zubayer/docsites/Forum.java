@@ -113,7 +113,7 @@ public class Forum extends Activity {
             post_text;
 
     StorageReference storageRef;
-    TextView imageChooser;
+    TextView imageChooser,del_chooser;
     Uri imageUri;
     long postSize;
 
@@ -179,6 +179,13 @@ public class Forum extends Activity {
             @Override
             public void onClick(View v) {
                 chooseImage();
+            }
+        });
+        del_chooser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageUri=null;
+                chooser_cardview.setVisibility(View.GONE);
             }
         });
         forum_subscription.setMenuListener(new FabSpeedDial.MenuListener() {
@@ -498,6 +505,7 @@ public class Forum extends Activity {
         chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
         forum_subscription = (FabSpeedDial) findViewById(R.id.forum_subscription);
         imageChooser = (TextView) findViewById(R.id.imageChooser);
+        del_chooser= (TextView) findViewById(R.id.del_chooser);
         replyFont.setFont(Forum.this, "kalpurush.ttf", true);
         namess = new ArrayList<>();
         textss = new ArrayList<>();

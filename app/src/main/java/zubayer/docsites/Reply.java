@@ -91,7 +91,7 @@ public class Reply extends Activity {
     boolean loggedin;
     ProgressDialog progressDialog;
     ImageView replyButton, postImage, pic_preview;
-    TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser;
+    TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser,del_chooser;
     Uri imageUri;
 
     @Override
@@ -198,6 +198,13 @@ public class Reply extends Activity {
             @Override
             public void onClick(View v) {
                 chooseImage();
+            }
+        });
+        del_chooser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageUri=null;
+                chooser_cardview.setVisibility(View.GONE);
             }
         });
         delete_Post.setOnClickListener(new View.OnClickListener() {
@@ -395,6 +402,7 @@ public class Reply extends Activity {
         Calligrapher replyFont = new Calligrapher(Reply.this);
         replyFont.setFont(Reply.this, "kalpurush.ttf", true);
         imageChooser = (TextView) findViewById(R.id.imageChooser);
+        del_chooser= (TextView) findViewById(R.id.del_chooser);
         chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
         reply_post_name = (TextView) findViewById(R.id.reply_post_name);
         reply_post_text = (TextView) findViewById(R.id.reply_post_text);
