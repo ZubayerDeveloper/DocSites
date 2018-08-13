@@ -169,8 +169,6 @@ public class Forum extends Activity {
                     }
 
                 }
-
-
                 chooser_cardview.setVisibility(View.GONE);
 
             }
