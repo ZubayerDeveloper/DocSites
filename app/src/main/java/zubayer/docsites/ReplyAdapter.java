@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
@@ -83,6 +84,12 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         delete_reply_Reference=database.getReference().child("user").child(postID).child("reply");
         myIDpreference = context.getSharedPreferences("myID",Context.MODE_PRIVATE);
         myID=myIDpreference.getString("myID",null);
+        holder.replyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                browser(repy_image_url.get(position));
+            }
+        });
         holder.docText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -148,6 +155,11 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
 
+    }
+    public void browser(String inurl) {
+        Intent intent = new Intent(context, Browser.class);
+        intent.putExtra("value", inurl);
+        context.startActivity(intent);
     }
 }
 

@@ -57,7 +57,7 @@ import static android.widget.Toast.makeText;
 
 public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     ArrayList<String> doc_name, doc_text, post_Time, user_id, post_id, reply_preview, reply_preview_name,
-            replier_id, user_device_token, commentCount, postImageUrl;
+            replier_id, user_device_token, commentCount, postImageUrl, replyImageUrl;
     Activity context;
     Typeface forum_font;
     SharedPreferences myIDpreference;
@@ -78,7 +78,8 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                         ArrayList<String> replier_id,
                         ArrayList<String> user_device_token,
                         ArrayList<String> commentCount,
-                        ArrayList<String> postImageUrl) {
+                        ArrayList<String> postImageUrl,
+                        ArrayList<String> replyImageUrl) {
         this.doc_name = doc_name;
         this.doc_text = doc_text;
         this.post_Time = post_Time;
@@ -89,6 +90,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         this.replier_id = replier_id;
         this.commentCount = commentCount;
         this.postImageUrl = postImageUrl;
+        this.replyImageUrl = replyImageUrl;
         this.user_device_token = user_device_token;
 
         this.context = context;
@@ -154,8 +156,14 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         try {
             Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
             Glide.with(context).load(postImageUrl.get(position)).into(holder.postImage);
+            if (!replyImageUrl.get(position).equals("blank")) {
+                Glide.with(context).load(replyImageUrl.get(position)).into(holder.replyImage);
+                holder.replyImage.setVisibility(View.VISIBLE);
+            } else {
+                holder.replyImage.setVisibility(View.GONE);
+            }
         } catch (IndexOutOfBoundsException e) {
-        }
+        }catch (NullPointerException e){}
         holder.preview_reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,6 +187,18 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             @Override
             public void onClick(View v) {
                 intentPutExtra(position);
+            }
+        });
+        holder.postImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                browser(postImageUrl.get(position));
+            }
+        });
+        holder.replyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                browser(postImageUrl.get(position));
             }
         });
         holder.block.setOnClickListener(new View.OnClickListener() {
@@ -260,12 +280,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 return true;
             }
         });
-        holder.postImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                browser(postImageUrl.get(position));
-            }
-        });
+
         try {
             if (user_id.get(position).equals("1335608633238560")) {
                 holder.varified.setVisibility(View.VISIBLE);
@@ -371,7 +386,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 preview_reply_name, block, comment_count, report;
         CircularImageView pic, preview_pic;
         CardView cardView;
-        ImageView postImage;
+        ImageView postImage, replyImage;
 
         private VHolder(View itemView) {
             super(itemView);
@@ -388,6 +403,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             comment_count = (TextView) itemView.findViewById(R.id.comment_count);
             report = (TextView) itemView.findViewById(R.id.report);
             postImage = (ImageView) itemView.findViewById(R.id.postImage);
+            replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
             pic = (CircularImageView) itemView.findViewById(R.id.user_image);
             preview_pic = (CircularImageView) itemView.findViewById(R.id.reply_preview_image);
 

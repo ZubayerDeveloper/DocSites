@@ -107,7 +107,6 @@
                         android:id="@+id/postImage"
                         android:layout_below="@+id/reply_post_text"
                         android:layout_centerInParent="true"
-                        android:layout_marginTop="5dp"
                         android:layout_marginBottom="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
