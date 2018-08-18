@@ -45,6 +45,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import org.json.JSONException;
@@ -63,7 +65,8 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     SharedPreferences myIDpreference;
     String myID, myName;
     FirebaseDatabase database;
-    DatabaseReference rootReference, unsubscribeReference, blockReference;
+    DatabaseReference rootReference, unsubscribeReference, blockReference,imageReference;
+    StorageReference storageRef;
     AlertDialog dialog;
     AlertDialog.Builder builder;
 
@@ -116,6 +119,9 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
 //        try {
         holder.docName.setText(doc_name.get(position));
         holder.docName.setTypeface(forum_font);
+        if(holder.docText.equals(" ")){
+            holder.docText.setVisibility(View.GONE);
+        }
         if (doc_text.get(position).length() > 200) {
             holder.docText.setText(doc_text.get(position).substring(0, 200) + "...." + " continue reading");
         } else {
@@ -133,7 +139,9 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             } else {
                 if (reply_preview.get(position).length() > 100) {
                     holder.preview_reply.setText(reply_preview.get(position).substring(0, 100) + "....");
-                } else {
+                } else if(holder.preview_reply.equals(" ")){
+                    holder.preview_reply.setVisibility(View.GONE);
+                }else {
                     holder.preview_reply.setText(reply_preview.get(position));
                 }
 
@@ -155,6 +163,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
 //        }
         try {
             Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
+
             Glide.with(context).load(postImageUrl.get(position)).into(holder.postImage);
             if(postImageUrl.get(position).equals("blank")){
                 holder.progressBar.setVisibility(View.GONE);
@@ -199,12 +208,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 browser(postImageUrl.get(position));
             }
         });
-        holder.replyImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                browser(replyImageUrl.get(position));
-            }
-        });
+
         holder.block.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -214,7 +218,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 AlertDialog dialog = builder.create();
                 dialog.setMessage("Block " + doc_name.get(position) + " ?");
-                dialog.setButton(DialogInterface.BUTTON1, "Block", new DialogInterface.OnClickListener() {
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Block", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         blockReference.updateChildren(blockList).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -225,7 +229,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                         });
                     }
                 });
-                dialog.setButton(DialogInterface.BUTTON3, "Cancel", new DialogInterface.OnClickListener() {
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -290,24 +294,26 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             } else {
                 holder.varified.setVisibility(View.GONE);
             }
-            if (myID.equals("1335608633238560")) {
-                if (user_id.get(position).equals("1335608633238560")) {
-                    holder.block.setVisibility(View.GONE);
-                } else {
-                    holder.block.setVisibility(View.VISIBLE);
-                }
-            } else {
-                holder.block.setVisibility(View.GONE);
-            }
-            if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
-                holder.report.setVisibility(View.GONE);
-            } else {
-                holder.report.setVisibility(View.VISIBLE);
-            }
+//            if (myID.equals("1335608633238560")) {
+//                if (user_id.get(position).equals("1335608633238560")) {
+//                    holder.block.setVisibility(View.GONE);
+//                } else {
+//                    holder.block.setVisibility(View.VISIBLE);
+//                }
+//            } else {
+//                holder.block.setVisibility(View.GONE);
+//            }
+//            if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
+//                holder.report.setVisibility(View.GONE);
+//            } else {
+//                holder.report.setVisibility(View.VISIBLE);
+//            }
 
             if (user_id.get(position).equals(myID) || myID.equals("1335608633238560")) {
                 rootReference = database.getReference().child("user");
                 unsubscribeReference = database.getReference().child("unsubscribe");
+                storageRef = FirebaseStorage.getInstance().getReference("image/");
+                imageReference = database.getReference().child("imageReference");
                 holder.delete_post.setVisibility(View.VISIBLE);
                 holder.delete_post.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -341,6 +347,9 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                                     }
                                 });
 
+                                storageRef.child(post_id.get(position)).delete();
+                                imageReference.child(post_id.get(position)).setValue(null);
+
                             }
                         });
                         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
@@ -368,13 +377,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
 
     private void intentPutExtra(int position) {
         Intent intent = new Intent(context, Reply.class);
-        intent.putExtra("id", user_id.get(position));
-        intent.putExtra("name", doc_name.get(position));
-        intent.putExtra("text", doc_text.get(position));
-        intent.putExtra("time", post_Time.get(position));
         intent.putExtra("postID", post_id.get(position));
-        intent.putExtra("devicetoken", user_device_token.get(position));
-        intent.putExtra("imageUrl", postImageUrl.get(position));
         context.startActivity(intent);
     }
 

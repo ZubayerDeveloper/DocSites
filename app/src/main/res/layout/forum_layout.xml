@@ -18,8 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
-            android:orientation="vertical"
-            android:padding="6dp">
+            android:orientation="vertical">
 
             <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/user_image"
@@ -34,11 +33,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/user_image"
-                tools:text="User name"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
                 android:textColor="#000099"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="User name" />
 
             <TextView
                 android:id="@+id/varified"
@@ -68,12 +67,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/time"
                 android:layout_marginLeft="5dp"
-                android:autoLink="all"
                 android:layout_marginTop="10dp"
-                tools:text="User text"
+                android:autoLink="all"
                 android:textColor="#000000"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="User text" />
+
             <LinearLayout
                 android:id="@+id/seperator"
                 android:layout_width="match_parent"
@@ -82,48 +82,51 @@
                 android:background="#DFDFDF"
                 android:orientation="vertical"
                 android:padding=".2dp" />
+
             <TextView
                 android:id="@+id/time"
-                android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/user_name"
-                android:layout_toRightOf="@+id/user_image"
+                android:layout_marginLeft="5dp"
                 android:layout_marginTop="4dp"
-                tools:text="time"
-                android:textColor="#916E00" />
+                android:layout_toRightOf="@+id/user_image"
+                android:textColor="#916E00"
+                tools:text="time" />
 
             <TextView
                 android:id="@+id/block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/seperator"
+                android:layout_marginTop="4dp"
                 android:layout_toRightOf="@+id/report"
                 android:padding="10dp"
-                android:layout_marginTop="4dp"
-                android:textColor="#FC0E00"
-                android:text="🚫" />
+                android:text="🚫"
+                android:textColor="#FC0E00" />
+
             <TextView
                 android:id="@+id/report"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/seperator"
-                android:padding="10dp"
                 android:layout_marginTop="4dp"
-                android:textColor="#FC0E00"
-                android:text="Report" />
+                android:padding="10dp"
+                android:text="Report"
+                android:textColor="#FC0E00" />
+
             <TextView
                 android:id="@+id/comment_count"
-                android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:layout_below="@+id/seperator"
+                android:layout_centerInParent="true"
                 android:layout_marginTop="4dp"
+                android:padding="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                tools:text="comment count"
-                android:textColor="#990000" />
+                android:textColor="#990000"
+                tools:text="comment count" />
 
 
             <com.mikhaellopez.circularimageview.CircularImageView
@@ -136,24 +139,29 @@
                 android:layout_marginTop="8dp"
                 app:civ_border_color="#123456"
                 app:civ_border_width="0.2dp" />
+
             <ProgressBar
                 android:id="@+id/forum_layout_progressbar"
-                android:layout_centerInParent="true"
-                android:layout_width="wrap_content"
-                android:layout_below="@+id/user_text"
-                android:layout_height="wrap_content" />
-            <ImageView
-                android:id="@+id/postImage"
-                android:layout_marginBottom="5dp"
-                android:layout_below="@+id/user_text"
-                android:layout_centerInParent="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_below="@+id/user_text"
+                android:layout_centerInParent="true" />
+
+            <ImageView
+                android:id="@+id/postImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_text"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="5dp" />
+
+            <RelativeLayout
+                android:id="@+id/preview_holder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/comment_count"
+                android:layout_marginTop="2dp"
+                android:paddingRight="5dp"
                 android:layout_toRightOf="@+id/reply_preview_image"
                 android:background="@drawable/reply_preview_background"
                 android:orientation="vertical">
@@ -162,10 +170,11 @@
                     android:id="@+id/reply_preview_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="17sp"
                     android:paddingLeft="10dp"
-                    tools:text="Name"
-                    android:textColor="#000099" />
+                    android:textColor="#000099"
+                    android:textSize="17sp"
+                    tools:text="Name" />
+
                 <TextView
                     android:id="@+id/varified_reply"
                     android:layout_width="12dp"
@@ -177,23 +186,36 @@
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
                     android:textColor="#000099"
                     android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/reply_preview_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/reply_preview_name"
                     android:paddingLeft="10dp"
-                    tools:text="Reply"
-                    android:textColor="#222222" />
-
-                <ImageView
-                    android:id="@+id/replyImage"
-                    android:layout_below="@+id/reply_preview_text"
-                    android:layout_centerInParent="true"
-                    android:layout_width="match_parent"
-                    android:layout_marginBottom="5dp"
-                    android:layout_height="150dp" />
+                    android:textColor="#222222"
+                    tools:text="Reply" />
             </RelativeLayout>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/preview_holder"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/replyImage"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>

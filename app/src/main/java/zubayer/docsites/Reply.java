@@ -3,6 +3,8 @@ package zubayer.docsites;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +23,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -83,12 +86,10 @@ public class Reply extends Activity {
     EditText edit_reply;
     SharedPreferences loginPreference, myIdPreference, postIdPreference, devicetokenPreference;
     FirebaseDatabase database;
-    DatabaseReference replyReference, deleteReference, unsubscribeReference, rootReference;
+    DatabaseReference replyReference, deleteReference, unsubscribeReference, rootReference,imageReference;
     HashMap<String, Object> reply_post;
-    String userid, intentName, intentText, time, postID, rootPost, blocked, postImage_url,
-            facebook_user_name, myID, postHoldersDeviceToken, replyTextFromEditText,
-            reply_image_name, reply_texts;
-    boolean loggedin;
+    String userid, intentName, intentText, time, postID, reply_image_name, blocked, postImage_url,
+            facebook_user_name, myID, postHoldersDeviceToken, replyTextFromEditText, reply_texts;
     ProgressDialog progressDialog;
     ImageView replyButton, postImage, pic_preview;
     TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser,del_chooser;
@@ -106,6 +107,7 @@ public class Reply extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reply);
 
@@ -142,47 +144,39 @@ public class Reply extends Activity {
 
             }
         });
+        reply_post_text.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) Reply.this.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("", reply_post_text.getText().toString());
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(clip);
+                    Toast toast = makeText(Reply.this, "Text copied", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                return true;
+            }
+        });
         replyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                reply_image_name=replyTime();
+                if (imageUri != null) {
+                    upload(reply_image_name);
+                    HashMap <String, Object>imageref=new HashMap<>();
+                    imageref.put(reply_image_name,"");
+                    imageReference.updateChildren(imageref);
+                } else {
+                    reply_post.put("imageUrl", "blank");
+                    if (edit_reply.getText().toString().length() != 0) {
 
-                rootReference = database.getReference().child("user");
-                rootReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            if (snapshot.getKey().equals(postID)) {
-                                rootPost = snapshot.getKey();
-                            }
-
-                        }
-                        if (rootPost != null) {
-                            if (imageUri != null) {
-                                upload();
-                            } else {
-                                reply_post.put("imageUrl", "blank");
-                                if (edit_reply.getText().toString().length() != 0) {
-
-                                    reply_texts = edit_reply.getText().toString();
-                                    reply_post.put("text", reply_texts);
-                                    postReply();
-                                }
-
-                            }
-
-                            rootPost = null;
-                        } else {
-                            finish();
-                        }
-                        progressDialog.dismiss();
+                        reply_texts = edit_reply.getText().toString();
+                        reply_post.put("text", reply_texts);
+                        postReply(reply_image_name);
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
+                }
                 FirebaseMessaging.getInstance().unsubscribeFromTopic(postID).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -332,39 +326,58 @@ public class Reply extends Activity {
     }
 
     private void setValueToMainPost() {
-        if (userid.equals(myID) || myID.equals("1335608633238560")) {
-            delete_Post.setVisibility(View.VISIBLE);
-        } else {
-            delete_Post.setVisibility(View.GONE);
+        rootReference = database.getReference().child("user").child(postID);
+        rootReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                intentName=dataSnapshot.child("name").getValue(String.class);
+                intentText=dataSnapshot.child("text").getValue(String.class);
+                userid=dataSnapshot.child("id").getValue(String.class);
+                time=dataSnapshot.child("time").getValue(String.class);
+                postHoldersDeviceToken=dataSnapshot.child("devicetoken").getValue(String.class);
+                postImage_url=dataSnapshot.child("imageUrl").getValue(String.class);
 
-        }
-        if (userid.equals("1335608633238560")) {
-            varified.setVisibility(View.VISIBLE);
-        } else {
-            varified.setVisibility(View.GONE);
+                if(userid!=null) {
+                    if (userid.equals(myID) || myID.equals("1335608633238560")) {
+                        delete_Post.setVisibility(View.VISIBLE);
+                    } else {
+                        delete_Post.setVisibility(View.GONE);
 
-        }
-        if (dataconnected()) {
-            graphRequest();
-        } else {
-            alertMessage("Turn on data", "Try again", "Exit");
-        }
-        reply_post_name.setText(intentName);
-        reply_post_text.setText(intentText);
-        post_time.setText(time);
-        Glide.with(this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
-        Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
-        Glide.with(Reply.this).load(postImage_url).into(postImage);
+                    }
+                    if (userid.equals("1335608633238560")) {
+                        varified.setVisibility(View.VISIBLE);
+                    } else {
+                        varified.setVisibility(View.GONE);
+
+                    }
+                    if (dataconnected()) {
+                        graphRequest();
+                    } else {
+                        alertMessage("Turn on data", "Try again", "Exit");
+                    }
+                    reply_post_name.setText(intentName);
+                    reply_post_text.setText(intentText);
+                    post_time.setText(time);
+                    try {
+                        Glide.with(Reply.this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
+                        Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
+                        Glide.with(Reply.this).load(postImage_url).into(postImage);
+                    }catch (Exception e){}
+                }else {
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void getIntentvalue() {
-        userid = getIntent().getExtras().getString("id");
-        intentName = getIntent().getExtras().getString("name");
-        intentText = getIntent().getExtras().getString("text");
         postID = getIntent().getExtras().getString("postID");
-        time = getIntent().getExtras().getString("time");
-        postHoldersDeviceToken = getIntent().getExtras().getString("devicetoken");
-        postImage_url = getIntent().getExtras().getString("imageUrl");
     }
 
     private void myToaster(String text) {
@@ -382,17 +395,21 @@ public class Reply extends Activity {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(token);
     }
 
-    private void postReply() {
+    private void postReply(final String reply_image_name) {
         reply_post.put("name", facebook_user_name);
         reply_post.put("time", replyDate());
         reply_post.put("myID", myID);
-        replyReference.child(replyTime()).setValue(reply_post).addOnFailureListener(new OnFailureListener() {
+        replyReference.child(reply_image_name).setValue(reply_post).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 myToaster("failed");
             }
         });
         edit_reply.setText(null);
+        DatabaseReference notificationReference=database.getReference().child("notifications");
+        HashMap<String,Object> noti=new HashMap<>();
+        noti.put(userid+" replied to your post",intentText);
+        notificationReference.child(userid).child(postID).updateChildren(noti);
     }
 
     private void initialize() {
@@ -424,6 +441,7 @@ public class Reply extends Activity {
         devicetokenPreference = getSharedPreferences("token", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
         replyReference = database.getReference().child("user").child(postID).child("reply");
+        imageReference = database.getReference().child("imageReference");
         reply_post = new HashMap<>();
         edit_reply = (EditText) findViewById(R.id.edit_reply);
         recyclerView = (RecyclerView) findViewById(R.id.reply_forum_recyclerView);
@@ -627,16 +645,16 @@ public class Reply extends Activity {
                     }
                     if (blocked != null) {
                         edit_reply.setEnabled(false);
-                        AlertDialog.Builder builder = new AlertDialog.Builder(Reply.this);
-                        AlertDialog dialog = builder.create();
-                        dialog.setMessage("You can not reply to forum post");
-                        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                        alert.dismiss();
+                        alert = alertBuilder.create();
+                        alert.setMessage("You can not reply to forum post");
+                        alert.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                             }
                         });
                         try {
-                            dialog.show();
+                            alert.show();
                         } catch (WindowManager.BadTokenException e) {
                         }
 
@@ -658,8 +676,7 @@ public class Reply extends Activity {
         startActivity(intent);
     }
 
-    private void upload() {
-        reply_image_name = replyTime();
+    private void upload(final String reply_image_name) {
         final StorageReference storageRef = FirebaseStorage.getInstance().getReference("image/");
         storageRef.child(reply_image_name).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -676,7 +693,7 @@ public class Reply extends Activity {
                             reply_texts = " ";
                             reply_post.put("text", reply_texts);
                         }
-                        postReply();
+                        postReply(reply_image_name);
                         progressDialog.dismiss();
                         imageUri = null;
                     }

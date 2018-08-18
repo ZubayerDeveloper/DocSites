@@ -1,22 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/stetho1"
     android:gravity="center"
     android:orientation="vertical">
-
+    <RelativeLayout
+        android:padding="1dp"
+        android:background="#101010"
+        android:id="@+id/notification_layer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_marginLeft="5dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_launcher_foreground"/>
+        <TextView
+            android:id="@+id/version"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:text="DocSites 3.2.9"
+            android:textColor="#FFFFFF"
+            android:layout_toRightOf="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/updateNotifier"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/version"
+            android:textColor="#FC0E00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
     <GridView
         android:id="@+id/grid"
+        android:layout_below="@+id/notification_layer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="2"
         android:layout_above="@+id/adViewCard"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:paddingTop="10dp"
+        android:paddingTop="2dp"
         android:scrollbars="none" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/forum"

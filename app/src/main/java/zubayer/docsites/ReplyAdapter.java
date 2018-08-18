@@ -22,6 +22,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
@@ -34,8 +36,9 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
     Activity context;
     Typeface forum_font;
     FirebaseDatabase database;
-    DatabaseReference delete_reply_Reference;
+    DatabaseReference delete_reply_Reference,imageReference;
     SharedPreferences postIdPreference,myIDpreference;
+    StorageReference storageRef;
     HashMap<String,Object>test;
     String postID,myID;
     public ReplyAdapter(Activity context,
@@ -86,6 +89,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         } catch (IndexOutOfBoundsException e) {
         }
         delete_reply_Reference=database.getReference().child("user").child(postID).child("reply");
+        imageReference = database.getReference().child("imageReference");
+        storageRef = FirebaseStorage.getInstance().getReference("image/");
         myIDpreference = context.getSharedPreferences("myID",Context.MODE_PRIVATE);
         myID=myIDpreference.getString("myID",null);
         holder.replyImage.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +130,9 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
                             notifyDataSetChanged();
                         }
                     });
+
+                    storageRef.child(reply_id.get(position)).delete();
+                    imageReference.child(reply_id.get(position)).setValue(null);
                 }
             });
         }else {

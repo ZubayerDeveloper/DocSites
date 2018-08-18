@@ -37,6 +37,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -83,7 +84,7 @@ public class MainActivity extends Activity {
     ListView list;
     LinearLayoutManager manager;
     FirebaseDatabase database;
-    DatabaseReference rootReference, reply_preview_reference;
+    DatabaseReference rootReference;
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
@@ -102,9 +103,10 @@ public class MainActivity extends Activity {
     CcdParser ccdParser;
     CcdParser2 ccdParser2;
     UpdateChecker check;
+    UpdateNotifier notifier;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2,
-            notificationNumberText;
+            notificationNumberText,update_version,update_msg;
     int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize,
             finalNotificationSize, newNotification, bsmmubegin, bsmmuend;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
@@ -117,6 +119,7 @@ public class MainActivity extends Activity {
     FloatingActionButton forum;
     Button showNotificationNumber;
     FirebaseJobDispatcher jobDispatcher;
+    TextView updateNotifier;
 
     @Override
     protected void onDestroy() {
@@ -130,7 +133,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         createGridView();
-        setFont();
+        setFont(this,this);
         adjustScreenSize();
         manageSettings();
         loadButtonOptions();
@@ -146,6 +149,13 @@ public class MainActivity extends Activity {
         readNotificationCount();
         forumSubscription();
         loadUnsubscriber();
+        updateNotifier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites")));
+
+            }
+        });
         fab = (FabSpeedDial) findViewById(R.id.fabs);
         fab.setMenuListener(new FabSpeedDial.MenuListener() {
             @Override
@@ -193,7 +203,7 @@ public class MainActivity extends Activity {
                             try {
                                 stopFirebaseJobDispatcher();
                                 setFirebaseJobDispatcher(0, 21600);
-                                myToaster("Checking Notifications");
+                                myToaster(MainActivity.this,"Checking Notifications");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -1307,6 +1317,7 @@ public class MainActivity extends Activity {
             try {
                 SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
                 boolean b = prefs.getBoolean("yesno", false);
+                boolean notify=prefs.getBoolean("yesnoMSG", false);
                 updateMessage = prefs.getString("updateMessage", null);
                 if (b) {
                     checkinternet = builder.create();
@@ -1319,12 +1330,45 @@ public class MainActivity extends Activity {
                     checkinternet.setMessage(updateMessage);
                     checkinternet.setCancelable(false);
                     checkinternet.show();
+
                 }
             } catch (Exception e) {
             }
         }
     }
+    class UpdateNotifier extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Document doc = Jsoup.connect("https://drzubayerahmed.wordpress.com/2017/11/29/26/?preview=true").get();
+                Elements links = doc.select("p");
+                Element link = links.get(4);
+                Element message = links.get(5);
+                update_version = link.text();
+                update_msg = message.text();
+            } catch (Exception e) {
+            }
+            return null;
+        }
 
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+            if (update_version != null) {
+                Integer parseint = Integer.parseInt(update_version);
+                if (parseint > versionCode) {
+                    updateNotifier.setText(update_msg);
+                }
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            buttonTexts.clear();
+            urls.clear();
+            super.onCancelled();
+        }
+    }
     @Override
     public void onBackPressed() {
         boolean pressed = false;
@@ -1683,11 +1727,6 @@ public class MainActivity extends Activity {
         browser(pdfFilter);
     }
 
-    private void ccdHome() {
-        pdfFilter = "http://www.badas-dlp.org/";
-        browser(pdfFilter);
-    }
-
     private void ccdNotices1() {
         ccdParser = new CcdParser();
         paramUrl = "http://www.badas-dlp.org/";
@@ -1763,8 +1802,7 @@ public class MainActivity extends Activity {
     }
 
 
-    public void browser(String inurl) {
-        final String uurl = inurl;
+    private void browser(String inurl) {
         try {
             preferences = getSharedPreferences("setting", 0);
             checked = preferences.getBoolean("checked", false);
@@ -1781,8 +1819,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void myToaster(String text) {
-        Toast toast = makeText(MainActivity.this, text, Toast.LENGTH_SHORT);
+    private void myToaster(Context context,String text) {
+        Toast toast = makeText(context, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
@@ -1790,11 +1828,6 @@ public class MainActivity extends Activity {
     public void selectDeselect(String preferenceName, String putBooleanName) {
         SharedPreferences settings = getSharedPreferences(preferenceName, 0);
         settings.edit().putBoolean(putBooleanName, true).apply();
-    }
-
-    public void deletePreference(String preferenceName, String key) {
-        SharedPreferences settings = getSharedPreferences(preferenceName, 0);
-        settings.edit().remove(key).apply();
     }
 
     public void selectAll() {
@@ -1820,31 +1853,6 @@ public class MainActivity extends Activity {
         selectDeselect("ccdSetting", "ccdChecked");
         selectDeselect("leaveSetting", "leaveChecked");
         selectDeselect("appLaunched", "appLaunchedchecked");
-    }
-
-    public void deleteAll() {
-        deletePreference("residencySetting", "residencyChecked");
-        deletePreference("noticeSetting", "noticeChecked");
-        deletePreference("dghsSetting", "dghsChecked");
-        deletePreference("reultBcsSetting", "reultBcsChecked");
-        deletePreference("resultDeptSetting", "resultDeptChecked");
-        deletePreference("resultSeniorSetting", "resultSeniorChecked");
-        deletePreference("regiDeptSetting", "regiDeptChecked");
-        deletePreference("regiSeniorSetting", "regiSeniorChecked");
-        deletePreference("assistantSurgeonSetting", "assistantSurgeonChecked");
-        deletePreference("juniorConsultantSetting", "juniorConsultantChecked");
-        deletePreference("seniorConsultantSetting", "seniorConsultantChecked");
-        deletePreference("assistantProfessorSetting", "assistantProfessorChecked");
-        deletePreference("associateProfessorSetting", "associateProfessorChecked");
-        deletePreference("professorSetting", "professorChecked");
-        deletePreference("civilSurgeonSetting", "civilSurgeonChecked");
-        deletePreference("adhocSetting", "adhocChecked");
-        deletePreference("mohfwSetting", "mohfwChecked");
-        deletePreference("deputationSetting", "deputationChecked");
-        deletePreference("leaveSetting", "leaveChecked");
-        deletePreference("appLaunched", "appLaunchedchecked");
-        deletePreference("wentToSetting", "wentToSetting");
-        myToaster("Preference deleted");
     }
 
     private void adjustScreenSize() {
@@ -1953,9 +1961,9 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void setFont() {
-        Calligrapher font = new Calligrapher(MainActivity.this);
-        font.setFont(MainActivity.this, "kalpurush.ttf", true);
+    public void setFont(Context context,Activity activity) {
+        Calligrapher font = new Calligrapher(context);
+        font.setFont(activity, "kalpurush.ttf", true);
     }
 
     private void buildAlertDialogue() {
@@ -2022,6 +2030,9 @@ public class MainActivity extends Activity {
     }
 
     private void checkAppUpdates() {
+        updateNotifier=(TextView)findViewById(R.id.updateNotifier);
+        notifier=new UpdateNotifier();
+        notifier.execute();
         check = new UpdateChecker();
         check.execute();
     }
