@@ -7,50 +7,68 @@
     android:layout_height="match_parent"
     android:background="#dadada"
     tools:context=".Forum">
+
     <RelativeLayout
-        android:padding="1dp"
-        android:background="#101010"
         android:id="@+id/notification_layer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#101010"
+        android:padding="1dp">
+
         <ImageView
             android:id="@+id/icon"
-            android:layout_marginLeft="5dp"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/ic_launcher_foreground"/>
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_launcher_foreground" />
+
         <TextView
             android:id="@+id/version"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:text="DocSites Forum"
-            android:textColor="#FFFFFF"
-            android:layout_toRightOf="@+id/icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@+id/icon"
+            android:text="DocSites Forum"
+            android:textColor="#FFFFFF" />
+
         <TextView
             android:id="@+id/updateNotifier"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/version"
-            android:textColor="#FC0E00"
+            android:background="@drawable/notification"
+            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:textColor="#FC0E00" />
     </RelativeLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/forum_recyclerView"
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/notification_layer"
         android:layout_above="@+id/post_image"
-        android:layout_marginBottom="10dp" />
+        android:paddingBottom="3dp"
+        android:layout_below="@+id/notification_layer">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/forum_recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:paddingBottom="70dp" />
+        </RelativeLayout>
+    </ScrollView>
+
 
     <com.mikhaellopez.circularimageview.CircularImageView
         android:id="@+id/post_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="17dp"
+        android:layout_above="@+id/gap"
         android:layout_marginLeft="5dp"
         app:civ_border_color="#123456"
         app:civ_border_width="0.2dp" />
@@ -58,7 +76,7 @@
     <EditText
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_above="@+id/gap"
         android:layout_marginLeft="3dp"
         android:layout_toLeftOf="@+id/send"
@@ -78,7 +96,7 @@
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_above="@+id/gap"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="7dp"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/post_image"
         android:background="@mipmap/image_chooser" />
@@ -92,9 +110,9 @@
 
         <ImageView
             android:id="@+id/pic_preview"
-            android:alpha=".5"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:alpha=".5" />
 
         <TextView
             android:id="@+id/del_chooser"
@@ -107,20 +125,19 @@
 
     <LinearLayout
         android:id="@+id/gap"
-        android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"/>
+        android:orientation="vertical"
+        android:padding="5dp" />
 
     <ImageView
         android:id="@+id/send"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@+id/gap"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="17dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="15dp"
         android:background="@drawable/forum_button"

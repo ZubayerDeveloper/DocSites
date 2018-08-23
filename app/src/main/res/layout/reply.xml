@@ -18,7 +18,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/reply_cardview"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="70dp"
                 android:layout_marginLeft="7dp" />
 
             <android.support.v7.widget.CardView
@@ -129,7 +129,7 @@
     <EditText
         android:id="@+id/edit_reply"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_above="@+id/gap"
         android:layout_marginLeft="3dp"
         android:layout_toLeftOf="@+id/reply_post"
@@ -147,7 +147,7 @@
         android:id="@+id/imageChooser"
         android:layout_above="@+id/gap"
         android:layout_marginLeft="10dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="7dp"
         android:background="@mipmap/image_chooser"
         android:layout_toRightOf="@+id/reply_post_image"
         android:layout_width="25dp"

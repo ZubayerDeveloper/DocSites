@@ -10,11 +10,11 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
 import android.support.design.internal.NavigationMenu;
@@ -95,6 +95,7 @@ public class Forum extends Activity {
     CircularImageView post_image;
     ImageView send, pic_preview, icon;
     ForumAdapter adapter;
+    LollipopAdapter adapter2;
     FabSpeedDial forum_subscription;
     GraphRequest request;
     LinearLayoutManager manager;
@@ -113,9 +114,10 @@ public class Forum extends Activity {
             post_text;
 
     StorageReference storageRef;
-    TextView imageChooser, del_chooser;
+    TextView imageChooser, del_chooser, updateNotifier;
     Uri imageUri;
     long postSize, reportSize;
+    boolean clicked = false;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -136,9 +138,9 @@ public class Forum extends Activity {
         AppEventsLogger.activateApp(this);
         setContentView(R.layout.forum);
 
-
         initialize();
-        setFont(this,this);
+        getreportSize();
+        setFont(this, this);
         chooser_cardview.setVisibility(View.GONE);
         progressDialog = ProgressDialog.show(this, "", "Connecting to Database...", true, false);
         genetatekeyHash();
@@ -151,8 +153,50 @@ public class Forum extends Activity {
             @Override
             public void onClick(View v) {
                 if (facebook_id.equals("1335608633238560")) {
-                    startActivity(new Intent(Forum.this, Blocklist.class));
+                    showBlocklist();
+                    clicked = true;
                 }
+            }
+        });
+        updateNotifier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ArrayList<String> notifytime = new ArrayList<>();
+                final ArrayList<String> userSource = new ArrayList<>();
+                final ArrayList<String> notifyText = new ArrayList<>();
+                final ArrayList<String> mainPostID = new ArrayList<>();
+                final DatabaseReference notificationReference = database.getReference().child("notifications");
+                notificationReference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot.getKey().equals(facebook_id)) {
+                                notificationReference.child(snapshot.getKey()).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            notifytime.add(snapshot.getKey());
+                                            notifyText.add(snapshot.child("notificationText").getValue(String.class));
+                                            userSource.add(snapshot.child("myid").getValue(String.class));
+                                            mainPostID.add(snapshot.child("mainPostID").getValue(String.class));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
         send.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +278,58 @@ public class Forum extends Activity {
 
             @Override
             public void onMenuClosed() {
+
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (clicked) {
+            recyclerView.setAdapter(adapter);
+            clicked = false;
+        } else {
+            super.onBackPressed();
+        }
+
+    }
+
+    private void showBlocklist() {
+        final ArrayList<String> id = new ArrayList<>();
+        final ArrayList<String> name = new ArrayList<>();
+        final BlockListAdapter blockListAdapter = new BlockListAdapter(Forum.this, id, name);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference blockReference = database.getReference().child("block");
+        blockReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                id.clear();
+                name.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    id.add(snapshot.getKey());
+                    name.add(snapshot.getValue(String.class));
+                }
+                recyclerView.setAdapter(blockListAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getreportSize() {
+        DatabaseReference reportReference = database.getReference().child("reportSize");
+        reportReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                reportSize = dataSnapshot.getValue(Long.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
@@ -326,8 +422,14 @@ public class Forum extends Activity {
                     postImage_url.add(0, snapshot.child("imageUrl").getValue(String.class));
                     times.add(0, elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
                     user_device_token.add(0, snapshot.child("devicetoken").getValue(String.class));
-                    replyPreview(snapshot.getKey());
-                    perPost_reportCount(snapshot.getKey());
+                    if (Build.VERSION.SDK_INT >= 23) {
+                        replyPreview(snapshot.getKey());
+                        perPost_reportCount(snapshot.getKey());
+                    } else {
+//                        recyclerView.setAdapter(adapter2);
+                        replycount(snapshot.getKey());
+                        perPost_reportCount(snapshot.getKey());
+                    }
                 }
 
                 progressDialog.dismiss();
@@ -356,7 +458,7 @@ public class Forum extends Activity {
 
                 }
                 if (total_report_each_post.size() != 0) {
-                    if (total_report_each_post.size() > 10) {
+                    if (total_report_each_post.size() > reportSize) {
                         rootReference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -425,6 +527,40 @@ public class Forum extends Activity {
                     reply_imageUrl.add(0, "blank");
                     total_comments_each_post.clear();
                     recyclerView.setAdapter(adapter);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void replycount(final String post_ID) {
+        reply_preview_reference = database.getReference().child("user").child(post_ID).child("reply");
+        reply_preview_reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    total_comments_each_post.add(snapshot.getKey());
+                }
+                if (total_comments_each_post.size() != 0) {
+                    if (total_comments_each_post.size() > 1) {
+                        comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comments");
+                        total_comments_each_post.clear();
+                        recyclerView.setAdapter(adapter2);
+                    } else {
+                        comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comment");
+                        total_comments_each_post.clear();
+                        recyclerView.setAdapter(adapter2);
+                    }
+
+                } else {
+                    comment_count.add(0, "Reply");
+                    recyclerView.setAdapter(adapter2);
                 }
 
             }
@@ -515,6 +651,7 @@ public class Forum extends Activity {
         forum_subscription = (FabSpeedDial) findViewById(R.id.forum_subscription);
         imageChooser = (TextView) findViewById(R.id.imageChooser);
         del_chooser = (TextView) findViewById(R.id.del_chooser);
+        updateNotifier = (TextView) findViewById(R.id.updateNotifier);
         namess = new ArrayList<>();
         textss = new ArrayList<>();
         times = new ArrayList<>();
@@ -547,9 +684,12 @@ public class Forum extends Activity {
         adapter = new ForumAdapter(Forum.this, namess, textss, times, user_id,
                 post_id, preview_replierText, preview_replierName, preview_replierID,
                 user_device_token, comment_count, postImage_url, reply_imageUrl);
+        adapter2 = new LollipopAdapter(Forum.this, namess, user_id, textss, times,
+                postImage_url, user_device_token, post_id, comment_count);
         manager = new LinearLayoutManager(Forum.this);
         post_image = (CircularImageView) findViewById(R.id.post_image);
         recyclerView.setLayoutManager(manager);
+        recyclerView.setNestedScrollingEnabled(false);
     }
 
     private void myToaster(String text) {
@@ -827,42 +967,29 @@ public class Forum extends Activity {
     }
 
     private void autoBlock(final String reported) {
-        DatabaseReference reportReference = database.getReference().child("reportSize");
-        reportReference.addValueEventListener(new ValueEventListener() {
+
+        final DatabaseReference autoBlockReference = database.getReference().child("reportedID").child(reported);
+        autoBlockReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                reportSize = dataSnapshot.getValue(Long.class);
-                final DatabaseReference autoBlockReference = database.getReference().child("reportedID");
-                autoBlockReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        ArrayList<String> reporterIDlist = new ArrayList<>();
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            reporterIDlist.add(snapshot.child(reported).getKey());
-                        }
-                        if (reporterIDlist.size() > reportSize) {
-                            blockReference = database.getReference().child("block");
-                            HashMap<String, Object> autoBlock = new HashMap<>();
-                            autoBlock.put(reported, facebook_user_name);
-                            blockReference.updateChildren(autoBlock);
-                            autoBlockReference.setValue(null);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                ArrayList<String> reporterIDlist = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    reporterIDlist.add(snapshot.getKey());
+                }
+                if (reporterIDlist.size() > reportSize) {
+                    blockReference = database.getReference().child("block");
+                    HashMap<String, Object> autoBlock = new HashMap<>();
+                    autoBlock.put(reported, facebook_user_name);
+                    blockReference.updateChildren(autoBlock);
+                    autoBlockReference.setValue(null);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-
         });
-
     }
 
     private void getSize() {

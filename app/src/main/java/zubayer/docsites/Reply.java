@@ -66,6 +66,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
@@ -408,8 +409,19 @@ public class Reply extends Activity {
         edit_reply.setText(null);
         DatabaseReference notificationReference=database.getReference().child("notifications");
         HashMap<String,Object> noti=new HashMap<>();
-        noti.put(userid+" replied to your post",intentText);
-        notificationReference.child(userid).child(postID).updateChildren(noti);
+        noti.put("notificationText",facebook_user_name+" replied to your post");
+        noti.put("mainPostID",postID);
+        noti.put("time",replyTime());
+        noti.put("myid",myID);
+        notificationReference.child(userid).child(reply_image_name).updateChildren(noti);
+        for(int i=0;i<replyUserId.size();i++){
+            if(!replyUserId.get(i).equals(userid)){
+                noti.put("notificationText",facebook_user_name+" replied to "+intentName+"\'s post");
+                noti.put("mainPostID",postID);
+                noti.put("time",replyTime());
+                notificationReference.child(replyUserId.get(i)).child(reply_image_name).updateChildren(noti);
+            }
+        }
     }
 
     private void initialize() {

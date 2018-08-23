@@ -35,6 +35,8 @@ import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -65,7 +67,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     SharedPreferences myIDpreference;
     String myID, myName;
     FirebaseDatabase database;
-    DatabaseReference rootReference, unsubscribeReference, blockReference,imageReference;
+    DatabaseReference rootReference, unsubscribeReference, blockReference, imageReference;
     StorageReference storageRef;
     AlertDialog dialog;
     AlertDialog.Builder builder;
@@ -119,7 +121,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
 //        try {
         holder.docName.setText(doc_name.get(position));
         holder.docName.setTypeface(forum_font);
-        if(holder.docText.equals(" ")){
+        if (holder.docText.equals(" ")) {
             holder.docText.setVisibility(View.GONE);
         }
         if (doc_text.get(position).length() > 200) {
@@ -139,9 +141,9 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             } else {
                 if (reply_preview.get(position).length() > 100) {
                     holder.preview_reply.setText(reply_preview.get(position).substring(0, 100) + "....");
-                } else if(holder.preview_reply.equals(" ")){
+                } else if (holder.preview_reply.equals(" ")) {
                     holder.preview_reply.setVisibility(View.GONE);
-                }else {
+                } else {
                     holder.preview_reply.setText(reply_preview.get(position));
                 }
 
@@ -165,7 +167,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
 
             Glide.with(context).load(postImageUrl.get(position)).into(holder.postImage);
-            if(postImageUrl.get(position).equals("blank")){
+            if (postImageUrl.get(position).equals("blank")) {
                 holder.progressBar.setVisibility(View.GONE);
             }
             if (!replyImageUrl.get(position).equals("blank")) {
@@ -176,7 +178,8 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 holder.replyImage.setVisibility(View.GONE);
             }
         } catch (IndexOutOfBoundsException e) {
-        }catch (NullPointerException e){}
+        } catch (NullPointerException e) {
+        }
         holder.preview_reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -255,7 +258,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                     public void onClick(DialogInterface dialog, int which) {
                         final HashMap<String, Object> reportList = new HashMap<>();
                         reportList.put(myID, myName);
-                        blockReference.child("reportPost").setValue(reportList);
+                        blockReference.child("reportPost").updateChildren(reportList);
                     }
                 });
                 dialog.setButton(DialogInterface.BUTTON3, "Report ID", new DialogInterface.OnClickListener() {
@@ -294,20 +297,20 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             } else {
                 holder.varified.setVisibility(View.GONE);
             }
-//            if (myID.equals("1335608633238560")) {
-//                if (user_id.get(position).equals("1335608633238560")) {
-//                    holder.block.setVisibility(View.GONE);
-//                } else {
-//                    holder.block.setVisibility(View.VISIBLE);
-//                }
-//            } else {
-//                holder.block.setVisibility(View.GONE);
-//            }
-//            if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
-//                holder.report.setVisibility(View.GONE);
-//            } else {
-//                holder.report.setVisibility(View.VISIBLE);
-//            }
+            if (myID.equals("1335608633238560")) {
+                if (user_id.get(position).equals("1335608633238560")) {
+                    holder.block.setVisibility(View.GONE);
+                } else {
+                    holder.block.setVisibility(View.VISIBLE);
+                }
+            } else {
+                holder.block.setVisibility(View.GONE);
+            }
+            if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
+                holder.report.setVisibility(View.GONE);
+            } else {
+                holder.report.setVisibility(View.VISIBLE);
+            }
 
             if (user_id.get(position).equals(myID) || myID.equals("1335608633238560")) {
                 rootReference = database.getReference().child("user");
@@ -413,8 +416,7 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
             pic = (CircularImageView) itemView.findViewById(R.id.user_image);
             preview_pic = (CircularImageView) itemView.findViewById(R.id.reply_preview_image);
-            progressBar=(ProgressBar)itemView.findViewById(R.id.forum_layout_progressbar);
-
+            progressBar = (ProgressBar) itemView.findViewById(R.id.forum_layout_progressbar);
         }
     }
 
