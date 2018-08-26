@@ -1,15 +1,12 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -21,15 +18,11 @@ import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -50,15 +43,12 @@ import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jsoup.Jsoup;
@@ -67,11 +57,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.BuildConfig;
+import zubayer.docsites.adapters.GridAdapter;
+import zubayer.docsites.adapters.MyAdapter;
+import zubayer.docsites.services.MyFirebseJobDidpatcher;
+import zubayer.docsites.R;
 
 import static android.widget.Toast.makeText;
 
@@ -148,7 +142,6 @@ public class MainActivity extends Activity {
         initializeWidgetVariable();
         readNotificationCount();
         forumSubscription();
-        loadUnsubscriber();
         updateNotifier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2403,30 +2396,6 @@ public class MainActivity extends Activity {
 
     private void unSubscribeTopic(String topic) {
         FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-    }
-
-    private void loadUnsubscriber() {
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference().child("unsubscribe");
-        rootReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                unsubscribe_list = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    unsubscribe_list.add(snapshot.getKey());
-                    unSubscribeTopic(snapshot.getKey());
-                }
-                if (unsubscribe_list.size() > 3000) {
-                    rootReference.child(unsubscribe_list.get(unsubscribe_list.size() - 1)).setValue(null, null);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
     }
 
 }

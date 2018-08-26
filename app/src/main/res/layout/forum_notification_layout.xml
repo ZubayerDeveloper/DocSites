@@ -1,6 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:id="@+id/relativelayout">
+
+            <com.mikhaellopez.circularimageview.CircularImageView
+                android:id="@+id/user_source_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                app:civ_border_color="#123456"
+                app:civ_border_width="0.2dp"/>
+
+            <TextView
+                android:id="@+id/noti_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@+id/user_source_image"
+                android:layout_toLeftOf="@+id/del_notification"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                tools:text="notification texts" />
+            <TextView
+                android:id="@+id/notify_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/noti_text"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@+id/user_source_image"
+                android:layout_toLeftOf="@+id/del_notification"
+                android:autoLink="all"
+                tools:text="time"
+                android:textColor="#916E00"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_marginTop="15dp"
+                android:id="@+id/del_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:padding="10dp"
+                android:text="❌" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

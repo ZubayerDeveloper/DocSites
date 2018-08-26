@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +15,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.R;
 
 public class Settings extends Activity {
 

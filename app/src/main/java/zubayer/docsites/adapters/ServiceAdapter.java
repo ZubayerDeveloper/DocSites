@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import zubayer.docsites.R;
 
 /**
  * Created by ZYbyer on 17.1.18.

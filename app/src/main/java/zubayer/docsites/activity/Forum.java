@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,7 +13,6 @@ import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.os.Bundle;
@@ -83,6 +82,11 @@ import java.util.Map;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.adapters.BlockListAdapter;
+import zubayer.docsites.adapters.ForumAdapter;
+import zubayer.docsites.adapters.ForumNotificationAdapter;
+import zubayer.docsites.adapters.LollipopAdapter;
+import zubayer.docsites.R;
 
 import static android.widget.Toast.makeText;
 
@@ -94,15 +98,14 @@ public class Forum extends Activity {
     CardView chooser_cardview;
     CircularImageView post_image;
     ImageView send, pic_preview, icon;
-    ForumAdapter adapter;
-    LollipopAdapter adapter2;
+    ForumAdapter adapter, profileAdapter;
+    LollipopAdapter lollipopAdapter, lollipopProfileAdapter;
     FabSpeedDial forum_subscription;
     GraphRequest request;
     LinearLayoutManager manager;
     RecyclerView recyclerView;
     ArrayList<String> namess, textss, times, user_id, post_id, get_post_id_serially, comment_count,
-            total_comments_each_post, preview_replierID, preview_replierText, preview_replierName,
-            user_device_token, postImage_url, reply_imageUrl;
+            total_comments_each_post, preview_replierID, preview_replierText, preview_replierName, postImage_url, reply_imageUrl;
     EditText edit_text;
     SharedPreferences loginPreference, myIDpreference, notificationPreference;
     FirebaseDatabase database;
@@ -110,11 +113,11 @@ public class Forum extends Activity {
     HashMap<String, Object> post;
     ProgressDialog progressDialog;
     String facebook_id, facebook_user_name, postID, blocked, reported, post_ID_reference_for_Imge,
-            replierID, replierName, facebook_post_time, myDeviceToken, replyImage, post_image_name,
+            replierID, replierName, facebook_post_time, replyImage, post_image_name,
             post_text;
 
     StorageReference storageRef;
-    TextView imageChooser, del_chooser, updateNotifier;
+    TextView imageChooser, del_chooser, notifications, my_profile;
     Uri imageUri;
     long postSize, reportSize;
     boolean clicked = false;
@@ -158,45 +161,17 @@ public class Forum extends Activity {
                 }
             }
         });
-        updateNotifier.setOnClickListener(new View.OnClickListener() {
+        notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ArrayList<String> notifytime = new ArrayList<>();
-                final ArrayList<String> userSource = new ArrayList<>();
-                final ArrayList<String> notifyText = new ArrayList<>();
-                final ArrayList<String> mainPostID = new ArrayList<>();
-                final DatabaseReference notificationReference = database.getReference().child("notifications");
-                notificationReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            if (snapshot.getKey().equals(facebook_id)) {
-                                notificationReference.child(snapshot.getKey()).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            notifytime.add(snapshot.getKey());
-                                            notifyText.add(snapshot.child("notificationText").getValue(String.class));
-                                            userSource.add(snapshot.child("myid").getValue(String.class));
-                                            mainPostID.add(snapshot.child("mainPostID").getValue(String.class));
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                showNotification();
+                clicked = true;
+            }
+        });
+        my_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMyPosts();
             }
         });
         send.setOnClickListener(new View.OnClickListener() {
@@ -283,16 +258,128 @@ public class Forum extends Activity {
         });
     }
 
+    private void loadMyPosts() {
+        clicked = true;
+        final ArrayList<String> name = new ArrayList<>();
+        final ArrayList<String> text = new ArrayList<>();
+        final ArrayList<String> time = new ArrayList<>();
+        final ArrayList<String> userid = new ArrayList<>();
+        final ArrayList<String> postid = new ArrayList<>();
+        final ArrayList<String> previewreplierText = new ArrayList<>();
+        final ArrayList<String> previewreplierName = new ArrayList<>();
+        final ArrayList<String> previewreplierID = new ArrayList<>();
+        final ArrayList<String> commentcount = new ArrayList<>();
+        final ArrayList<String> postImageurl = new ArrayList<>();
+        final ArrayList<String> replyimageUrl = new ArrayList<>();
+
+        profileAdapter = new ForumAdapter(Forum.this, name, text, time, userid,
+                postid, previewreplierText, previewreplierName, previewreplierID
+                , commentcount, postImageurl, replyimageUrl);
+        lollipopProfileAdapter = new LollipopAdapter(Forum.this, name, userid, text, time
+                , postImageurl, postid, commentcount);
+        name.clear();
+        text.clear();
+        time.clear();
+        userid.clear();
+        postid.clear();
+        previewreplierText.clear();
+        previewreplierName.clear();
+        previewreplierID.clear();
+        commentcount.clear();
+        postImageurl.clear();
+        replyimageUrl.clear();
+        for (int i = 0; i < user_id.size(); i++) {
+            if (user_id.get(i).equals(facebook_id)) {
+                name.add(namess.get(i));
+                text.add(textss.get(i));
+                time.add(times.get(i));
+                userid.add(user_id.get(i));
+                postid.add(post_id.get(i));
+                commentcount.add(comment_count.get(i));
+                postImageurl.add(postImage_url.get(i));
+                if (Build.VERSION.SDK_INT >= 23) {
+                    previewreplierText.add(preview_replierText.get(i));
+                    previewreplierName.add(preview_replierName.get(i));
+                    previewreplierID.add(preview_replierID.get(i));
+                    replyimageUrl.add(reply_imageUrl.get(i));
+
+                    recyclerView.setAdapter(profileAdapter);
+                } else {
+                    recyclerView.setAdapter(lollipopProfileAdapter);
+                }
+            }
+        }
+    }
+
+
     @Override
     public void onBackPressed() {
 
         if (clicked) {
-            recyclerView.setAdapter(adapter);
             clicked = false;
+            if (Build.VERSION.SDK_INT >= 23) {
+                recyclerView.setAdapter(adapter);
+            } else {
+                recyclerView.setAdapter(lollipopAdapter);
+            }
+            post_image.setVisibility(View.VISIBLE);
+            edit_text.setVisibility(View.VISIBLE);
+            send.setVisibility(View.VISIBLE);
+            imageChooser.setVisibility(View.VISIBLE);
         } else {
             super.onBackPressed();
         }
 
+    }
+
+    private void showNotification() {
+        final ArrayList<String> notifytime = new ArrayList<>();
+        final ArrayList<String> notificationID = new ArrayList<>();
+        final ArrayList<String> userSource = new ArrayList<>();
+        final ArrayList<String> notifyText = new ArrayList<>();
+        final ArrayList<String> mainPostID = new ArrayList<>();
+        final ArrayList<String> seenUnseen = new ArrayList<>();
+        final ForumNotificationAdapter forumNotificationAdapter = new ForumNotificationAdapter(Forum.this, notificationID, userSource, notifyText, notifytime, mainPostID, seenUnseen);
+        final DatabaseReference notificationReference = database.getReference().child("notifications");
+        notificationReference.child(facebook_id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                notifytime.clear();
+                notifyText.clear();
+                userSource.clear();
+                mainPostID.clear();
+                seenUnseen.clear();
+                notificationID.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    notificationID.add(0, snapshot.getKey());
+                    notifytime.add(0, elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
+                    notifyText.add(0, snapshot.child("notificationText").getValue(String.class));
+                    userSource.add(0, snapshot.child("myid").getValue(String.class));
+                    mainPostID.add(0, snapshot.child("mainPostID").getValue(String.class));
+                    seenUnseen.add(0, snapshot.child("seenUnseen").getValue(String.class));
+                }
+
+                post_image.setVisibility(View.GONE);
+                edit_text.setVisibility(View.GONE);
+                send.setVisibility(View.GONE);
+                imageChooser.setVisibility(View.GONE);
+                for(int i=0;i<notificationID.size();i++){
+                    if(notificationExpiry(notificationID.get(i))>1000*60*60*24*7){
+                        notificationReference.child(facebook_id).child(notificationID.get(i)).setValue(null);
+                    }
+
+                }
+                if(notificationID.size()>10){
+                    notificationReference.child(facebook_id).child(notificationID.get(notificationID.size()-1)).setValue(null);
+                }
+                recyclerView.setAdapter(forumNotificationAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void showBlocklist() {
@@ -412,7 +499,6 @@ public class Forum extends Activity {
                 preview_replierID.clear();
                 preview_replierText.clear();
                 preview_replierName.clear();
-                user_device_token.clear();
                 postImage_url.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     post_id.add(0, snapshot.getKey());
@@ -421,7 +507,6 @@ public class Forum extends Activity {
                     textss.add(0, snapshot.child("text").getValue(String.class));
                     postImage_url.add(0, snapshot.child("imageUrl").getValue(String.class));
                     times.add(0, elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
-                    user_device_token.add(0, snapshot.child("devicetoken").getValue(String.class));
                     if (Build.VERSION.SDK_INT >= 23) {
                         replyPreview(snapshot.getKey());
                         perPost_reportCount(snapshot.getKey());
@@ -551,16 +636,16 @@ public class Forum extends Activity {
                     if (total_comments_each_post.size() > 1) {
                         comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comments");
                         total_comments_each_post.clear();
-                        recyclerView.setAdapter(adapter2);
+                        recyclerView.setAdapter(lollipopAdapter);
                     } else {
                         comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comment");
                         total_comments_each_post.clear();
-                        recyclerView.setAdapter(adapter2);
+                        recyclerView.setAdapter(lollipopAdapter);
                     }
 
                 } else {
                     comment_count.add(0, "Reply");
-                    recyclerView.setAdapter(adapter2);
+                    recyclerView.setAdapter(lollipopAdapter);
                 }
 
             }
@@ -579,6 +664,7 @@ public class Forum extends Activity {
 
                 try {
                     facebook_id = object.getString("id");
+                    subscribeTopic(facebook_id);
                     myIDpreference.edit().putString("myID", facebook_id).apply();
                     facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
                     Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
@@ -627,8 +713,7 @@ public class Forum extends Activity {
         post.put("name", facebook_user_name);
         post.put("time", postDate());
         post.put("id", facebook_id);
-        myDeviceToken = current_post_time + facebook_id;
-        post.put("devicetoken", myDeviceToken);
+        post.put("notifyMe", "yes");
         post_ID_reference_for_Imge = current_post_time;
         rootReference.child(current_post_time).setValue(post).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -651,7 +736,8 @@ public class Forum extends Activity {
         forum_subscription = (FabSpeedDial) findViewById(R.id.forum_subscription);
         imageChooser = (TextView) findViewById(R.id.imageChooser);
         del_chooser = (TextView) findViewById(R.id.del_chooser);
-        updateNotifier = (TextView) findViewById(R.id.updateNotifier);
+        notifications = (TextView) findViewById(R.id.updateNotifier);
+        my_profile = (TextView) findViewById(R.id.my_profile);
         namess = new ArrayList<>();
         textss = new ArrayList<>();
         times = new ArrayList<>();
@@ -661,7 +747,6 @@ public class Forum extends Activity {
         preview_replierText = new ArrayList<>();
         preview_replierName = new ArrayList<>();
         get_post_id_serially = new ArrayList<>();
-        user_device_token = new ArrayList<>();
         comment_count = new ArrayList<>();
         postImage_url = new ArrayList<>();
         reply_imageUrl = new ArrayList<>();
@@ -683,9 +768,9 @@ public class Forum extends Activity {
         pic_preview = (ImageView) findViewById(R.id.pic_preview);
         adapter = new ForumAdapter(Forum.this, namess, textss, times, user_id,
                 post_id, preview_replierText, preview_replierName, preview_replierID,
-                user_device_token, comment_count, postImage_url, reply_imageUrl);
-        adapter2 = new LollipopAdapter(Forum.this, namess, user_id, textss, times,
-                postImage_url, user_device_token, post_id, comment_count);
+                comment_count, postImage_url, reply_imageUrl);
+        lollipopAdapter = new LollipopAdapter(Forum.this, namess, user_id, textss, times,
+                postImage_url, post_id, comment_count);
         manager = new LinearLayoutManager(Forum.this);
         post_image = (CircularImageView) findViewById(R.id.post_image);
         recyclerView.setLayoutManager(manager);
@@ -771,6 +856,14 @@ public class Forum extends Activity {
             ago = genuine_pot_time;
         }
         return ago;
+
+    }
+
+    private Long notificationExpiry(String postTimeMillis) {
+        long post_time = Long.parseLong(postTimeMillis);
+        long current_time = System.currentTimeMillis();
+        long elapse_time = current_time - post_time;
+        return elapse_time;
 
     }
 
@@ -863,10 +956,6 @@ public class Forum extends Activity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.e("True", response + "");
-                        if (!notificationPreference.getBoolean("unsubscribed_post_noti", false)) {
-                            subscribeTopic("forum");
-                        }
-                        subscribeTopic(myDeviceToken);
                     }
                 },
                 new Response.ErrorListener() {
@@ -1000,15 +1089,7 @@ public class Forum extends Activity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 postSize = dataSnapshot.getValue(Long.class);
                 if (post_id.size() > postSize) {
-                    HashMap<String, Object> unsubscribeList = new HashMap<>();
-                    unsubscribeList.put(post_id.get(post_id.size() - 1), "");
-                    unsubscribeList.put(user_device_token.get(user_device_token.size() - 1), "");
-                    unsubscribeReference.updateChildren(unsubscribeList).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
 
-                        }
-                    });
                     rootReference.child(post_id.get(post_id.size() - 1)).setValue(null, null);
                     unsubscribeReference.addValueEventListener(new ValueEventListener() {
                         @Override

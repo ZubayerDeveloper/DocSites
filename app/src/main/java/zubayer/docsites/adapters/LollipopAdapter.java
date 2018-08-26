@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -42,10 +42,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import zubayer.docsites.R;
+import zubayer.docsites.activity.Browser;
+import zubayer.docsites.activity.Forum;
+import zubayer.docsites.activity.Reply;
+
 import static android.widget.Toast.makeText;
 
 public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolder>{
-    ArrayList<String> doc_name, doc_text, post_Time, user_id,postImageUrl,user_device_token,post_id,commentCount;
+    ArrayList<String> doc_name, doc_text, post_Time, user_id,postImageUrl,post_id,commentCount;
     Activity context;
     Typeface fonts;
     String myID,myName;
@@ -55,7 +60,6 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                            ArrayList<String> doc_text,
                            ArrayList<String> post_Time,
                            ArrayList<String> postImageUrl,
-                           ArrayList<String> user_device_token,
                            ArrayList<String> post_id,
                            ArrayList<String> commentCount) {
         this.doc_name = doc_name;
@@ -63,7 +67,6 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         this.doc_text = doc_text;
         this.post_Time = post_Time;
         this.postImageUrl = postImageUrl;
-        this.user_device_token = user_device_token;
         this.post_id = post_id;
         this.commentCount = commentCount;
         this.context = context;
@@ -83,7 +86,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
     public void onBindViewHolder(@NonNull VHolder holder, final int position) {
         holder.docName.setText(doc_name.get(position));
         holder.docName.setTypeface(fonts);
-        holder.reply.setText(commentCount.get(position));
+
         if (holder.docText.equals(" ")) {
             holder.docText.setVisibility(View.GONE);
         }
@@ -97,6 +100,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         holder.postTime.setText(post_Time.get(position));
         holder.postTime.setTypeface(fonts);
         try{
+            holder.reply.setText(commentCount.get(position));
             if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
                 holder.report.setVisibility(View.GONE);
             } else {
@@ -110,7 +114,6 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
             if (user_id.get(position).equals(myID)) {
                 FirebaseDatabase database=FirebaseDatabase.getInstance();
                 final DatabaseReference rootReference = database.getReference().child("user");
-                final DatabaseReference unsubscribeReference = database.getReference().child("unsubscribe");
                 final StorageReference storageRef = FirebaseStorage.getInstance().getReference("image/");
                 final DatabaseReference imageReference = database.getReference().child("imageReference");
                 holder.delete_post.setVisibility(View.VISIBLE);
@@ -124,18 +127,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //first unsubscribe yourself
-                                unsubscribe(post_id.get(position), user_device_token.get(position));
 
-                                HashMap<String, Object> unsubscribeList = new HashMap<>();
-                                unsubscribeList.put(post_id.get(position), "");
-
-                                unsubscribeReference.updateChildren(unsubscribeList).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-
-                                    }
-                                });
                                 rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -162,7 +154,9 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                 holder.delete_post.setVisibility(View.GONE);
 
             }
-        }catch (Exception e){}
+        }catch (Exception e){
+            context.startActivity(new Intent(context, Forum.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        }
         try {
             Glide.with(context).load("https://graph.facebook.com/" + user_id.get(position) + "/picture?width=800").into(holder.pic);
             Glide.with(context).load(postImageUrl.get(position)).into(holder.postImage);
@@ -252,7 +246,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         TextView docName,docText, postTime,delete_post,report,reply,varified;
         CircularImageView pic;
         CardView cardView;
-        ImageView postImage, replyImage;
+        ImageView postImage;
         ProgressBar progressBar;
 
         private VHolder(View itemView) {
@@ -269,10 +263,6 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
             reply = (TextView) itemView.findViewById(R.id.reply);
             varified = (TextView) itemView.findViewById(R.id.lollipopvarified);
         }
-    }
-    private void unsubscribe(final String topic, final String token) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(token);
     }
 
     private void intentPutExtra(int position) {

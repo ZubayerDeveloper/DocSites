@@ -1,32 +1,24 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.PixelFormat;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,17 +27,11 @@ import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -57,17 +43,22 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import zubayer.docsites.R;
+import zubayer.docsites.activity.Browser;
+import zubayer.docsites.activity.Forum;
+import zubayer.docsites.activity.Reply;
+
 import static android.widget.Toast.makeText;
 
 public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
     ArrayList<String> doc_name, doc_text, post_Time, user_id, post_id, reply_preview, reply_preview_name,
-            replier_id, user_device_token, commentCount, postImageUrl, replyImageUrl;
+            replier_id, commentCount, postImageUrl, replyImageUrl;
     Activity context;
     Typeface forum_font;
     SharedPreferences myIDpreference;
     String myID, myName;
     FirebaseDatabase database;
-    DatabaseReference rootReference, unsubscribeReference, blockReference, imageReference;
+    DatabaseReference rootReference, blockReference, imageReference;
     StorageReference storageRef;
     AlertDialog dialog;
     AlertDialog.Builder builder;
@@ -81,7 +72,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                         ArrayList<String> reply_preview,
                         ArrayList<String> reply_preview_name,
                         ArrayList<String> replier_id,
-                        ArrayList<String> user_device_token,
                         ArrayList<String> commentCount,
                         ArrayList<String> postImageUrl,
                         ArrayList<String> replyImageUrl) {
@@ -96,7 +86,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         this.commentCount = commentCount;
         this.postImageUrl = postImageUrl;
         this.replyImageUrl = replyImageUrl;
-        this.user_device_token = user_device_token;
 
         this.context = context;
 
@@ -123,12 +112,15 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         holder.docName.setTypeface(forum_font);
         if (holder.docText.equals(" ")) {
             holder.docText.setVisibility(View.GONE);
-        }
-        if (doc_text.get(position).length() > 200) {
-            holder.docText.setText(doc_text.get(position).substring(0, 200) + "...." + " continue reading");
+        }if (doc_text.get(position).length() > 400) {
+            String text="<font color=#b4b4b4> ...continue reading</font>";
+            holder.docText.setText(Html.fromHtml(doc_text.get(position).substring(0, 400) +text),TextView.BufferType.SPANNABLE);
         } else {
             holder.docText.setText(doc_text.get(position));
 
+        }
+        if(doc_text.get(position).length()<100){
+            holder.docText.setTextSize(27);
         }
         holder.docText.setTypeface(forum_font);
         try {
@@ -205,6 +197,20 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 intentPutExtra(position);
             }
         });
+        holder.docText.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("", doc_text.get(position));
+                if (clipboard != null) {
+                    clipboard.setPrimaryClip(clip);
+                    Toast toast = makeText(context, "Text copied", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                return true;
+            }
+        });
         holder.postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -276,20 +282,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                 }
             }
         });
-        holder.docText.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("", doc_text.get(position));
-                if (clipboard != null) {
-                    clipboard.setPrimaryClip(clip);
-                    Toast toast = makeText(context, "Text copied", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
-                }
-                return true;
-            }
-        });
 
         try {
             if (user_id.get(position).equals("1335608633238560")) {
@@ -314,7 +306,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
 
             if (user_id.get(position).equals(myID) || myID.equals("1335608633238560")) {
                 rootReference = database.getReference().child("user");
-                unsubscribeReference = database.getReference().child("unsubscribe");
                 storageRef = FirebaseStorage.getInstance().getReference("image/");
                 imageReference = database.getReference().child("imageReference");
                 holder.delete_post.setVisibility(View.VISIBLE);
@@ -323,25 +314,11 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                     public void onClick(View v) {
                         dialog = builder.create();
                         dialog.setMessage("Delete post?");
+                        dialog.setCancelable(true);
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //first unsubscribe yourself
-                                unsubscribe(post_id.get(position), user_device_token.get(position));
 
-                                HashMap<String, Object> unsubscribeList = new HashMap<>();
-                                unsubscribeList.put(post_id.get(position), "");
-                                if (myID.equals("1335608633238560")) {
-                                    // for admin delete, to provide other's device token unsubscription
-                                    unsubscribeList.put(user_device_token.get(position), "");
-                                }
-
-                                unsubscribeReference.updateChildren(unsubscribeList).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-
-                                    }
-                                });
                                 rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -371,11 +348,6 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         } catch (Exception e) {
             context.startActivity(new Intent(context, Forum.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
-    }
-
-    private void unsubscribe(final String topic, final String token) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(token);
     }
 
     private void intentPutExtra(int position) {

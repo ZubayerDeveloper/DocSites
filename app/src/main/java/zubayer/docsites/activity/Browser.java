@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.*;
 import android.os.*;
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.adapters.MyAdapter;
+import zubayer.docsites.R;
 
 import static android.widget.Toast.makeText;
 

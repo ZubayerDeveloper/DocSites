@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import zubayer.docsites.R;
 
 public class GazetteAdapter extends ArrayAdapter<String> {
 

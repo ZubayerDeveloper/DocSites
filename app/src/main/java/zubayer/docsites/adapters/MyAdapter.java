@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -18,9 +18,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import zubayer.docsites.R;
+
 import static android.widget.Toast.makeText;
 
-class MyAdapter extends ArrayAdapter<String> {
+public class MyAdapter extends ArrayAdapter<String> {
 
 	public Typeface font;
 	private ArrayList<String> titleArray;

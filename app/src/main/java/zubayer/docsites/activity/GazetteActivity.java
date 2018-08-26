@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.*;
 import android.content.Context;
@@ -14,7 +14,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.adapters.GazetteAdapter;
+import zubayer.docsites.adapters.MyAdapter;
+import zubayer.docsites.R;
 
 import static android.widget.Toast.makeText;
 

@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.*;
 import android.content.Context;
@@ -26,6 +26,9 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.adapters.MyAdapter;
+import zubayer.docsites.R;
+import zubayer.docsites.adapters.ServiceAdapter;
 
 public class WeeklyGazettes extends Activity {
     ArrayList<String> yearArray, volumeArray,navigatinArray,gazetteArray,yearUrls,navigationUrls, volumeUrls,gazetteUrls;

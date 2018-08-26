@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -19,9 +18,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -45,6 +41,10 @@ import java.util.ArrayList;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.adapters.MyAdapter;
+import zubayer.docsites.services.MyFirebseJobDidpatcher;
+import zubayer.docsites.adapters.NotificationListAdapter;
+import zubayer.docsites.R;
 
 import static android.widget.Toast.makeText;
 

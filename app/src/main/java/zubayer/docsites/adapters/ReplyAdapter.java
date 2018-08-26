@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -28,6 +28,9 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import zubayer.docsites.R;
+import zubayer.docsites.activity.Browser;
 
 import static android.widget.Toast.makeText;
 
@@ -147,7 +150,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
 
     public class VHolder extends RecyclerView.ViewHolder{
 
-        TextView docName,docText,postTime,reply,delete_reply,varified;
+        TextView docName,docText,postTime,delete_reply,varified;
         CircularImageView pic;
         ImageView replyImage;
         ProgressBar progressBar;
@@ -162,12 +165,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
             replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
             progressBar=(ProgressBar)itemView.findViewById(R.id.reply_layout_progressbar);
         }
-    }
-    private void myToast(String text) {
-        Toast toast = makeText(context, text, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-
     }
     public void browser(String inurl) {
         Intent intent = new Intent(context, Browser.class);

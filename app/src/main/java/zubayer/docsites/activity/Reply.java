@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,7 +14,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,7 +51,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -66,11 +64,12 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.R;
+import zubayer.docsites.adapters.ReplyAdapter;
 
 import static android.widget.Toast.makeText;
 
@@ -79,22 +78,24 @@ public class Reply extends Activity {
     AlertDialog.Builder alertBuilder;
     CardView chooser_cardview;
     CircularImageView userImage, replyImage;
-    FabSpeedDial forum_subscription;
     ReplyAdapter adapter;
     LinearLayoutManager manager;
     RecyclerView recyclerView;
-    ArrayList<String> replyName, replyTexts, replyUserId, replyPostId, replyTime,reply_imageURL;
+    ArrayList<String> replyName, replyTexts, replyUserId, replyPostId, replyTime, reply_imageURL,
+            notifyMe;
     EditText edit_reply;
     SharedPreferences loginPreference, myIdPreference, postIdPreference, devicetokenPreference;
     FirebaseDatabase database;
-    DatabaseReference replyReference, deleteReference, unsubscribeReference, rootReference,imageReference;
+    DatabaseReference replyReference, deleteReference, rootReference, imageReference;
+    StorageReference storageRef;
     HashMap<String, Object> reply_post;
     String userid, intentName, intentText, time, postID, reply_image_name, blocked, postImage_url,
-            facebook_user_name, myID, postHoldersDeviceToken, replyTextFromEditText, reply_texts;
+            facebook_user_name, myID, postHoldersDeviceToken, notifyPostOwner, reply_texts;
     ProgressDialog progressDialog;
-    ImageView replyButton, postImage, pic_preview;
-    TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser,del_chooser;
+    ImageView replyButton, postImage, pic_preview, notify, notifyOff;
+    TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser, del_chooser;
     Uri imageUri;
+    boolean notifyOn;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -127,6 +128,7 @@ public class Reply extends Activity {
                 replyUserId.clear();
                 replyPostId.clear();
                 replyTime.clear();
+                notifyMe.clear();
                 reply_imageURL.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     replyPostId.add(snapshot.getKey());
@@ -135,9 +137,11 @@ public class Reply extends Activity {
                     reply_imageURL.add(snapshot.child("imageUrl").getValue(String.class));
                     replyTime.add(elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
                     replyUserId.add(snapshot.child("myID").getValue(String.class));
+                    notifyMe.add(snapshot.child("notifyMe").getValue(String.class));
                 }
                 progressDialog.dismiss();
                 recyclerView.setAdapter(adapter);
+                notifyStatus();
             }
 
             @Override
@@ -162,11 +166,11 @@ public class Reply extends Activity {
         replyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reply_image_name=replyTime();
+                reply_image_name = replyTime();
                 if (imageUri != null) {
                     upload(reply_image_name);
-                    HashMap <String, Object>imageref=new HashMap<>();
-                    imageref.put(reply_image_name,"");
+                    HashMap<String, Object> imageref = new HashMap<>();
+                    imageref.put(reply_image_name, "");
                     imageReference.updateChildren(imageref);
                 } else {
                     reply_post.put("imageUrl", "blank");
@@ -178,13 +182,6 @@ public class Reply extends Activity {
                     }
 
                 }
-                FirebaseMessaging.getInstance().unsubscribeFromTopic(postID).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        workSequence(postID, postHoldersDeviceToken);
-
-                    }
-                });
                 chooser_cardview.setVisibility(View.GONE);
             }
 
@@ -198,7 +195,7 @@ public class Reply extends Activity {
         del_chooser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageUri=null;
+                imageUri = null;
                 chooser_cardview.setVisibility(View.GONE);
             }
         });
@@ -206,21 +203,14 @@ public class Reply extends Activity {
             @Override
             public void onClick(View v) {
                 alert.setMessage("Delete post?");
+                alert.setCancelable(true);
                 alert.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        unSubscribe(postID, postHoldersDeviceToken);
-                        HashMap<String, Object> unsubscribeList = new HashMap<>();
-                        unsubscribeReference = database.getReference().child("unsubscribe");
-                        unsubscribeList.put(postID, postID);
-                        unsubscribeReference.updateChildren(unsubscribeList).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-
-                            }
-                        });
                         deleteReference = database.getReference().child("user");
                         deleteReference.child(postID).setValue(null);
+                        storageRef.child(postID).delete();
+                        imageReference.child(postID).setValue(null);
                         finish();
                     }
                 });
@@ -240,105 +230,113 @@ public class Reply extends Activity {
                 browser(postImage_url);
             }
         });
-        forum_subscription.setMenuListener(new FabSpeedDial.MenuListener() {
+
+        notify.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                return true;
+            public void onClick(View v) {
+                turnOffNotificatioh();
+                notifyStatus();
             }
-
+        });
+        notifyOff.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onMenuItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.reply_on:
-                        subscribePreference(postID, postHoldersDeviceToken);
-                        break;
-                    case R.id.reply_off:
-                        unSubscribePreference(postID, postHoldersDeviceToken);
-                        break;
-                }
-                return false;
-            }
-
-            @Override
-            public void onMenuClosed() {
-
+            public void onClick(View v) {
+                turnOnNotificatioh();
+                notifyStatus();
             }
         });
 
     }
 
-    private void workSequence(final String postID, final String postHoldersDeviceToken) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(postID).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-                sendFCMPush(facebook_user_name, " replied to " + intentName + "\'s post \n" + replyTextFromEditText, "/topics/" + postID);
-
+    private void turnOffNotificatioh() {
+        HashMap<String, Object> notifyme = new HashMap<>();
+        notifyme.put("notifyMe", "no");
+        rootReference.updateChildren(notifyme);
+        for (int i = replyUserId.size() - 1; i > -1; i--) {
+            if (replyUserId.get(i).equals(myID)) {
+                HashMap<String, Object> yesno = new HashMap<>();
+                yesno.put("notifyMe", "no");
+                replyReference.child(replyPostId.get(i)).updateChildren(yesno);
             }
-        });
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(postHoldersDeviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                if (!postHoldersDeviceToken.contains(myID)) {
-                    sendFCMPush(facebook_user_name, "replied to your post...\n\n" + replyTextFromEditText, "/topics/" + postHoldersDeviceToken);
-                }
-            }
-        });
+        }
     }
 
-    private void unSubscribePreference(final String topic, final String token) {
-        if (!token.contains(myID)) {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(topic).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    myToaster("Notification turned off");
-                }
-            });
+    private void turnOnNotificatioh() {
+        HashMap<String, Object> notifyme = new HashMap<>();
+        notifyme.put("notifyMe", "yes");
+        rootReference.updateChildren(notifyme);
+        for (int i = replyUserId.size() - 1; i > -1; i--) {
+            if (replyUserId.get(i).equals(myID)) {
+                HashMap<String, Object> yesno = new HashMap<>();
+                yesno.put("notifyMe", "yes");
+                replyReference.child(replyPostId.get(i)).updateChildren(yesno);
+            }
         }
-        if (token.contains(myID)) {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(token).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    myToaster("Notification turned off");
-                }
-            });
-        }
-
     }
 
-    private void subscribePreference(final String topic, final String token) {
-        if (!token.contains(myID)) {
-            FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void notifyStatus() {
+        if (userid.equals(myID)) {
+            rootReference.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onSuccess(Void aVoid) {
-                    myToaster("Notification turned on");
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.child("notifyMe").getValue(String.class).equals("yes")){
+                        notify.setVisibility(View.VISIBLE);
+                        notifyOff.setVisibility(View.GONE);
+                    }else {
+                        notify.setVisibility(View.GONE);
+                        notifyOff.setVisibility(View.VISIBLE);
+                    }
                 }
-            });
-        }
-        if (token.contains(myID)) {
-            FirebaseMessaging.getInstance().subscribeToTopic(token).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    myToaster("Notification turned on");
-                }
-            });
-        }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }else if (!replyUserId.isEmpty()) {
+            for (int i = replyUserId.size() - 1; i > -1; i--) {
+                if (replyUserId.get(i).equals(myID)) {
+                    replyReference.child(replyPostId.get(i)).child("notifyMe").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            try {
+                                if (dataSnapshot.getValue(String.class).equals("yes")) {
+                                    notify.setVisibility(View.VISIBLE);
+                                    notifyOff.setVisibility(View.GONE);
+                                    notifyOn = true;
+                                } else {
+                                    notify.setVisibility(View.GONE);
+                                    notifyOff.setVisibility(View.VISIBLE);
+                                    notifyOn = false;
+                                }
+                            } catch (Exception e) {
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    break;
+                }
+            }
+        }
     }
 
     private void setValueToMainPost() {
-        rootReference = database.getReference().child("user").child(postID);
         rootReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                intentName=dataSnapshot.child("name").getValue(String.class);
-                intentText=dataSnapshot.child("text").getValue(String.class);
-                userid=dataSnapshot.child("id").getValue(String.class);
-                time=dataSnapshot.child("time").getValue(String.class);
-                postHoldersDeviceToken=dataSnapshot.child("devicetoken").getValue(String.class);
-                postImage_url=dataSnapshot.child("imageUrl").getValue(String.class);
+                intentName = dataSnapshot.child("name").getValue(String.class);
+                intentText = dataSnapshot.child("text").getValue(String.class);
+                userid = dataSnapshot.child("id").getValue(String.class);
+                time = dataSnapshot.child("time").getValue(String.class);
+                notifyPostOwner = dataSnapshot.child("notifyMe").getValue(String.class);
+                postHoldersDeviceToken = dataSnapshot.child("devicetoken").getValue(String.class);
+                postImage_url = dataSnapshot.child("imageUrl").getValue(String.class);
 
-                if(userid!=null) {
+                if (userid != null) {
                     if (userid.equals(myID) || myID.equals("1335608633238560")) {
                         delete_Post.setVisibility(View.VISIBLE);
                     } else {
@@ -358,13 +356,14 @@ public class Reply extends Activity {
                     }
                     reply_post_name.setText(intentName);
                     reply_post_text.setText(intentText);
-                    post_time.setText(time);
+                    post_time.setText(elapsedTime(postID, time));
                     try {
                         Glide.with(Reply.this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
                         Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
                         Glide.with(Reply.this).load(postImage_url).into(postImage);
-                    }catch (Exception e){}
-                }else {
+                    } catch (Exception e) {
+                    }
+                } else {
                     finish();
                 }
             }
@@ -387,41 +386,43 @@ public class Reply extends Activity {
         toast.show();
     }
 
-    private void subscribeTopic(String topic) {
-        FirebaseMessaging.getInstance().subscribeToTopic(topic);
-    }
-
-    private void unSubscribe(final String topic, final String token) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(token);
-    }
-
     private void postReply(final String reply_image_name) {
         reply_post.put("name", facebook_user_name);
         reply_post.put("time", replyDate());
         reply_post.put("myID", myID);
+        reply_post.put("notifyMe", "yes");
         replyReference.child(reply_image_name).setValue(reply_post).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 myToaster("failed");
             }
         });
-        edit_reply.setText(null);
-        DatabaseReference notificationReference=database.getReference().child("notifications");
-        HashMap<String,Object> noti=new HashMap<>();
-        noti.put("notificationText",facebook_user_name+" replied to your post");
-        noti.put("mainPostID",postID);
-        noti.put("time",replyTime());
-        noti.put("myid",myID);
-        notificationReference.child(userid).child(reply_image_name).updateChildren(noti);
-        for(int i=0;i<replyUserId.size();i++){
-            if(!replyUserId.get(i).equals(userid)){
-                noti.put("notificationText",facebook_user_name+" replied to "+intentName+"\'s post");
-                noti.put("mainPostID",postID);
-                noti.put("time",replyTime());
+
+        DatabaseReference notificationReference = database.getReference().child("notifications");
+        HashMap<String, Object> noti = new HashMap<>();
+        if (facebook_user_name != null && !userid.equals(myID) && notifyPostOwner.equals("yes")) {
+            noti.put("notificationText", "<font color=#990000>" + facebook_user_name + "</font> replied to your post");
+            noti.put("mainPostID", postID);
+            noti.put("time", reply_image_name);
+            noti.put("myid", myID);
+            noti.put("seenUnseen", "unseen");
+            notificationReference.child(userid).child(reply_image_name).updateChildren(noti);
+            sendFCMPush(facebook_user_name, "replied to your post...\n\n" + reply_texts, "/topics/" + userid);
+
+        }
+
+        for (int i = replyUserId.size() - 1; i > -1; i--) {
+            if (facebook_user_name != null && !replyUserId.get(i).equals(myID) && !replyUserId.get(i).equals(userid) && notifyMe.get(i).equals("yes")) {
+                noti.put("notificationText", "<font color=#000099>" + facebook_user_name + "</font> replied to " + "<font color=#000099>" + intentName + "</font>\'s post");
+                noti.put("mainPostID", postID);
+                noti.put("time", reply_image_name);
+                noti.put("myid", myID);
+                noti.put("seenUnseen", "unseen");
                 notificationReference.child(replyUserId.get(i)).child(reply_image_name).updateChildren(noti);
+                sendFCMPush(facebook_user_name, " replied to " + intentName + "\'s post \n" + reply_texts, "/topics/" + replyUserId.get(i));
             }
         }
+        edit_reply.setText(null);
     }
 
     private void initialize() {
@@ -431,20 +432,23 @@ public class Reply extends Activity {
         Calligrapher replyFont = new Calligrapher(Reply.this);
         replyFont.setFont(Reply.this, "kalpurush.ttf", true);
         imageChooser = (TextView) findViewById(R.id.imageChooser);
-        del_chooser= (TextView) findViewById(R.id.del_chooser);
+        del_chooser = (TextView) findViewById(R.id.del_chooser);
         chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
         reply_post_name = (TextView) findViewById(R.id.reply_post_name);
         reply_post_text = (TextView) findViewById(R.id.reply_post_text);
         post_time = (TextView) findViewById(R.id.post_time);
         delete_Post = (TextView) findViewById(R.id.delete_post);
         varified = (TextView) findViewById(R.id.varified);
-        forum_subscription = (FabSpeedDial) findViewById(R.id.reply_subscription);
+        notify = (ImageView) findViewById(R.id.notify);
+        notifyOff = (ImageView) findViewById(R.id.notifyOff);
+
         replyName = new ArrayList<>();
         replyTexts = new ArrayList<>();
         replyUserId = new ArrayList<>();
         replyPostId = new ArrayList<>();
         replyTime = new ArrayList<>();
         reply_imageURL = new ArrayList<>();
+        notifyMe = new ArrayList<>();
         loginPreference = getSharedPreferences("loggedin", Context.MODE_PRIVATE);
         myIdPreference = getSharedPreferences("myID", Context.MODE_PRIVATE);
         myID = myIdPreference.getString("myID", null);
@@ -452,8 +456,10 @@ public class Reply extends Activity {
         postIdPreference.edit().putString("postid", postID).apply();
         devicetokenPreference = getSharedPreferences("token", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference().child("user").child(postID);
         replyReference = database.getReference().child("user").child(postID).child("reply");
         imageReference = database.getReference().child("imageReference");
+        storageRef = FirebaseStorage.getInstance().getReference("image/");
         reply_post = new HashMap<>();
         edit_reply = (EditText) findViewById(R.id.edit_reply);
         recyclerView = (RecyclerView) findViewById(R.id.reply_forum_recyclerView);
@@ -461,7 +467,7 @@ public class Reply extends Activity {
         replyButton = (ImageView) findViewById(R.id.reply_post);
         postImage = (ImageView) findViewById(R.id.postImage);
         pic_preview = (ImageView) findViewById(R.id.pic_preview);
-        adapter = new ReplyAdapter(Reply.this, replyName, replyTexts, replyUserId, replyTime, replyPostId,reply_imageURL);
+        adapter = new ReplyAdapter(Reply.this, replyName, replyTexts, replyUserId, replyTime, replyPostId, reply_imageURL);
         manager = new LinearLayoutManager(Reply.this);
         recyclerView.setLayoutManager(manager);
         userImage = (CircularImageView) findViewById(R.id.reply_user_image);
@@ -479,6 +485,12 @@ public class Reply extends Activity {
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy h:mm a");
         String reply_time = sdf.format(mydate);
         return reply_time;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        graphRequest();
     }
 
     private void graphRequest() {
@@ -595,16 +607,18 @@ public class Reply extends Activity {
             objData.put("body", message);
             objData.put("title", title);
             objData.put("sound", "default");
-            objData.put("icon", "icon_name"); //   icon_name
+            objData.put("icon", "icon_name");
+
+            //   icon_name
 //            objData.put("tag", token);
-            JSONObject put = objData.put("priority", "high");
+//            JSONObject put = objData.put("priority", "high");
 
             dataobjData = new JSONObject();
             dataobjData.put("text", message);
             dataobjData.put("title", title);
 //            "/topics/"+salary.getText().toString()
             obj.put("to", to);
-            //obj.put("priority", "high");
+            obj.put("priority", "high");
 
             obj.put("notification", objData);
             obj.put("data", dataobjData);
@@ -618,11 +632,6 @@ public class Reply extends Activity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.e("True", response + "");
-                        if (!postHoldersDeviceToken.contains(myID)) { // if not my post
-                            subscribeTopic(postID);
-                        } else {
-                            subscribeTopic(postHoldersDeviceToken);
-                        }
                     }
                 },
                 new Response.ErrorListener() {

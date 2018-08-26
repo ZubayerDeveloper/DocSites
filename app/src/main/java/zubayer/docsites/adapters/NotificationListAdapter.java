@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.adapters;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import java.util.ArrayList;
+
+import zubayer.docsites.R;
 
 public class NotificationListAdapter extends ArrayAdapter<String> {
     public Typeface font;

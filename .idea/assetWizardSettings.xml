@@ -34,7 +34,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_camera_alt_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_person_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -55,10 +55,10 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
-                                      <entry key="iconShape" value="CIRCLE" />
+                                      <entry key="cropped" value="true" />
+                                      <entry key="iconShape" value="NONE" />
                                       <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\fb.png" />
-                                      <entry key="outputName" value="varified2" />
+                                      <entry key="outputName" value="profile" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -74,7 +74,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_camera_alt_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/E:/Android%20program%20files/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_person_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -85,7 +85,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\images.png" />
-                                      <entry key="outputName" value="imag_chooser" />
+                                      <entry key="outputName" value="profile" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -95,7 +95,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="LAUNCHER_LEGACY" />
+                            <entry key="outputIconType" value="NOTIFICATION" />
                           </map>
                         </option>
                       </PersistentState>

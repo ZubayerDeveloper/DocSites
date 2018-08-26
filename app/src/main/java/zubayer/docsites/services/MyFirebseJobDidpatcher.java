@@ -1,4 +1,4 @@
-package zubayer.docsites;
+package zubayer.docsites.services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -31,6 +31,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import zubayer.docsites.R;
+import zubayer.docsites.activity.Browser;
+import zubayer.docsites.activity.MainActivity;
+import zubayer.docsites.activity.Settings;
 
 public class MyFirebseJobDidpatcher extends JobService {
     String btxt, url, paramUrl, paramTagForText, paramTagForLink, paramLink, previousSaved, previousSaved2,
