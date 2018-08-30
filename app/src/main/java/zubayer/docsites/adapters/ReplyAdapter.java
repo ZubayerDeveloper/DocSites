@@ -126,7 +126,6 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
             holder.delete_reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-//                myToast(delete_reply_Reference.child(reply_id.get(position)).getKey());
                     delete_reply_Reference.child(reply_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

@@ -10,12 +10,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.*;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -32,8 +30,6 @@ import me.anwarshahriar.calligrapher.Calligrapher;
 import zubayer.docsites.adapters.GazetteAdapter;
 import zubayer.docsites.adapters.MyAdapter;
 import zubayer.docsites.R;
-
-import static android.widget.Toast.makeText;
 
 public class GazetteActivity extends Activity {
     ArrayList<String> yearArray, monthArray, resultArray, ministryArray, yearUrls, monthUrls, listUrls;
@@ -572,24 +568,6 @@ public class GazetteActivity extends Activity {
         }
     }
 
-    private void adjustScreenSize() {
-        int screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-        switch (screenSize) {
-            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                text.setTextSize(35);
-                text.setText("xlarge");
-            case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                text.setTextSize(30);
-                text.setText("large");
-            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                text.setTextSize(20);
-                text.setText("normal");
-            case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                text.setTextSize(15);
-                text.setText("small");
-        }
-    }
-
     private void createAddView() {
         mAdView = (AdView) findViewById(R.id.adViewGazette);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -630,12 +608,6 @@ public class GazetteActivity extends Activity {
             examName = getString(R.string.departmentalOption);
             text.setText(examName);
         }
-    }
-
-    private void myToaster(String text) {
-        Toast toast = makeText(GazetteActivity.this, text, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
     }
 
     private boolean dataconnected() {

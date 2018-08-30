@@ -41,6 +41,16 @@
             android:layout_marginLeft="35dp"
             android:layout_marginTop="5dp"
             android:textColor="#FC0E00" />
+        <Button
+            android:layout_marginTop="4dp"
+            android:id="@+id/notificationCount"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/bcps"
+            android:layout_toRightOf="@+id/my_profile"
+            android:layout_marginLeft="45dp"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
         <TextView
             android:id="@+id/my_profile"
             android:background="@drawable/profile"

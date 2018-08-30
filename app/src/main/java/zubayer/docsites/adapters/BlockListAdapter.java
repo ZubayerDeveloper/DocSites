@@ -101,12 +101,6 @@ public class BlockListAdapter extends RecyclerView.Adapter<BlockListAdapter.VHol
             blocked_user_image=(CircularImageView)itemView.findViewById(R.id.blocked_user_image);
         }
     }
-    private void myToast(String text) {
-        Toast toast = makeText(context, text, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-
-    }
 }
 
 

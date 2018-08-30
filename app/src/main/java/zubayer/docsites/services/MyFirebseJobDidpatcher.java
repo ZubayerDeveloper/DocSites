@@ -8,13 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
-import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 
 import com.firebase.jobdispatcher.JobParameters;
@@ -38,23 +36,20 @@ import zubayer.docsites.activity.MainActivity;
 import zubayer.docsites.activity.Settings;
 
 public class MyFirebseJobDidpatcher extends JobService {
-    String btxt, url, paramUrl, paramTagForText, paramTagForLink, paramLink, previousSaved, previousSaved2,
+    String btxt, url, paramUrl, paramTagForText, paramTagForLink, paramLink, previousSaved,
             filterContent, filterContent2, driveViewer, title, text, date;
     int textMin, linkBegin;
     SharedPreferences preferences;
-    boolean checked, enableSound, enableVibrate, wifiAvailable, mobileDataAvailable;
+    boolean checked, wifiAvailable, mobileDataAvailable;
     PendingIntent pendingIntent, pendingSetting;
     Intent myIntent, settingIntent;
-    ArrayList<String> buttonTexts2 = new ArrayList<>();
-    ArrayList<String> urls2 = new ArrayList<>();
-    ArrayList<String> buttonTexts = new ArrayList<>();
-    ArrayList<String> urls = new ArrayList<>();
     ArrayList<String> notificationHeadings = new ArrayList<>();
     ArrayList<String> notificationDates = new ArrayList<>();
     ArrayList<String> notificationTexts = new ArrayList<>();
     ArrayList<String> notificationUrls = new ArrayList<>();
     ArrayList<String> missedNotifications = new ArrayList<>();
     NotificationParser notificationParser;
+    int n=0;
 
     @Override
     public void onCreate() {
@@ -65,8 +60,6 @@ public class MyFirebseJobDidpatcher extends JobService {
             readDate();
             readText();
             readUrl();
-            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
-            oldsize.edit().putInt("oldsize", notificationUrls.size()).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,8 +77,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                     if (notificationTexts.size() != 0) {
 //                        addToSymmery("", "", notificationDate(), "");
                         saveState();
-                        SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
-                        oldsize.edit().putInt("finalsize", notificationUrls.size()).apply();
                     }
                     clearArray();
                 } catch (Exception e) {
@@ -108,18 +99,10 @@ public class MyFirebseJobDidpatcher extends JobService {
             driveViewer = "https://docs.google.com/viewer?url=";
 
             try {
-                preferences = getSharedPreferences("notificationSound", 0);
-                enableSound = preferences.getBoolean("notificationSoundChecked", false);
-
-                preferences = getSharedPreferences("vibration", 0);
-                enableVibrate = preferences.getBoolean("vibrationChecked", false);
-
                 preferences = getSharedPreferences("residencySetting", 0);
                 checked = preferences.getBoolean("residencyChecked", false);
 
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     bsmmuTag();
                     preferences = getSharedPreferences("residency", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("residency", null);
@@ -145,8 +128,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("noticeSetting", 0);
                 checked = preferences.getBoolean("noticeChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     bsmmuNotice();
                     executableTag();
                     preferences = getSharedPreferences("bsmmuNotice", Context.MODE_PRIVATE);
@@ -173,8 +154,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("dghsSetting", 0);
                 checked = preferences.getBoolean("dghsChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     dghsHomeLinks();
                     executableTag();
                     preferences = getSharedPreferences("dghs", Context.MODE_PRIVATE);
@@ -201,8 +180,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("resultDeptSetting", 0);
                 checked = preferences.getBoolean("resultDeptChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     resultDept();
                     executableTag();
                     preferences = getSharedPreferences("dept", Context.MODE_PRIVATE);
@@ -229,8 +206,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("resultSeniorSetting", 0);
                 checked = preferences.getBoolean("resultSeniorChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     resultSenior();
                     executableTag();
                     preferences = getSharedPreferences("senior", Context.MODE_PRIVATE);
@@ -257,8 +232,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("reultBcsSetting", 0);
                 checked = preferences.getBoolean("reultBcsChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     resultBCS();
                     executableTag();
                     preferences = getSharedPreferences("bcs", Context.MODE_PRIVATE);
@@ -285,8 +258,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("regiDeptSetting", 0);
                 checked = preferences.getBoolean("regiDeptChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     regiDeptStarts();
                     executableTag();
                     if (btxt.length() == 0) {
@@ -306,8 +277,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                         preferences.edit().remove("regideptExpired").apply();
 
                     }
-                    btxt = "";
-                    url = "";
                     regiDeptExpire();
                     executableTag();
                     preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
@@ -334,8 +303,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("regiSeniorSetting", 0);
                 checked = preferences.getBoolean("regiSeniorChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     regiSeniorStsrts();
                     executableTag();
                     if (btxt.length() == 0) {
@@ -355,8 +322,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                         preferences.edit().remove("regiSeniorExpired").apply();
 
                     }
-                    btxt = "";
-                    url = "";
                     regiSeniorExpre();
                     executableTag();
                     preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
@@ -383,8 +348,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("assistantSurgeonSetting", 0);
                 checked = preferences.getBoolean("assistantSurgeonChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.assistantSurgeon);
                     executeService();
                     serviceConfirmTag();
@@ -412,8 +375,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("juniorConsultantSetting", 0);
                 checked = preferences.getBoolean("juniorConsultantChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.juniorConsultant);
                     executeService();
                     serviceConfirmTag();
@@ -441,8 +402,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("seniorConsultantSetting", 0);
                 checked = preferences.getBoolean("seniorConsultantChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.seniorConsultant);
                     executeService();
                     serviceConfirmTag();
@@ -471,8 +430,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("assistantProfessorSetting", 0);
                 checked = preferences.getBoolean("assistantProfessorChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.assistantProfessor);
                     executeService();
                     serviceConfirmTag();
@@ -500,8 +457,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("associateProfessorSetting", 0);
                 checked = preferences.getBoolean("associateProfessorChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.associateProfessor);
                     executeService();
                     serviceConfirmTag();
@@ -529,8 +484,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("professorSetting", 0);
                 checked = preferences.getBoolean("professorChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.professor);
                     executeService();
                     serviceConfirmTag();
@@ -558,8 +511,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("civilSurgeonSetting", 0);
                 checked = preferences.getBoolean("civilSurgeonChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.civilSurgeon);
                     executeService();
                     serviceConfirmTag();
@@ -587,8 +538,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("adhocSetting", 0);
                 checked = preferences.getBoolean("adhocChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = getString(R.string.adhoc);
                     executeService();
                     serviceConfirmTag();
@@ -616,8 +565,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("mohfwSetting", 0);
                 checked = preferences.getBoolean("mohfwChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = "Per";
                     filterContent2 = "aaaaaaa";
                     executeService();
@@ -646,8 +593,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("deputationSetting", 0);
                 checked = preferences.getBoolean("deputationChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = "ME-";
                     executeDeputation();
                     serviceConfirmTag();
@@ -676,8 +621,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 preferences = getSharedPreferences("leaveSetting", 0);
                 checked = preferences.getBoolean("leaveChecked", false);
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     filterContent = "HR-";
                     executeLeave();
                     serviceConfirmTag();
@@ -707,8 +650,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 checked = preferences.getBoolean("ccdChecked", false);
 
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     executeCCD1();
                     executableTag();
                     preferences = getSharedPreferences("ccd", Context.MODE_PRIVATE);
@@ -731,8 +672,6 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
 
-                    btxt = "";
-                    url = "";
                     executeCCD2();
                     executableTag();
                     preferences = getSharedPreferences("ccd2", Context.MODE_PRIVATE);
@@ -760,8 +699,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 checked = preferences.getBoolean("dgfpChecked", false);
 
                 if (checked) {
-                    btxt = "";
-                    url = "";
                     dgfpOrder();
                     executableTag();
                     preferences = getSharedPreferences("dgfp1", Context.MODE_PRIVATE);
@@ -783,9 +720,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                         preferences.edit().putString("dgfp1", btxt).apply();
 
                     }
-
-                    btxt = "";
-                    url = "";
                     dgfpNotice();
                     executableTag();
                     preferences = getSharedPreferences("dgfp2", Context.MODE_PRIVATE);
@@ -807,9 +741,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                         preferences.edit().putString("dgfp2", btxt).apply();
 
                     }
-
-                    btxt = "";
-                    url = "";
                     dgfpNOC();
                     executableTag();
                     preferences = getSharedPreferences("dgfp3", Context.MODE_PRIVATE);
@@ -838,15 +769,6 @@ public class MyFirebseJobDidpatcher extends JobService {
             return null;
         }
 
-    }
-
-    private void residency() {
-        paramUrl = "http://www.bsmmu.edu.bd";
-        paramTagForText = "a";
-        paramTagForLink = "a";
-        paramLink = "abs:href";
-        textMin = 147;
-        linkBegin = 147;
     }
 
     private void bsmmuNotice() {
@@ -961,14 +883,14 @@ public class MyFirebseJobDidpatcher extends JobService {
         paramUrl = "http://dgfp.gov.bd/site/view/office_order/অফিস-আদেশ";
         paramTagForText = "tr";
         paramLink = "abs:href";
-        textMin = 0;
+        textMin = 1;
     }
 
     private void dgfpNotice() {
         paramUrl = "http://dgfp.gov.bd/site/view/notices/নোটিশ";
         paramTagForText = "tr";
         paramLink = "abs:href";
-        textMin = 0;
+        textMin = 1;
     }
 
     private void dgfpNOC() {
@@ -980,52 +902,28 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     public void serviceConfirmTag() {
         try {
+            btxt="";
+            url="";
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
             int textMax = links.size();
             for (int i = textMin; i <= textMax; i++) {
                 Element link = links.get(i);
-                btxt = link.text();
-                url = link.select("a").attr(paramLink);
-                if (btxt.contains(filterContent)) {
-                    buttonTexts.add(btxt);
-                    urls.add(url);
-                    textMax = i;
+                if(link.text().contains(filterContent)){
+                    btxt = link.text();
+                    url = link.select("a").attr(paramLink);
+                    break;
                 }
-            }
-            btxt = buttonTexts.get(0);
-            url = urls.get(0);
-            buttonTexts.clear();
-            urls.clear();
-        } catch (Exception e) {
-        }
-    }
 
-    public void serviceConfirmTag2() {
-        try {
-            Document doc = Jsoup.connect(paramUrl).get();
-            Elements links = doc.select(paramTagForText);
-            int textMax = links.size();
-            for (int i = textMin; i <= textMax; i++) {
-                Element link = links.get(i);
-                btxt = link.text();
-                url = link.select("a").attr(paramLink);
-                if (btxt.contains(filterContent2)) {
-                    buttonTexts2.add(btxt);
-                    urls2.add(url);
-                    textMax = i;
-                }
             }
-            btxt = buttonTexts2.get(0);
-            url = urls2.get(0);
-            buttonTexts2.clear();
-            urls2.clear();
         } catch (Exception e) {
         }
     }
 
     public void executableTag() {
         try {
+            btxt="";
+            url="";
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
             Element link = links.get(textMin);
@@ -1038,6 +936,8 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     private  void bsmmuTag() {
         try {
+            btxt="";
+            url="";
             Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
             Elements links = doc.select("a");
             linkBegin = 0;
@@ -1054,8 +954,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 Element link = links.get(i);
                 btxt = link.text();
                 url = link.select("a").attr("abs:href");
-                buttonTexts.add(btxt);
-                urls.add(url);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1085,17 +983,6 @@ public class MyFirebseJobDidpatcher extends JobService {
             notification.ledARGB = 0xff990000;
             notification.ledOnMS = 500;
             notification.ledOffMS = 100;
-            if (enableSound) {
-                MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
-                mp.start();
-            }
-
-            if (enableVibrate) {
-                Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                if (vibrator != null) {
-                    vibrator.vibrate(700);
-                }
-            }
             PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
             PowerManager.WakeLock wakeLock = null;
             if (pm != null) {
@@ -1136,18 +1023,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                 .setStyle(bigTextStyle)
                 .setSmallIcon(R.mipmap.ic_launcher_foreground);
         notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
-        if (enableSound) {
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
-            mp.start();
-        }
-
-        if (enableVibrate) {
-            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-            if (vibrator != null) {
-                vibrator.vibrate(1000);
-                vibrator.vibrate(1000);
-            }
-        }
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = null;
         if (pm != null) {
@@ -1301,7 +1176,8 @@ public class MyFirebseJobDidpatcher extends JobService {
     }
 
     private void finalNotificationCount() {
+        n++;
         SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
-        oldsize.edit().putInt("finalsize", notificationUrls.size()).apply();
+        oldsize.edit().putInt("finalsize", n).apply();
     }
 }

@@ -1,27 +1,20 @@
 package zubayer.docsites.adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import zubayer.docsites.R;
-
-import static android.widget.Toast.makeText;
 
 public class GridAdapter extends ArrayAdapter<String> {
     ArrayList<String> heading,description,contents;

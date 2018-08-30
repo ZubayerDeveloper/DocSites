@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -94,11 +96,13 @@ public class Forum extends Activity {
 
     AlertDialog alert;
     AlertDialog.Builder alertBuilder;
+    Button notificationCount;
     CallbackManager callbackManager;
     CardView chooser_cardview;
     CircularImageView post_image;
     ImageView send, pic_preview, icon;
     ForumAdapter adapter, profileAdapter;
+    ForumNotificationAdapter forumNotificationAdapter;
     LollipopAdapter lollipopAdapter, lollipopProfileAdapter;
     FabSpeedDial forum_subscription;
     GraphRequest request;
@@ -109,7 +113,7 @@ public class Forum extends Activity {
     EditText edit_text;
     SharedPreferences loginPreference, myIDpreference, notificationPreference;
     FirebaseDatabase database;
-    DatabaseReference rootReference, reply_preview_reference, unsubscribeReference, blockReference, imageReference;
+    DatabaseReference rootReference, reply_preview_reference,blockReference, imageReference;
     HashMap<String, Object> post;
     ProgressDialog progressDialog;
     String facebook_id, facebook_user_name, postID, blocked, reported, post_ID_reference_for_Imge,
@@ -162,6 +166,13 @@ public class Forum extends Activity {
             }
         });
         notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNotification();
+                clicked = true;
+            }
+        });
+        notificationCount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showNotification();
@@ -326,6 +337,7 @@ public class Forum extends Activity {
             edit_text.setVisibility(View.VISIBLE);
             send.setVisibility(View.VISIBLE);
             imageChooser.setVisibility(View.VISIBLE);
+            forum_subscription.setVisibility(View.VISIBLE);
         } else {
             super.onBackPressed();
         }
@@ -339,7 +351,7 @@ public class Forum extends Activity {
         final ArrayList<String> notifyText = new ArrayList<>();
         final ArrayList<String> mainPostID = new ArrayList<>();
         final ArrayList<String> seenUnseen = new ArrayList<>();
-        final ForumNotificationAdapter forumNotificationAdapter = new ForumNotificationAdapter(Forum.this, notificationID, userSource, notifyText, notifytime, mainPostID, seenUnseen);
+        forumNotificationAdapter = new ForumNotificationAdapter(Forum.this, notificationID, userSource, notifyText, notifytime, mainPostID, seenUnseen);
         final DatabaseReference notificationReference = database.getReference().child("notifications");
         notificationReference.child(facebook_id).addValueEventListener(new ValueEventListener() {
             @Override
@@ -363,14 +375,15 @@ public class Forum extends Activity {
                 edit_text.setVisibility(View.GONE);
                 send.setVisibility(View.GONE);
                 imageChooser.setVisibility(View.GONE);
-                for(int i=0;i<notificationID.size();i++){
-                    if(notificationExpiry(notificationID.get(i))>1000*60*60*24*7){
+                forum_subscription.setVisibility(View.GONE);
+                for (int i = 0; i < notificationID.size(); i++) {
+                    if (notificationExpiry(notificationID.get(i)) > 1000 * 60 * 60 * 24 * 7) {
                         notificationReference.child(facebook_id).child(notificationID.get(i)).setValue(null);
                     }
 
                 }
-                if(notificationID.size()>10){
-                    notificationReference.child(facebook_id).child(notificationID.get(notificationID.size()-1)).setValue(null);
+                if (notificationID.size() > 10) {
+                    notificationReference.child(facebook_id).child(notificationID.get(notificationID.size() - 1)).setValue(null);
                 }
                 recyclerView.setAdapter(forumNotificationAdapter);
             }
@@ -482,8 +495,6 @@ public class Forum extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-//        adapter.notifyDataSetChanged();
-//        loadForumPost();
     }
 
     private void loadForumPost() {
@@ -511,7 +522,6 @@ public class Forum extends Activity {
                         replyPreview(snapshot.getKey());
                         perPost_reportCount(snapshot.getKey());
                     } else {
-//                        recyclerView.setAdapter(adapter2);
                         replycount(snapshot.getKey());
                         perPost_reportCount(snapshot.getKey());
                     }
@@ -521,6 +531,7 @@ public class Forum extends Activity {
                 getSize();
                 loadReportedIDlist();
                 loadBlocklist();
+                loadNotificationCount();
             }
 
             @Override
@@ -531,28 +542,62 @@ public class Forum extends Activity {
 
     }
 
+    private void loadNotificationCount() {
+        final ArrayList<String> unseencount = new ArrayList<>();
+        final DatabaseReference notificationReference = database.getReference().child("notifications");
+        notificationReference.child(facebook_id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                unseencount.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.child("seenUnseen").getValue(String.class).equals("unseen")) {
+                        unseencount.add(".");
+                    }
+                }
+                if (!unseencount.isEmpty()) {
+                    notificationCount.setText(Integer.toString(unseencount.size()));
+                    notificationCount.setVisibility(View.VISIBLE);
+
+                } else {
+                    notificationCount.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void perPost_reportCount(final String post_ID) {
         reply_preview_reference = database.getReference().child("user").child(post_ID).child("reportPost");
         reply_preview_reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<String> total_report_each_post = new ArrayList<>();
-                final HashMap<String, Object> unsubscribeList = new HashMap<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     total_report_each_post.add(snapshot.getKey());
 
                 }
                 if (total_report_each_post.size() != 0) {
                     if (total_report_each_post.size() > reportSize) {
-                        rootReference.addValueEventListener(new ValueEventListener() {
+                        rootReference.child(post_ID).child("reply").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                unsubscribeList.put(post_ID, "");
-                                unsubscribeList.put(dataSnapshot.child(post_ID).child("devicetoken").getValue(String.class), "");
-                                try {
-                                    unsubscribeReference.updateChildren(unsubscribeList);
-                                } catch (Exception e) {
+
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    storageRef.child(snapshot.getKey()).delete();
+                                    imageReference.child(snapshot.getKey()).setValue(null);
                                 }
+
+                                rootReference.child(post_ID).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                    }
+                                });
+
                             }
 
                             @Override
@@ -561,6 +606,7 @@ public class Forum extends Activity {
                             }
                         });
                         rootReference.child(post_ID).setValue(null);
+                        storageRef.child(post_ID).delete();
                     }
                 }
             }
@@ -737,6 +783,8 @@ public class Forum extends Activity {
         imageChooser = (TextView) findViewById(R.id.imageChooser);
         del_chooser = (TextView) findViewById(R.id.del_chooser);
         notifications = (TextView) findViewById(R.id.updateNotifier);
+        notificationCount = (Button) findViewById(R.id.notificationCount);
+        notificationCount.setVisibility(View.GONE);
         my_profile = (TextView) findViewById(R.id.my_profile);
         namess = new ArrayList<>();
         textss = new ArrayList<>();
@@ -757,7 +805,6 @@ public class Forum extends Activity {
         notificationPreference = getSharedPreferences("forum_notification", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
         rootReference = database.getReference().child("user");
-        unsubscribeReference = database.getReference().child("unsubscribe");
         imageReference = database.getReference().child("imageReference");
         storageRef = FirebaseStorage.getInstance().getReference("image/");
         post = new HashMap<>();
@@ -870,6 +917,8 @@ public class Forum extends Activity {
     public void setFont(Context context, Activity activity) {
         Calligrapher font = new Calligrapher(context);
         font.setFont(activity, "kalpurush.ttf", true);
+        Typeface fontnull = Typeface.createFromAsset(getAssets(), "times.ttf");
+        notificationCount.setTypeface(fontnull);
     }
 
     private boolean dataconnected() {
@@ -1089,18 +1138,26 @@ public class Forum extends Activity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 postSize = dataSnapshot.getValue(Long.class);
                 if (post_id.size() > postSize) {
-
-                    rootReference.child(post_id.get(post_id.size() - 1)).setValue(null, null);
-                    unsubscribeReference.addValueEventListener(new ValueEventListener() {
+                    rootReference.child(post_id.get(post_id.size() - 1)).child("reply").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            ArrayList<String> unsubscriberefs = new ArrayList<>();
+
                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                unsubscriberefs.add(snapshot.getKey());
+                                myToaster(snapshot.getKey());
+                                storageRef.child(snapshot.getKey()).delete();
+                                imageReference.child(snapshot.getKey()).setValue(null);
+
                             }
-                            if (unsubscriberefs.size() > postSize) {
-                                unsubscribeReference.child(unsubscriberefs.get(0)).setValue(null);
-                            }
+
+                            rootReference.child(post_id.get(post_id.size() - 1)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                }
+                            });
+                            storageRef.child(post_id.get(post_id.size() - 1)).delete();
+                            imageReference.child(post_id.get(post_id.size() - 1)).setValue(null);
+                            rootReference.child(post_id.get(post_id.size() - 1)).setValue(null);
                         }
 
                         @Override
@@ -1108,24 +1165,8 @@ public class Forum extends Activity {
 
                         }
                     });
-                    imageReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            ArrayList<String> imagerefs = new ArrayList<>();
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                imagerefs.add(snapshot.getKey());
-                            }
-                            if (imagerefs.size() > postSize) {
-                                imageReference.child(imagerefs.get(0)).setValue(null);
-                                storageRef.child(imagerefs.get(0)).delete();
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
                 }
             }
 

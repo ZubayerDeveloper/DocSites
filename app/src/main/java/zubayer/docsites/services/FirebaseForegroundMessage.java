@@ -13,6 +13,8 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Random;
+
 import zubayer.docsites.R;
 
 public class FirebaseForegroundMessage extends FirebaseMessagingService {
@@ -33,12 +35,18 @@ public class FirebaseForegroundMessage extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
 //            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
 //            mp.start();
-            notification("firebase","firebase_channel",remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody(),101);
+            notification("firebase","firebase_channel",remoteMessage.getNotification().getTitle(),remoteMessage.getNotification().getBody(),notifyID());
 
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message,
+    }
+
+    private int notifyID() {
+        Random random=new Random();
+        random.nextInt();
+        return random.nextInt();
     }
 
     private void notification(String channel_id, String channel_name, String title, String text, int notify_id) {

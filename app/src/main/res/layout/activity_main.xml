@@ -24,7 +24,7 @@
             android:id="@+id/version"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
-            android:text="DocSites 3.2.9"
+            android:text="DocSites 4.0.0"
             android:textColor="#FFFFFF"
             android:layout_toRightOf="@+id/icon"
             android:layout_width="wrap_content"
@@ -33,7 +33,9 @@
             android:id="@+id/updateNotifier"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
+            android:padding="3dp"
             android:layout_toRightOf="@+id/version"
+            android:background="@drawable/notify_forum"
             android:textColor="#FC0E00"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -66,6 +68,19 @@
         android:focusable="true"
         android:padding="10dp"
         android:src="@drawable/forum" />
+    <TextView
+        android:layout_marginTop="4dp"
+        android:id="@+id/forumhelpNotify"
+        android:layout_above="@+id/adViewCard"
+        android:layout_toLeftOf="@+id/forum"
+        android:layout_marginBottom="65dp"
+        android:layout_width="wrap_content"
+        android:padding="7dp"
+        android:alpha=".8"
+        android:layout_height="wrap_content"
+        android:background="@drawable/notify_forum"
+        android:textColor="#00a2ff"
+        android:textSize="12sp" />
     <ImageButton
         android:layout_marginTop="4dp"
         android:id="@+id/notificationSumery"

@@ -30,9 +30,11 @@ import com.facebook.GraphResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -112,14 +114,15 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         holder.docName.setTypeface(forum_font);
         if (holder.docText.equals(" ")) {
             holder.docText.setVisibility(View.GONE);
-        }if (doc_text.get(position).length() > 400) {
-            String text="<font color=#b4b4b4> ...continue reading</font>";
-            holder.docText.setText(Html.fromHtml(doc_text.get(position).substring(0, 400) +text),TextView.BufferType.SPANNABLE);
+        }
+        if (doc_text.get(position).length() > 400) {
+            String text = "<font color=#b4b4b4> ...continue reading</font>";
+            holder.docText.setText(Html.fromHtml(doc_text.get(position).substring(0, 400) + text), TextView.BufferType.SPANNABLE);
         } else {
             holder.docText.setText(doc_text.get(position));
 
         }
-        if(doc_text.get(position).length()<100){
+        if (doc_text.get(position).length() < 100) {
             holder.docText.setTextSize(27);
         }
         holder.docText.setTypeface(forum_font);
@@ -319,13 +322,31 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                rootReference.child(post_id.get(position)).child("reply").addValueEventListener(new ValueEventListener() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        notifyDataSetChanged();
-                                        myToast("Post deleted");
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            storageRef.child(snapshot.getKey()).delete();
+                                            imageReference.child(snapshot.getKey()).setValue(null);
+                                        }
+
+                                        rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                notifyDataSetChanged();
+                                                myToast("Post deleted");
+                                            }
+                                        });
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                     }
                                 });
+
 
                                 storageRef.child(post_id.get(position)).delete();
                                 imageReference.child(post_id.get(position)).setValue(null);

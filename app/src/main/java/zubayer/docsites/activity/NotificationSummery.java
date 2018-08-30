@@ -2,9 +2,7 @@ package zubayer.docsites.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +16,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -49,7 +46,6 @@ import zubayer.docsites.R;
 import static android.widget.Toast.makeText;
 
 public class NotificationSummery extends Activity {
-    ImageButton save, clear, undo, redo, about;
     AlertDialog Dialog, checkinternet;
     AlertDialog.Builder builder;
     ArrayList<String> dates, headings, urls, texts, missedNotifications,falseurls,notificatinCount;
@@ -57,17 +53,12 @@ public class NotificationSummery extends Activity {
     View m;
     NotificationListAdapter adaptate;
     ListView notificationList;
-    int size, textsize = 18;
-    FabSpeedDial fab;
     private AdView mAdView;
     SharedPreferences preferences;
     boolean checked;
     MyAdapter adapter;
     ProgressBar progressBar;
     FabSpeedDial fabspeed;
-    PendingIntent pendingIntent;
-    AlarmManager manager;
-    Intent newIntent;
     boolean wifiAvailable, mobileDataAvailable;
     FirebaseJobDispatcher jobDispatcher;
 

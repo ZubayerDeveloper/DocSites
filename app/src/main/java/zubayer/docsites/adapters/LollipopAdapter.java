@@ -27,11 +27,12 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.mikhaellopez.circularimageview.CircularImageView;
@@ -90,11 +91,14 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         if (holder.docText.equals(" ")) {
             holder.docText.setVisibility(View.GONE);
         }
-        if (doc_text.get(position).length() > 200) {
-            holder.docText.setText(doc_text.get(position).substring(0, 200) + "...." + " continue reading");
+        if (doc_text.get(position).length() > 400) {
+            holder.docText.setText(doc_text.get(position).substring(0, 400) + "...." + " continue reading");
         } else {
             holder.docText.setText(doc_text.get(position));
 
+        }
+        if(doc_text.get(position).length()<100){
+            holder.docText.setTextSize(27);
         }
         holder.docText.setTypeface(fonts);
         holder.postTime.setText(post_Time.get(position));
@@ -128,13 +132,31 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                rootReference.child(post_id.get(position)).child("reply").addValueEventListener(new ValueEventListener() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        notifyDataSetChanged();
-                                        myToast("Post deleted");
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                            storageRef.child(snapshot.getKey()).delete();
+                                            imageReference.child(snapshot.getKey()).setValue(null);
+                                        }
+
+                                        rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                notifyDataSetChanged();
+                                                myToast("Post deleted");
+                                            }
+                                        });
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                     }
                                 });
+
 
                                 storageRef.child(post_id.get(position)).delete();
                                 imageReference.child(post_id.get(position)).setValue(null);

@@ -9,27 +9,20 @@ import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.mikhaellopez.circularimageview.CircularImageView;
 
 import java.util.ArrayList;
 
 import zubayer.docsites.R;
 import zubayer.docsites.activity.Reply;
-
-import static android.widget.Toast.makeText;
 
 public class ForumNotificationAdapter extends RecyclerView.Adapter<ForumNotificationAdapter.VHolder> {
     ArrayList<String> notification_text, notification_time, users_sources, main_postID, seen_unseen,notification_ID;
@@ -83,14 +76,18 @@ public class ForumNotificationAdapter extends RecyclerView.Adapter<ForumNotifica
         holder.del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notification_Reference.child(myID).child(notification_ID.get(position)).setValue(null);
+                try {
+                    notification_Reference.child(myID).child(notification_ID.get(position)).setValue(null);
+                }catch (Exception e){}
             }
         });
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context,Reply.class).putExtra("postID",main_postID.get(position)));
-                notification_Reference.child(myID).child(notification_ID.get(position)).child("seenUnseen").setValue("seen");
+                if(main_postID.get(position)!=null) {
+                    context.startActivity(new Intent(context, Reply.class).putExtra("postID", main_postID.get(position)));
+                    notification_Reference.child(myID).child(notification_ID.get(position)).child("seenUnseen").setValue("seen");
+                }
             }
         });
 

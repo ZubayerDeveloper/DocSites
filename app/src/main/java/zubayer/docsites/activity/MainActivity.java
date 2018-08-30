@@ -1,7 +1,9 @@
 package zubayer.docsites.activity;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +60,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
@@ -66,6 +71,7 @@ import zubayer.docsites.adapters.GridAdapter;
 import zubayer.docsites.adapters.MyAdapter;
 import zubayer.docsites.services.MyFirebseJobDidpatcher;
 import zubayer.docsites.R;
+import zubayer.docsites.services.NotificationReceiver;
 
 import static android.widget.Toast.makeText;
 
@@ -78,11 +84,11 @@ public class MainActivity extends Activity {
     ListView list;
     LinearLayoutManager manager;
     FirebaseDatabase database;
-    DatabaseReference rootReference;
+    DatabaseReference rootReference,updateReference;
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
-            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount, unsubscribe_list;
+            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount, queryID;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
@@ -96,24 +102,19 @@ public class MainActivity extends Activity {
     ServiceParser serviceParser;
     CcdParser ccdParser;
     CcdParser2 ccdParser2;
-    UpdateChecker check;
-    UpdateNotifier notifier;
     String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
-            updateMessage, parseVersionCode, pdfFilter, driveViewer, filterContent, filterContent2,
-            notificationNumberText,update_version,update_msg;
-    int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize,
-            finalNotificationSize, newNotification, bsmmubegin, bsmmuend;
+            pdfFilter, driveViewer, filterContent, filterContent2,
+            notificationNumberText, queryNotification;
+    int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize, bsmmubegin, bsmmuend;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
-            bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable;
-    MenuItem menuitem;
-    Menu menu;
+            bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable, newNotifications;
     SharedPreferences preferences, notificationPreference;
     FabSpeedDial fab;
     ImageButton notificationSummery;
     FloatingActionButton forum;
     Button showNotificationNumber;
     FirebaseJobDispatcher jobDispatcher;
-    TextView updateNotifier;
+    TextView updateNotifier, forumhelpNotify;
 
     @Override
     protected void onDestroy() {
@@ -126,8 +127,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        newForumPost();
         createGridView();
-        setFont(this,this);
+        setFont(this, this);
         adjustScreenSize();
         manageSettings();
         loadButtonOptions();
@@ -142,6 +144,7 @@ public class MainActivity extends Activity {
         initializeWidgetVariable();
         readNotificationCount();
         forumSubscription();
+        setAlarm();
         updateNotifier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -195,8 +198,8 @@ public class MainActivity extends Activity {
                         } else {
                             try {
                                 stopFirebaseJobDispatcher();
-                                setFirebaseJobDispatcher(0, 21600);
-                                myToaster(MainActivity.this,"Checking Notifications");
+                                setFirebaseJobDispatcher(1, 21600);
+                                myToaster(MainActivity.this, "Checking Notifications");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -214,6 +217,16 @@ public class MainActivity extends Activity {
         forum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
+                preferences.edit().putString("query", queryID.get(0)).apply();
+                startActivity(new Intent(MainActivity.this, Forum.class));
+            }
+        });
+        forumhelpNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
+                preferences.edit().putString("query", queryID.get(0)).apply();
                 startActivity(new Intent(MainActivity.this, Forum.class));
             }
         });
@@ -233,6 +246,8 @@ public class MainActivity extends Activity {
         notificationSummery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+                oldsize.edit().putInt("finalsize", 0).apply();
                 Intent summery = new Intent(MainActivity.this, NotificationSummery.class);
                 startActivity(summery);
             }
@@ -240,6 +255,8 @@ public class MainActivity extends Activity {
         showNotificationNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+                oldsize.edit().putInt("finalsize", 0).apply();
                 Intent summery = new Intent(MainActivity.this, NotificationSummery.class);
                 startActivity(summery);
             }
@@ -373,8 +390,11 @@ public class MainActivity extends Activity {
             Elements links = doc.select(TagForText);
             for (int i = begin; i < end; i++) {
                 Element link = links.get(i);
-                btxt = link.text();
-                url = link.select("a").attr(Attr);
+                if(link.text()!=""){
+                    btxt = link.text();
+                    url = link.select("a").attr(Attr);
+                }
+
                 buttonTexts.add(btxt);
                 urls.add(url);
             }
@@ -568,9 +588,12 @@ public class MainActivity extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
-                    ccdNotices2();
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                        ccdNotices2();
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -584,7 +607,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -623,11 +649,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -681,11 +713,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -699,7 +737,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -738,11 +779,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -756,7 +803,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -813,11 +863,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -831,7 +887,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -888,11 +947,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -906,7 +971,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -945,11 +1013,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                     dghsHomeLinks2();
                 } else {
                     checkinternet = builder.create();
@@ -964,7 +1038,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -1003,11 +1080,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                     dghsHomeLinks3();
                 } else {
                     checkinternet = builder.create();
@@ -1022,7 +1105,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -1061,11 +1147,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (url != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -1079,7 +1171,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -1118,11 +1213,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (btxt != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
@@ -1136,7 +1237,10 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 }
             } catch (Exception e) {
@@ -1151,7 +1255,6 @@ public class MainActivity extends Activity {
         String taglink = "a";
         String Attrs = "onClick";
         String uRl = "";
-        String prelingk = "http://www.bcpsbd.org/";
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -1231,11 +1334,17 @@ public class MainActivity extends Activity {
                         }
                     });
 
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    } catch (Exception e) {
+                    }
                     progressBar.setVisibility(View.GONE);
                 } else if (uRl != null) {
-                    progressBar.setVisibility(View.GONE);
-                    list.setAdapter(adapter);
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        list.setAdapter(adapter);
+                    } catch (Exception e) {
+                    }
                 } else {
                     checkinternet = builder.create();
                     checkinternet.setMessage("Website is not responding");
@@ -1249,119 +1358,17 @@ public class MainActivity extends Activity {
                         }
                     });
                     try {
-
+                        checkinternet.setCancelable(false);
+                        checkinternet.show();
                     } catch (Exception e) {
                     }
-                    checkinternet.setCancelable(false);
-                    checkinternet.show();
-                }
-            } catch (Exception e) {
-            }
-        }
-    }
-
-    class UpdateChecker extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                Document doc = Jsoup.connect("https://drzubayerahmed.wordpress.com/2017/11/29/26/?preview=true").get();
-                Elements links = doc.select("p");
-                Element link = links.get(0);
-                Element message = links.get(2);
-                parseVersionCode = link.text();
-                updateMessage = message.text();
-            } catch (Exception e) {
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void b) {
-            super.onPostExecute(b);
-            if (parseVersionCode != null) {
-                Integer parseint = Integer.parseInt(parseVersionCode);
-                if (parseint > versionCode) {
-                    SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                    prefs.edit().putBoolean("yesno", true).apply();
-                    prefs.edit().putString("updateMessage", updateMessage).apply();
-                    checkUpdate();
-                } else if (parseint == versionCode) {
-                    SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                    prefs.edit().putBoolean("yesno", false).apply();
-                    checkUpdate();
-                } else if (parseint < versionCode) {
-                    SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                    prefs.edit().putBoolean("yesno", false).apply();
-                    checkUpdate();
-                }
-            } else {
-                checkUpdate();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            buttonTexts.clear();
-            urls.clear();
-            super.onCancelled();
-        }
-
-        public void checkUpdate() {
-            try {
-                SharedPreferences prefs = getSharedPreferences("updateDocSite", Context.MODE_PRIVATE);
-                boolean b = prefs.getBoolean("yesno", false);
-                boolean notify=prefs.getBoolean("yesnoMSG", false);
-                updateMessage = prefs.getString("updateMessage", null);
-                if (b) {
-                    checkinternet = builder.create();
-                    checkinternet.setButton("Update", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface da, int but) {
-                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites"));
-                            startActivity(i);
-                        }
-                    });
-                    checkinternet.setMessage(updateMessage);
-                    checkinternet.setCancelable(false);
-                    checkinternet.show();
 
                 }
             } catch (Exception e) {
             }
         }
     }
-    class UpdateNotifier extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                Document doc = Jsoup.connect("https://drzubayerahmed.wordpress.com/2017/11/29/26/?preview=true").get();
-                Elements links = doc.select("p");
-                Element link = links.get(4);
-                Element message = links.get(5);
-                update_version = link.text();
-                update_msg = message.text();
-            } catch (Exception e) {
-            }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(Void b) {
-            super.onPostExecute(b);
-            if (update_version != null) {
-                Integer parseint = Integer.parseInt(update_version);
-                if (parseint > versionCode) {
-                    updateNotifier.setText(update_msg);
-                }
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            buttonTexts.clear();
-            urls.clear();
-            super.onCancelled();
-        }
-    }
     @Override
     public void onBackPressed() {
         boolean pressed = false;
@@ -1401,6 +1408,8 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         readNotificationCount();
+        newForumPost();
+
     }
 
     @Override
@@ -1728,8 +1737,8 @@ public class MainActivity extends Activity {
         paramLink = "abs:href";
         textMin = 9;
         linkBegin = 9;
-        textMax = 12;
-        linkEnd = 12;
+        textMax = 14;
+        linkEnd = 14;
         ccdParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1755,9 +1764,9 @@ public class MainActivity extends Activity {
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
-        textMin = 0;
+        textMin = 1;
         textMax = 122;
-        linkBegin = 0;
+        linkBegin = 1;
         linkEnd = 123;
         position = 125;
         bpscParser.execute();
@@ -1770,9 +1779,9 @@ public class MainActivity extends Activity {
         paramTagForText = "tr";
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
-        textMin = 0;
+        textMin = 1;
         textMax = 122;
-        linkBegin = 0;
+        linkBegin = 1;
         linkEnd = 123;
         position = 125;
         bpscParser.execute();
@@ -1794,7 +1803,6 @@ public class MainActivity extends Activity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-
     private void browser(String inurl) {
         try {
             preferences = getSharedPreferences("setting", 0);
@@ -1812,7 +1820,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void myToaster(Context context,String text) {
+    private void myToaster(Context context, String text) {
         Toast toast = makeText(context, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
@@ -1954,7 +1962,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void setFont(Context context,Activity activity) {
+    public void setFont(Context context, Activity activity) {
         Calligrapher font = new Calligrapher(context);
         font.setFont(activity, "kalpurush.ttf", true);
     }
@@ -1998,7 +2006,7 @@ public class MainActivity extends Activity {
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                readNotificationCount();
+
             }
 
             @Override
@@ -2006,10 +2014,15 @@ public class MainActivity extends Activity {
                 if (scrollState == 0) {
                     fab.show();
                     forum.show();
+                    newForumPost();
+                    if (newNotifications) {
+                        forumhelpNotify.setVisibility(View.VISIBLE);
+                    }
 
                 } else {
                     fab.hide();
                     forum.hide();
+                    forumhelpNotify.setVisibility(View.GONE);
                 }
 
             }
@@ -2023,11 +2036,35 @@ public class MainActivity extends Activity {
     }
 
     private void checkAppUpdates() {
-        updateNotifier=(TextView)findViewById(R.id.updateNotifier);
-        notifier=new UpdateNotifier();
-        notifier.execute();
-        check = new UpdateChecker();
-        check.execute();
+        updateReference=database.getReference();
+        updateReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(dataSnapshot.child("docUpdateVersion").getValue(Integer.class)>versionCode){
+                    checkinternet=builder.create();
+                    checkinternet.setCancelable(false);
+                    checkinternet.setMessage(dataSnapshot.child("docUpdateMessage").getValue(String.class));
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Update", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites")));
+                        }
+                    });
+                    checkinternet.show();
+                }
+                if(dataSnapshot.child("docNotifyVersion").getValue(Integer.class)>versionCode){
+                    updateNotifier.setVisibility(View.VISIBLE);
+                    updateNotifier.setText(dataSnapshot.child("docNotifyMessage").getValue(String.class));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void listViewOptionLoader(int position) {
@@ -2342,18 +2379,15 @@ public class MainActivity extends Activity {
 
     private void readNotificationCount() {
         try {
-            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
-            oldNotificatinSize = oldsize.getInt("oldsize", 0);
+            SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+            oldNotificatinSize = oldsize.getInt("finalsize", 0);
 
-            SharedPreferences finalsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
-            finalNotificationSize = finalsize.getInt("finalsize", 0);
-
-            newNotification = finalNotificationSize - oldNotificatinSize;
-
-            notificationNumberText = Integer.toString(newNotification);
-            if (newNotification == 0) {
+            notificationNumberText = Integer.toString(oldNotificatinSize);
+            if (oldNotificatinSize == 0) {
                 showNotificationNumber.setVisibility(View.GONE);
+                newNotifications = false;
             } else {
+                newNotifications = true;
                 showNotificationNumber.setVisibility(View.VISIBLE);
                 showNotificationNumber.setText(notificationNumberText);
             }
@@ -2365,7 +2399,12 @@ public class MainActivity extends Activity {
     private void initializeWidgetVariable() {
         notificationSummery = (ImageButton) findViewById(R.id.notificationSumery);
         forum = (FloatingActionButton) findViewById(R.id.forum);
+        forum.setVisibility(View.GONE);
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
+        forumhelpNotify = (TextView) findViewById(R.id.forumhelpNotify);
+        updateNotifier = (TextView) findViewById(R.id.updateNotifier);
+        updateNotifier.setVisibility(View.GONE);
+        forumhelpNotify.setVisibility(View.GONE);
         showNotificationNumber.setVisibility(View.GONE);
     }
 
@@ -2394,8 +2433,58 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void unSubscribeTopic(String topic) {
-        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-    }
+    private void newForumPost() {
+        final ArrayList<String> queryname = new ArrayList<>();
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference().child("user");
+        rootReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    queryID = new ArrayList<>();
+                    queryID.add(0,snapshot.getKey());
+                    queryname.add(0, snapshot.child("name").getValue(String.class));
+                }
+                if(queryID.get(0)!=null){
+                    forum.setVisibility(View.VISIBLE);
+                }
+                SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
+                queryNotification = preferences.getString("query", null);
+                if (!queryID.get(0).equals(queryNotification)) {
+                    forumhelpNotify.setVisibility(View.VISIBLE);
+                    forumhelpNotify.setText(queryname.get(0) + " asked...");
+                } else {
+                    forumhelpNotify.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+    private void setAlarm() {
+        Intent newIntent = new Intent(MainActivity.this, NotificationReceiver.class);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        try {
+            assert manager != null;
+            manager.cancel(pendingIntent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.getTimeInMillis();
+        calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.MINUTE, 30);
+        calendar.set(Calendar.SECOND, 1);
+
+        pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_HALF_DAY, pendingIntent);
+
+    }
 }

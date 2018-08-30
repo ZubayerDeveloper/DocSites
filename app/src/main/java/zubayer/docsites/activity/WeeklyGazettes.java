@@ -31,23 +31,19 @@ import zubayer.docsites.R;
 import zubayer.docsites.adapters.ServiceAdapter;
 
 public class WeeklyGazettes extends Activity {
-    ArrayList<String> yearArray, volumeArray,navigatinArray,gazetteArray,yearUrls,navigationUrls, volumeUrls,gazetteUrls;
+    ArrayList<String> volumeArray,navigatinArray,gazetteArray,navigationUrls, volumeUrls,gazetteUrls;
     ListView volume,navigation,gazettelist;
     MyAdapter gazetteAdapter;
     ServiceAdapter navigationAdapter,volumeAdapter;
-    TextView text;
     AlertDialog Dialog,checkinternet;
     AlertDialog.Builder builder;
     VolumrParser volumeParser;
     NavigationParser navigationParser;
     GazetteParser gazetteParser;
     View m;
-    EditText gazetteEdit;
-    Button search;
     private AdView mAdView;
     String btxt, url, parentUrl,paramTagForText,paramTagForLink, paramLink;
-    int i, textMin, textMax, linkBegin, linkEnd, aa,resultMin,
-            resulttMax,reslinkBegin,reslinkEnd,monthposition,yearcounter,gazetteUrlPosition;
+    int i, textMin, textMax, linkBegin, linkEnd, aa,yearcounter,gazetteUrlPosition;
     ProgressDialog progressDialog;
     ProgressBar progressBar;
     @Override

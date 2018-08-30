@@ -148,7 +148,7 @@ public class Browser extends Activity {
                         });
                         checkinternet.show();
                     }
-                }else {
+                } else {
                     website.loadUrl(urls);
                 }
 
@@ -162,6 +162,7 @@ public class Browser extends Activity {
             website.goBack();
             progressbar.setProgress(0);
             loadProgressBar();
+
         } else {
             finish();
             super.onBackPressed();
@@ -265,10 +266,10 @@ public class Browser extends Activity {
 
     private void reloadAdviceDialogue() {
         preferences = getSharedPreferences("reload", 0);
-        if (preferences.getBoolean("got it", false)) {
-
-        } else {
+        if (!preferences.getBoolean("got it", false)) {
             Dialog.show();
+            preferences = getSharedPreferences("reload", 0);
+            preferences.edit().putBoolean("got it", true).apply();
         }
     }
 
@@ -276,11 +277,6 @@ public class Browser extends Activity {
         Toast toast = makeText(Browser.this, text, Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
-    }
-
-    private void setFont() {
-        Calligrapher font = new Calligrapher(this);
-        font.setFont(this, "kalpurush.ttf", true);
     }
 
     private void setAdd() {
@@ -316,7 +312,7 @@ public class Browser extends Activity {
                     });
                     checkinternet.show();
                 }
-            }else {
+            } else {
                 website.loadUrl(urls);
                 loadProgressBar();
             }
@@ -341,17 +337,9 @@ public class Browser extends Activity {
     private void buildAlertDialogue() {
         builder = new AlertDialog.Builder(this);
         Dialog = builder.create();
-        Dialog.setCancelable(false);
         Dialog.setButton("Got it", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
-                preferences = getSharedPreferences("reload", 0);
-                preferences.edit().putBoolean("got it", true).apply();
-            }
-        });
-        Dialog.setButton3("Remind me next time", new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, int id) {
-                preferences = getSharedPreferences("reload", 0);
-                preferences.edit().putBoolean("got it", false).apply();
+
             }
         });
         Dialog.setView(m);

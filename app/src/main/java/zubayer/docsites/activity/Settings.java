@@ -1,12 +1,9 @@
 package zubayer.docsites.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
@@ -20,12 +17,11 @@ import zubayer.docsites.R;
 public class Settings extends Activity {
 
     CheckBox residency, notice, dghs, reultBcs, resultDept, resultSenior, regiDept, regiSenior, assistantSurgeon, juniorConsultant,
-            seniorConsultant, assistantProfessor, associateProfessor, professor, civilSurgeon, adhoc, mohfw, deputation, leave, sound,
-            vibration, openInBrowser, connectivityAlert, dgfp, ccdBirdem;
+            seniorConsultant, assistantProfessor, associateProfessor, professor, civilSurgeon, adhoc, mohfw, deputation, leave,
+            dgfp, ccdBirdem;
     SharedPreferences preferences;
-    boolean checked, enableSound, enableVibrate;
-    TextView heading;
-    Button select, deselect;
+    boolean checked;
+    TextView heading,select, deselect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +49,11 @@ public class Settings extends Activity {
         mohfw = (CheckBox) findViewById(R.id.mohfwSetting);
         deputation = (CheckBox) findViewById(R.id.deputationSetting);
         leave = (CheckBox) findViewById(R.id.leaveSetting);
-        sound = (CheckBox) findViewById(R.id.soundSetting);
-        vibration = (CheckBox) findViewById(R.id.vibrateSetting);
-        openInBrowser = (CheckBox) findViewById(R.id.openInbrowser);
-        connectivityAlert = (CheckBox) findViewById(R.id.connectivity);
         dgfp = (CheckBox) findViewById(R.id.dgfpSetting);
         ccdBirdem = (CheckBox) findViewById(R.id.ccdSetting);
 
-        select = (Button) findViewById(R.id.select);
-        deselect = (Button) findViewById(R.id.deselect);
+        select = (TextView) findViewById(R.id.select);
+        deselect = (TextView) findViewById(R.id.deselect);
 
         heading = (TextView) findViewById(R.id.settingHeading);
         int density = getResources().getDisplayMetrics().densityDpi;
@@ -269,47 +261,6 @@ public class Settings extends Activity {
         } else {
             dgfp.setTextColor(Color.parseColor("#B4B4B4"));
         }
-
-        preferences = getSharedPreferences("notificationSounds", 0);
-        enableSound = preferences.getBoolean("notificationSoundChecked", false);
-        sound.setChecked(enableSound);
-        if (sound.isChecked()) {
-            sound.setTextColor(Color.parseColor("#AA7E02"));
-
-        } else {
-            sound.setTextColor(Color.parseColor("#B4B4B4"));
-        }
-
-        preferences = getSharedPreferences("vibrations", 0);
-        enableVibrate = preferences.getBoolean("vibrationChecked", false);
-        vibration.setChecked(enableVibrate);
-        if (vibration.isChecked()) {
-            vibration.setTextColor(Color.parseColor("#59038D"));
-
-        } else {
-            vibration.setTextColor(Color.parseColor("#B4B4B4"));
-        }
-
-        preferences = getSharedPreferences("setting", 0);
-        checked = preferences.getBoolean("checked", false);
-        openInBrowser.setChecked(checked);
-        if (openInBrowser.isChecked()) {
-            openInBrowser.setTextColor(Color.parseColor("#890000"));
-
-        } else {
-            openInBrowser.setTextColor(Color.parseColor("#B4B4B4"));
-        }
-
-        preferences = getSharedPreferences("connectivity", 0);
-        checked = preferences.getBoolean("connectivityChecked", false);
-        connectivityAlert.setChecked(checked);
-        if (connectivityAlert.isChecked()) {
-            connectivityAlert.setTextColor(Color.parseColor("#890000"));
-
-        } else {
-            connectivityAlert.setTextColor(Color.parseColor("#B4B4B4"));
-        }
-
 
         residency.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -665,77 +616,6 @@ public class Settings extends Activity {
                     dgfp.setTextColor(Color.parseColor("#B4B4B4"));
                 }
                 editor.putBoolean("dgfpChecked", dgfp.isChecked());
-                editor.apply();
-            }
-        });
-        sound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences soundsettings = getSharedPreferences("notificationSounds", 0);
-                SharedPreferences.Editor soundeditor = soundsettings.edit();
-                if (sound.isChecked()) {
-                    sound.setChecked(true);
-                    sound.setTextColor(Color.parseColor("#AA7E02"));
-                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.sound);
-                    mp.start();
-                } else {
-                    sound.setChecked(false);
-                    sound.setTextColor(Color.parseColor("#B4B4B4"));
-                }
-                soundeditor.putBoolean("notificationSoundChecked", sound.isChecked());
-                soundeditor.apply();
-            }
-        });
-        vibration.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences vibrationsettings = getSharedPreferences("vibrations", 0);
-                SharedPreferences.Editor vibrateEditor = vibrationsettings.edit();
-                if (vibration.isChecked()) {
-                    vibration.setChecked(true);
-                    vibration.setTextColor(Color.parseColor("#59038D"));
-                    Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                    if (vibrator != null) {
-                        vibrator.vibrate(1000);
-                        vibrator.vibrate(1000);
-                    }
-                } else {
-                    vibration.setChecked(false);
-                    vibration.setTextColor(Color.parseColor("#B4B4B4"));
-                }
-                vibrateEditor.putBoolean("vibrationChecked", vibration.isChecked());
-                vibrateEditor.apply();
-            }
-        });
-        openInBrowser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences settings = getSharedPreferences("setting", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                if (openInBrowser.isChecked()) {
-                    openInBrowser.setChecked(true);
-                    openInBrowser.setTextColor(Color.parseColor("#890000"));
-                } else {
-                    openInBrowser.setChecked(false);
-                    openInBrowser.setTextColor(Color.parseColor("#B4B4B4"));
-                }
-                editor.putBoolean("checked", openInBrowser.isChecked());
-                editor.apply();
-            }
-        });
-        connectivityAlert.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences settings = getSharedPreferences("connectivity", 0);
-                SharedPreferences.Editor editor = settings.edit();
-                if (connectivityAlert.isChecked()) {
-                    connectivityAlert.setChecked(true);
-                    connectivityAlert.setTextColor(Color.parseColor("#890000"));
-                } else {
-                    connectivityAlert.setChecked(false);
-                    connectivityAlert.setTextColor(Color.parseColor("#B4B4B4"));
-                }
-                editor.putBoolean("connectivityChecked", connectivityAlert.isChecked());
                 editor.apply();
             }
         });
