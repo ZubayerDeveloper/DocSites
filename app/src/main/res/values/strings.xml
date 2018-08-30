@@ -172,6 +172,7 @@
     </string>
     <string name="settingDialog">\nManage your notifications\n</string>
     <string name="vloumeHeading">\বছর</string>
+    <string name="vloumes">\ভলিউম</string>
     <string name="volumeNavigation">\গেজেট</string>
     <string name="dialogueText">\গেজেট দেখার জন্য এখানে ক্লিক করুন</string>
     <string name="text">\⇦ লিস্ট থেকে বছর নির্বাচন করুন</string>

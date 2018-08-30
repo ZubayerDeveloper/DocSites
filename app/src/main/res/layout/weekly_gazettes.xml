@@ -1,84 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <TextView
-            android:text="@string/weeklyGazetteHeading"
             android:layout_width="match_parent"
-            android:layout_weight="2"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:layout_marginBottom="7dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="@string/weeklyGazetteHeading"
             android:textColor="#62330E"
             android:textSize="30sp" />
     </LinearLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:paddingRight="5dp"
-            android:paddingLeft="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-<TableLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="25dp">
-    <TableRow>
-        <TextView
-            android:textSize="15dp"
-            android:gravity="center"
-            android:text="@string/vloumeHeading"
-            android:layout_width="0dp"
-            android:layout_weight="6"
-            android:layout_height="match_parent">
-        </TextView>
-        <TextView
-            android:textSize="15dp"
-            android:gravity="center"
-            android:text="@string/volumeNavigation"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:layout_height="match_parent">
 
-        </TextView>
-    </TableRow>
-    <TableRow>
-        <ListView
-            android:textAlignment="center"
-            android:id="@+id/volume"
-            android:layout_width="0dp"
-            android:layout_weight="6"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bcsdept"
-            android:scrollbars="none"
-            android:paddingBottom="50dp"/>
-        <ListView
-            android:layout_width="0dp"
-            android:layout_weight="0.1"
-            android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:paddingBottom="50dp"/>
-        <ListView
-            android:textAlignment="center"
-            android:id="@+id/navigation"
-            android:layout_width="0dp"
-            android:layout_weight="1.7"
-            android:layout_height="match_parent"
-            android:background="@drawable/bcsdept"
-            android:scrollbars="none"
-            android:paddingBottom="50dp"/>
-    </TableRow>
-</TableLayout>
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="25dp">
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="6"
+                        android:gravity="center"
+                        android:text="@string/vloumes"
+                        android:textSize="15dp"></TextView>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:text="@string/volumeNavigation"
+                        android:textSize="15dp">
+
+                    </TextView>
+                </TableRow>
+
+                <TableRow>
+
+                    <ListView
+                        android:id="@+id/volume"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="6"
+                        android:background="@drawable/bcsdept"
+                        android:paddingBottom="50dp"
+                        android:scrollbars="none"
+                        android:textAlignment="center" />
+
+                    <ListView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:paddingBottom="50dp"
+                        android:scrollbars="none" />
+
+                    <ListView
+                        android:id="@+id/navigation"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.7"
+                        android:background="@drawable/bcsdept"
+                        android:paddingBottom="50dp"
+                        android:scrollbars="none"
+                        android:textAlignment="center" />
+                </TableRow>
+            </TableLayout>
         </LinearLayout>
+
         <com.google.android.gms.ads.AdView
             android:id="@+id/adViewGazette"
             android:layout_width="match_parent"

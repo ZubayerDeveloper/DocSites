@@ -145,6 +145,7 @@ public class MainActivity extends Activity {
         readNotificationCount();
         forumSubscription();
         setAlarm();
+        getFCMdataPlayLoad();
         updateNotifier.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,6 +269,17 @@ public class MainActivity extends Activity {
             browser(appLinkData.toString());
         }
 
+    }
+
+    private void getFCMdataPlayLoad() {
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            String postID= intent.getExtras().getString("postID");
+            String putBack= intent.getExtras().getString("intent");
+            if(postID!=null) {
+            startActivity(new Intent(MainActivity.this,Reply.class).putExtra("postID",postID).putExtra("intent",putBack));
+            }
+        }
     }
 
 

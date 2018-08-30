@@ -48,6 +48,7 @@ import java.util.HashMap;
 import zubayer.docsites.R;
 import zubayer.docsites.activity.Browser;
 import zubayer.docsites.activity.Forum;
+import zubayer.docsites.activity.ImageViewer;
 import zubayer.docsites.activity.Reply;
 
 import static android.widget.Toast.makeText;
@@ -217,7 +218,14 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         holder.postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                browser(postImageUrl.get(position));
+                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",postImageUrl.get(position)));
+            }
+        });
+
+        holder.replyImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",replyImageUrl.get(position)));
             }
         });
 

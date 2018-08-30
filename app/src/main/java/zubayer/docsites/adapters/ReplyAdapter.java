@@ -31,6 +31,7 @@ import java.util.HashMap;
 
 import zubayer.docsites.R;
 import zubayer.docsites.activity.Browser;
+import zubayer.docsites.activity.ImageViewer;
 
 import static android.widget.Toast.makeText;
 
@@ -99,7 +100,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         holder.replyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                browser(repy_image_url.get(position));
+                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",repy_image_url.get(position)));
             }
         });
         holder.docText.setOnLongClickListener(new View.OnLongClickListener() {

@@ -100,7 +100,7 @@ public class Forum extends Activity {
     CallbackManager callbackManager;
     CardView chooser_cardview;
     CircularImageView post_image;
-    ImageView send, pic_preview, icon;
+    ImageView send, pic_preview, icon,viewimage;
     ForumAdapter adapter, profileAdapter;
     ForumNotificationAdapter forumNotificationAdapter;
     LollipopAdapter lollipopAdapter, lollipopProfileAdapter;
@@ -156,6 +156,7 @@ public class Forum extends Activity {
         } else {
             alertMessage("Turn on data", "Try again", "Exit");
         }
+
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -772,7 +773,7 @@ public class Forum extends Activity {
                 myToaster("failed");
             }
         });
-        workSequence(post_text);
+        workSequence(post_text,current_post_time);
     }
 
     private void initialize() {
@@ -967,7 +968,7 @@ public class Forum extends Activity {
         });
     }
 
-    private void sendFCMPush(String title, String message) {
+    private void sendFCMPush(String title, String message,String data) {
 
         JSONObject obj = null;
         JSONObject objData;
@@ -987,8 +988,8 @@ public class Forum extends Activity {
 //            JSONObject put = objData.put("priority", "high");
 
             dataobjData = new JSONObject();
-            dataobjData.put("text", message);
-            dataobjData.put("title", title);
+            dataobjData.put("postID", data);
+            dataobjData.put("intent", "back");
 //            "/topics/"+salary.getText().toString()
             obj.put("to", "/topics/forum");
             obj.put("priority", "high");
@@ -1028,14 +1029,14 @@ public class Forum extends Activity {
         requestQueue.add(jsObjRequest);
     }
 
-    private void workSequence(final String post_text) {
+    private void workSequence(final String post_text, final String postID) {
         FirebaseMessaging.getInstance().unsubscribeFromTopic("forum").addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 if (post_text.equals(" ")) {
-                    sendFCMPush(facebook_user_name, "Uploaded an image");
+                    sendFCMPush(facebook_user_name, "Uploaded an image",postID);
                 } else {
-                    sendFCMPush(facebook_user_name, post_text);
+                    sendFCMPush(facebook_user_name, post_text,postID);
                 }
 
             }

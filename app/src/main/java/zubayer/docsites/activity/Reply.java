@@ -85,7 +85,7 @@ public class Reply extends Activity {
     StorageReference storageRef;
     HashMap<String, Object> reply_post;
     String userid, intentName, intentText, time, postID, reply_image_name, blocked, postImage_url,
-            facebook_user_name, myID, notifyPostOwner, reply_texts;
+            facebook_user_name, myID, notifyPostOwner, reply_texts,intentPlayload;
     ProgressDialog progressDialog;
     ImageView replyButton, postImage, pic_preview, notify, notifyOff;
     TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser, del_chooser;
@@ -239,7 +239,7 @@ public class Reply extends Activity {
         postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                browser(postImage_url);
+                startActivity(new Intent(Reply.this,ImageViewer.class).putExtra("showImage",postImage_url));
             }
         });
 
@@ -407,6 +407,7 @@ public class Reply extends Activity {
 
     private void getIntentvalue() {
         postID = getIntent().getExtras().getString("postID");
+        intentPlayload=getIntent().getExtras().getString("intent");
     }
 
     private void myToaster(String text) {
@@ -436,7 +437,7 @@ public class Reply extends Activity {
             noti.put("myid", myID);
             noti.put("seenUnseen", "unseen");
             notificationReference.child(userid).child(reply_image_name).updateChildren(noti);
-            sendFCMPush(facebook_user_name, "replied to your post...\n\n" + reply_texts, "/topics/" + userid);
+            sendFCMPush(facebook_user_name, "replied to your post...\n\n" + reply_texts, "/topics/" + userid,postID);
 
         }
 
@@ -448,7 +449,7 @@ public class Reply extends Activity {
                 noti.put("myid", myID);
                 noti.put("seenUnseen", "unseen");
                 notificationReference.child(replyUserId.get(i)).child(reply_image_name).updateChildren(noti);
-                sendFCMPush(facebook_user_name, " replied to " + intentName + "\'s post \n" + reply_texts, "/topics/" + replyUserId.get(i));
+                sendFCMPush(facebook_user_name, " replied to " + intentName + "\'s post \n" + reply_texts, "/topics/" + replyUserId.get(i),postID);
             }
         }
         edit_reply.setText(null);
@@ -481,7 +482,7 @@ public class Reply extends Activity {
         loginPreference = getSharedPreferences("loggedin", Context.MODE_PRIVATE);
         myIdPreference = getSharedPreferences("myID", Context.MODE_PRIVATE);
         myID = myIdPreference.getString("myID", null);
-        postIdPreference = getSharedPreferences("postid", Context.MODE_PRIVATE);
+        postIdPreference =  getSharedPreferences("postid", Context.MODE_PRIVATE);
         postIdPreference.edit().putString("postid", postID).apply();
         devicetokenPreference = getSharedPreferences("token", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
@@ -623,7 +624,7 @@ public class Reply extends Activity {
 
     }
 
-    private void sendFCMPush(String title, String message, final String to) {
+    private void sendFCMPush(String title, String message, final String to,final String data) {
 
         JSONObject obj = null;
         JSONObject objData;
@@ -643,8 +644,8 @@ public class Reply extends Activity {
 //            JSONObject put = objData.put("priority", "high");
 
             dataobjData = new JSONObject();
-            dataobjData.put("text", message);
-            dataobjData.put("title", title);
+            dataobjData.put("postID", data);
+            dataobjData.put("intent", "back");
 //            "/topics/"+salary.getText().toString()
             obj.put("to", to);
             obj.put("priority", "high");
