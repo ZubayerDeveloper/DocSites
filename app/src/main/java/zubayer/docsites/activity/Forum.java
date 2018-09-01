@@ -90,6 +90,9 @@ import zubayer.docsites.adapters.ForumNotificationAdapter;
 import zubayer.docsites.adapters.LollipopAdapter;
 import zubayer.docsites.R;
 
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.AdRequest;
+
 import static android.widget.Toast.makeText;
 
 public class Forum extends Activity {
@@ -100,7 +103,7 @@ public class Forum extends Activity {
     CallbackManager callbackManager;
     CardView chooser_cardview;
     CircularImageView post_image;
-    ImageView send, pic_preview, icon,viewimage;
+    ImageView send, pic_preview, icon, viewimage;
     ForumAdapter adapter, profileAdapter;
     ForumNotificationAdapter forumNotificationAdapter;
     LollipopAdapter lollipopAdapter, lollipopProfileAdapter;
@@ -113,11 +116,11 @@ public class Forum extends Activity {
     EditText edit_text;
     SharedPreferences loginPreference, myIDpreference, notificationPreference;
     FirebaseDatabase database;
-    DatabaseReference rootReference, reply_preview_reference,blockReference, imageReference;
+    DatabaseReference rootReference, reply_preview_reference, blockReference, imageReference;
     HashMap<String, Object> post;
     ProgressDialog progressDialog;
     String facebook_id, facebook_user_name, postID, blocked, reported, post_ID_reference_for_Imge,
-            replierID, replierName, facebook_post_time, replyImage, post_image_name,
+            replierID, replierName, facebook_post_time, replyImage, post_image_name, first_name,
             post_text;
 
     StorageReference storageRef;
@@ -125,6 +128,7 @@ public class Forum extends Activity {
     Uri imageUri;
     long postSize, reportSize;
     boolean clicked = false;
+    InterstitialAd mInterstitialAd;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -157,6 +161,7 @@ public class Forum extends Activity {
             alertMessage("Turn on data", "Try again", "Exit");
         }
 
+        loadADD();
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,6 +275,13 @@ public class Forum extends Activity {
         });
     }
 
+    private void loadADD() {
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.forum_interstitial));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+    }
+
     private void loadMyPosts() {
         clicked = true;
         final ArrayList<String> name = new ArrayList<>();
@@ -314,12 +326,14 @@ public class Forum extends Activity {
                     previewreplierName.add(preview_replierName.get(i));
                     previewreplierID.add(preview_replierID.get(i));
                     replyimageUrl.add(reply_imageUrl.get(i));
-
                     recyclerView.setAdapter(profileAdapter);
                 } else {
                     recyclerView.setAdapter(lollipopProfileAdapter);
                 }
             }
+        }
+        if (name.size() == 0) {
+            myToaster("You did not post anything yet");
         }
     }
 
@@ -341,6 +355,7 @@ public class Forum extends Activity {
             forum_subscription.setVisibility(View.VISIBLE);
         } else {
             super.onBackPressed();
+            mInterstitialAd.show();
         }
 
     }
@@ -491,11 +506,6 @@ public class Forum extends Activity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         startActivityForResult(intent, 11);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     private void loadForumPost() {
@@ -714,6 +724,7 @@ public class Forum extends Activity {
                     subscribeTopic(facebook_id);
                     myIDpreference.edit().putString("myID", facebook_id).apply();
                     facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
+                    first_name = object.getString("first_name");
                     Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
                     loadForumPost();
                 } catch (JSONException e) {
@@ -758,6 +769,7 @@ public class Forum extends Activity {
 
     private void postQuery(String current_post_time, String post_text) {
         post.put("name", facebook_user_name);
+        post.put("first_name", first_name);
         post.put("time", postDate());
         post.put("id", facebook_id);
         post.put("notifyMe", "yes");
@@ -773,7 +785,7 @@ public class Forum extends Activity {
                 myToaster("failed");
             }
         });
-        workSequence(post_text,current_post_time);
+        workSequence(post_text, current_post_time);
     }
 
     private void initialize() {
@@ -968,7 +980,7 @@ public class Forum extends Activity {
         });
     }
 
-    private void sendFCMPush(String title, String message,String data) {
+    private void sendFCMPush(String title, String message, String data) {
 
         JSONObject obj = null;
         JSONObject objData;
@@ -1034,9 +1046,9 @@ public class Forum extends Activity {
             @Override
             public void onSuccess(Void aVoid) {
                 if (post_text.equals(" ")) {
-                    sendFCMPush(facebook_user_name, "Uploaded an image",postID);
+                    sendFCMPush(facebook_user_name, "Uploaded an image", postID);
                 } else {
-                    sendFCMPush(facebook_user_name, post_text,postID);
+                    sendFCMPush(facebook_user_name, post_text, postID);
                 }
 
             }

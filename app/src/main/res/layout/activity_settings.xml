@@ -411,8 +411,8 @@
 
     <TextView
         android:id="@+id/select"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/deselect"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
@@ -421,13 +421,13 @@
         android:gravity="center"
         android:padding="7dp"
         android:text="Select All"
-        android:textColor="#009900"
-        android:textSize="12sp" />
+        android:textColor="#1EFFF0"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/deselect"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="60dp"
@@ -438,6 +438,6 @@
         android:gravity="center"
         android:padding="7dp"
         android:text="Deselect All"
-        android:textColor="#990000"
-        android:textSize="12sp" />
+        android:textColor="#FC0E00"
+        android:textSize="16sp" />
 </RelativeLayout>

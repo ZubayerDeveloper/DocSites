@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,10 +43,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import zubayer.docsites.R;
 import zubayer.docsites.activity.Browser;
 import zubayer.docsites.activity.Forum;
+import zubayer.docsites.activity.ImageViewer;
 import zubayer.docsites.activity.Reply;
 
 import static android.widget.Toast.makeText;
@@ -92,10 +95,15 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
             holder.docText.setVisibility(View.GONE);
         }
         if (doc_text.get(position).length() > 400) {
-            holder.docText.setText(doc_text.get(position).substring(0, 400) + "...." + " continue reading");
+            String text = "<font color=#b4b4b4> ...continue reading</font>";
+            Scanner sc = new Scanner(doc_text.get(position));
+            StringBuilder short_Text = new StringBuilder();
+            short_Text.append(sc.nextLine()).append("<br/>")
+                    .append(sc.nextLine()).append("<br/>")
+                    .append(sc.nextLine()).append(text);
+            holder.docText.setText(Html.fromHtml(short_Text.toString()), TextView.BufferType.SPANNABLE);
         } else {
             holder.docText.setText(doc_text.get(position));
-
         }
         if(doc_text.get(position).length()<100){
             holder.docText.setTextSize(27);
@@ -254,7 +262,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         holder.postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                browser(postImageUrl.get(position));
+                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",postImageUrl.get(position)));
             }
         });
     }
@@ -289,8 +297,10 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
 
     private void intentPutExtra(int position) {
         Intent intent = new Intent(context, Reply.class);
-        intent.putExtra("postID", post_id.get(position));
-        context.startActivity(intent);
+        if(post_id.get(position)!=null) {
+            intent.putExtra("postID", post_id.get(position));
+            context.startActivity(intent);
+        }
     }
 
     private void myToast(String text) {

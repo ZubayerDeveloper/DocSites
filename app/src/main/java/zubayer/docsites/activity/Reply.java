@@ -62,6 +62,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import me.anwarshahriar.calligrapher.Calligrapher;
 import zubayer.docsites.R;
 import zubayer.docsites.adapters.ReplyAdapter;
@@ -85,12 +86,12 @@ public class Reply extends Activity {
     StorageReference storageRef;
     HashMap<String, Object> reply_post;
     String userid, intentName, intentText, time, postID, reply_image_name, blocked, postImage_url,
-            facebook_user_name, myID, notifyPostOwner, reply_texts,intentPlayload;
+            facebook_user_name, myID, notifyPostOwner, reply_texts, intentPlayload;
     ProgressDialog progressDialog;
     ImageView replyButton, postImage, pic_preview, notify, notifyOff;
     TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser, del_chooser;
     Uri imageUri;
-    boolean commented=false;
+    boolean commented = false;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -204,24 +205,24 @@ public class Reply extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         deleteReference = database.getReference().child("user");
-                            replyReference.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for(DataSnapshot snapshot:dataSnapshot.getChildren()){
-                                        storageRef.child(snapshot.getKey()).delete();
-                                        imageReference.child(snapshot.getKey()).setValue(null);
-                                    }
-                                    storageRef.child(postID).delete();
-                                    imageReference.child(postID).setValue(null);
-                                    deleteReference.child(postID).setValue(null);
-
+                        replyReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    storageRef.child(snapshot.getKey()).delete();
+                                    imageReference.child(snapshot.getKey()).setValue(null);
                                 }
+                                storageRef.child(postID).delete();
+                                imageReference.child(postID).setValue(null);
+                                deleteReference.child(postID).setValue(null);
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
 
-                                }
-                            });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
 
                         finish();
                     }
@@ -239,7 +240,7 @@ public class Reply extends Activity {
         postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Reply.this,ImageViewer.class).putExtra("showImage",postImage_url));
+                startActivity(new Intent(Reply.this, ImageViewer.class).putExtra("showImage", postImage_url));
             }
         });
 
@@ -279,6 +280,7 @@ public class Reply extends Activity {
             }
         }
     }
+
     private void turnOnNotificatioh() {
 
         HashMap<String, Object> notifyme = new HashMap<>();
@@ -295,10 +297,12 @@ public class Reply extends Activity {
                     if (i == replyUserId.size() - 1) {
                         myToaster("Notification turned ON for this post");
                     }
-                    commented=true;
+                    commented = true;
                 }
             }
-            if(!commented){ myToaster("Comment something to turn ON notification"); }
+            if (!commented) {
+                myToaster("Comment something to turn ON notification");
+            }
         }
     }
 
@@ -318,6 +322,7 @@ public class Reply extends Activity {
                             }
                         }
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -407,7 +412,7 @@ public class Reply extends Activity {
 
     private void getIntentvalue() {
         postID = getIntent().getExtras().getString("postID");
-        intentPlayload=getIntent().getExtras().getString("intent");
+        intentPlayload = getIntent().getExtras().getString("intent");
     }
 
     private void myToaster(String text) {
@@ -431,25 +436,25 @@ public class Reply extends Activity {
         DatabaseReference notificationReference = database.getReference().child("notifications");
         HashMap<String, Object> noti = new HashMap<>();
         if (facebook_user_name != null && !userid.equals(myID) && notifyPostOwner.equals("yes")) {
-            noti.put("notificationText", "<font color=#990000>" + facebook_user_name + "</font> replied to your post");
+            noti.put("notificationText", "<font color=#990000>" + facebook_user_name + "</font> commented on your post");
             noti.put("mainPostID", postID);
             noti.put("time", replyDate());
             noti.put("myid", myID);
             noti.put("seenUnseen", "unseen");
             notificationReference.child(userid).child(reply_image_name).updateChildren(noti);
-            sendFCMPush(facebook_user_name, "replied to your post...\n\n" + reply_texts, "/topics/" + userid,postID);
+            sendFCMPush(facebook_user_name, "commented on your post...\n\n" + reply_texts, "/topics/" + userid, postID);
 
         }
 
         for (int i = replyUserId.size() - 1; i > -1; i--) {
             if (facebook_user_name != null && !replyUserId.get(i).equals(myID) && !replyUserId.get(i).equals(userid) && notifyMe.get(i).equals("yes")) {
-                noti.put("notificationText", "<font color=#000099>" + facebook_user_name + "</font> replied to " + "<font color=#000099>" + intentName + "</font>\'s post");
+                noti.put("notificationText", "<font color=#000099>" + facebook_user_name + "</font> commented on " + "<font color=#000099>" + intentName + "</font>\'s post");
                 noti.put("mainPostID", postID);
                 noti.put("time", replyDate());
                 noti.put("myid", myID);
                 noti.put("seenUnseen", "unseen");
                 notificationReference.child(replyUserId.get(i)).child(reply_image_name).updateChildren(noti);
-                sendFCMPush(facebook_user_name, " replied to " + intentName + "\'s post \n" + reply_texts, "/topics/" + replyUserId.get(i),postID);
+                sendFCMPush(facebook_user_name, " commented on " + intentName + "\'s post \n" + reply_texts, "/topics/" + replyUserId.get(i), postID);
             }
         }
         edit_reply.setText(null);
@@ -482,7 +487,7 @@ public class Reply extends Activity {
         loginPreference = getSharedPreferences("loggedin", Context.MODE_PRIVATE);
         myIdPreference = getSharedPreferences("myID", Context.MODE_PRIVATE);
         myID = myIdPreference.getString("myID", null);
-        postIdPreference =  getSharedPreferences("postid", Context.MODE_PRIVATE);
+        postIdPreference = getSharedPreferences("postid", Context.MODE_PRIVATE);
         postIdPreference.edit().putString("postid", postID).apply();
         devicetokenPreference = getSharedPreferences("token", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
@@ -624,7 +629,7 @@ public class Reply extends Activity {
 
     }
 
-    private void sendFCMPush(String title, String message, final String to,final String data) {
+    private void sendFCMPush(String title, String message, final String to, final String data) {
 
         JSONObject obj = null;
         JSONObject objData;

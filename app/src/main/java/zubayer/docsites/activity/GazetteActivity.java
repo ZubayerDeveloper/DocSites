@@ -91,6 +91,9 @@ public class GazetteActivity extends Activity {
         yearList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                monthParser.cancel(true);
+                resultParser.cancel(true);
                 message = yearArray.get(position);
                 progressDialog.dismiss();
                 monthUrls.clear();
@@ -413,7 +416,6 @@ public class GazetteActivity extends Activity {
     }
 
     public void executeYear() {
-        pareseYear = new YearParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -425,7 +427,6 @@ public class GazetteActivity extends Activity {
     }
 
     public void executeYearNext() {
-        yearNextParser = new YearNextParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -437,8 +438,8 @@ public class GazetteActivity extends Activity {
     }
 
     private void executeMonth() {
+        monthParser=new MonthParser();
         progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading gazette months for " + yearName, true, true);
-        monthParser = new MonthParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -458,7 +459,7 @@ public class GazetteActivity extends Activity {
         }
 
         progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Searching gazettes on " + monthName, true, true);
-        resultParser = new ResultParser();
+        resultParser=new ResultParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "href";
@@ -597,6 +598,10 @@ public class GazetteActivity extends Activity {
         driveViewer = "https://docs.google.com/viewer?url=";
         yearUrl = "http://www.dpp.gov.bd/bgpress/bangla/index.php/document/extraordinary_gazettes/285";
         yearUrlNext = yearUrl + "/publication_date/12";
+        monthParser = new MonthParser();
+        pareseYear = new YearParser();
+        yearNextParser = new YearNextParser();
+        resultParser = new ResultParser();
     }
 
     private void filterExamContent() {

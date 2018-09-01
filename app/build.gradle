@@ -8,7 +8,7 @@ android {
         applicationId "zubayer.docsites"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 41
+        versionCode 44
         versionName "4.0.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

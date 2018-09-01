@@ -17,7 +17,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Toast.makeText(context,"received",Toast.LENGTH_SHORT).show();
         FirebaseJobDispatcher jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
         Job job = jobDispatcher.newJobBuilder()
                 .setService(MyFirebseJobDidpatcher.class)

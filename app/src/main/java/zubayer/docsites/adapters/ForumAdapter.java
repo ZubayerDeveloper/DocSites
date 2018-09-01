@@ -42,8 +42,12 @@ import com.mikhaellopez.circularimageview.CircularImageView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import zubayer.docsites.R;
 import zubayer.docsites.activity.Browser;
@@ -118,10 +122,16 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         }
         if (doc_text.get(position).length() > 400) {
             String text = "<font color=#b4b4b4> ...continue reading</font>";
-            holder.docText.setText(Html.fromHtml(doc_text.get(position).substring(0, 400) + text), TextView.BufferType.SPANNABLE);
+            Scanner sc = new Scanner(doc_text.get(position));
+            StringBuilder short_Text = new StringBuilder();
+            short_Text.append(sc.nextLine()).append("<br/>")
+                    .append(sc.nextLine()).append("<br/>")
+                    .append(sc.nextLine()).append("<br/>")
+                    .append(sc.nextLine()).append("<br/>")
+                    .append(sc.nextLine()).append(text);
+            holder.docText.setText(Html.fromHtml(short_Text.toString()), TextView.BufferType.SPANNABLE);
         } else {
             holder.docText.setText(doc_text.get(position));
-
         }
         if (doc_text.get(position).length() < 100) {
             holder.docText.setTextSize(27);
@@ -218,14 +228,14 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         holder.postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",postImageUrl.get(position)));
+                context.startActivity(new Intent(context, ImageViewer.class).putExtra("showImage", postImageUrl.get(position)));
             }
         });
 
         holder.replyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",replyImageUrl.get(position)));
+                context.startActivity(new Intent(context, ImageViewer.class).putExtra("showImage", replyImageUrl.get(position)));
             }
         });
 
@@ -381,8 +391,11 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
 
     private void intentPutExtra(int position) {
         Intent intent = new Intent(context, Reply.class);
-        intent.putExtra("postID", post_id.get(position));
-        context.startActivity(intent);
+        if(post_id.get(position)!=null) {
+            intent.putExtra("postID", post_id.get(position));
+            context.startActivity(intent);
+        }
+
     }
 
     @Override

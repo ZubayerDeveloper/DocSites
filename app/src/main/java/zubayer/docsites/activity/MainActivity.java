@@ -84,11 +84,11 @@ public class MainActivity extends Activity {
     ListView list;
     LinearLayoutManager manager;
     FirebaseDatabase database;
-    DatabaseReference rootReference,updateReference;
+    DatabaseReference rootReference, updateReference;
     GridView gridView;
     ArrayList<String> buttonTexts, urls, buttonHeadidng, buttonDescription, buttonHint, buttonTexts2,
             bsmmuOptions, bcpsOptions, dghsOptions, mohfwOptions, bpscOptions, gazetteOptions, bmdcOptions,
-            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount, queryID;
+            resultOptions, dgfpOptions, ccdOptions, oldNotificatinCount, queryID, queryname;
     MyAdapter adapter;
     GridAdapter gridAdapter;
     HtmlParser back;
@@ -127,7 +127,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        newForumPost();
+        initializeWidgetVariable();
         createGridView();
         setFont(this, this);
         adjustScreenSize();
@@ -141,7 +141,7 @@ public class MainActivity extends Activity {
         setListView();
         buildAlertDialogue();
         checkAppUpdates();
-        initializeWidgetVariable();
+        newForumPost();
         readNotificationCount();
         forumSubscription();
         setAlarm();
@@ -219,7 +219,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
+                if(queryID.size()!=0){
                 preferences.edit().putString("query", queryID.get(0)).apply();
+                }
                 startActivity(new Intent(MainActivity.this, Forum.class));
             }
         });
@@ -274,10 +276,10 @@ public class MainActivity extends Activity {
     private void getFCMdataPlayLoad() {
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
-            String postID= intent.getExtras().getString("postID");
-            String putBack= intent.getExtras().getString("intent");
-            if(postID!=null) {
-            startActivity(new Intent(MainActivity.this,Reply.class).putExtra("postID",postID).putExtra("intent",putBack));
+            String postID = intent.getExtras().getString("postID");
+            String putBack = intent.getExtras().getString("intent");
+            if (postID != null) {
+                startActivity(new Intent(MainActivity.this, Reply.class).putExtra("postID", postID).putExtra("intent", putBack));
             }
         }
     }
@@ -402,7 +404,7 @@ public class MainActivity extends Activity {
             Elements links = doc.select(TagForText);
             for (int i = begin; i < end; i++) {
                 Element link = links.get(i);
-                if(link.text()!=""){
+                if (link.text() != "") {
                     btxt = link.text();
                     url = link.select("a").attr(Attr);
                 }
@@ -2048,24 +2050,24 @@ public class MainActivity extends Activity {
     }
 
     private void checkAppUpdates() {
-        updateReference=database.getReference();
+        updateReference = database.getReference();
         updateReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.child("docUpdateVersion").getValue(Integer.class)>versionCode){
-                    checkinternet=builder.create();
+                if (dataSnapshot.child("docUpdateVersion").getValue(Integer.class) > versionCode) {
+                    checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage(dataSnapshot.child("docUpdateMessage").getValue(String.class));
                     checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Update", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites")));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=zubayer.docsites")));
                         }
                     });
                     checkinternet.show();
                 }
-                if(dataSnapshot.child("docNotifyVersion").getValue(Integer.class)>versionCode){
+                if (dataSnapshot.child("docNotifyVersion").getValue(Integer.class) > versionCode) {
                     updateNotifier.setVisibility(View.VISIBLE);
                     updateNotifier.setText(dataSnapshot.child("docNotifyMessage").getValue(String.class));
                 }
@@ -2411,13 +2413,13 @@ public class MainActivity extends Activity {
     private void initializeWidgetVariable() {
         notificationSummery = (ImageButton) findViewById(R.id.notificationSumery);
         forum = (FloatingActionButton) findViewById(R.id.forum);
-        forum.setVisibility(View.GONE);
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
         forumhelpNotify = (TextView) findViewById(R.id.forumhelpNotify);
         updateNotifier = (TextView) findViewById(R.id.updateNotifier);
         updateNotifier.setVisibility(View.GONE);
         forumhelpNotify.setVisibility(View.GONE);
         showNotificationNumber.setVisibility(View.GONE);
+        database = FirebaseDatabase.getInstance();
     }
 
     private boolean dataconnected() {
@@ -2446,24 +2448,21 @@ public class MainActivity extends Activity {
     }
 
     private void newForumPost() {
-        final ArrayList<String> queryname = new ArrayList<>();
-        database = FirebaseDatabase.getInstance();
+        queryID = new ArrayList<>();
+        queryname = new ArrayList<>();
         rootReference = database.getReference().child("user");
         rootReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    queryID = new ArrayList<>();
-                    queryID.add(0,snapshot.getKey());
-                    queryname.add(0, snapshot.child("name").getValue(String.class));
+                    queryID.add(0, snapshot.getKey());
+                    queryname.add(0, snapshot.child("first_name").getValue(String.class));
                 }
-                if(queryID.get(0)!=null){
-                    forum.setVisibility(View.VISIBLE);
-                }
+
                 SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
                 queryNotification = preferences.getString("query", null);
-                if (!queryID.get(0).equals(queryNotification)) {
+                if (!queryID.isEmpty() && !queryID.get(0).equals(queryNotification)) {
                     forumhelpNotify.setVisibility(View.VISIBLE);
                     forumhelpNotify.setText(queryname.get(0) + " asked...");
                 } else {
@@ -2478,6 +2477,7 @@ public class MainActivity extends Activity {
         });
 
     }
+
     private void setAlarm() {
         Intent newIntent = new Intent(MainActivity.this, NotificationReceiver.class);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
