@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
     FloatingActionButton forum;
     Button showNotificationNumber;
     FirebaseJobDispatcher jobDispatcher;
-    TextView updateNotifier, forumhelpNotify;
+    TextView updateNotifier, forumhelpNotify,appVersion;
 
     @Override
     protected void onDestroy() {
@@ -2416,6 +2416,8 @@ public class MainActivity extends Activity {
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
         forumhelpNotify = (TextView) findViewById(R.id.forumhelpNotify);
         updateNotifier = (TextView) findViewById(R.id.updateNotifier);
+        appVersion= (TextView) findViewById(R.id.version);
+        appVersion.setText(getString(R.string.app_name)+" "+BuildConfig.VERSION_NAME);
         updateNotifier.setVisibility(View.GONE);
         forumhelpNotify.setVisibility(View.GONE);
         showNotificationNumber.setVisibility(View.GONE);
@@ -2462,7 +2464,7 @@ public class MainActivity extends Activity {
 
                 SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
                 queryNotification = preferences.getString("query", null);
-                if (!queryID.isEmpty() && !queryID.get(0).equals(queryNotification)) {
+                if (!queryID.get(0).equals(queryNotification)&&queryID.size()!=0) {
                     forumhelpNotify.setVisibility(View.VISIBLE);
                     forumhelpNotify.setText(queryname.get(0) + " asked...");
                 } else {

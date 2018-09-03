@@ -57,16 +57,9 @@ public class ServiceAdapter extends ArrayAdapter<String> {
         myTitle.setText(titleArray.get(position));
         myTitle.setTextColor(Color.parseColor("#123456"));
         share=(TextView)row.findViewById(R.id.ImageView);
-        share.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent= new Intent(Intent.ACTION_SEND);
-                intent.setType("dels/plain");
-                intent.putExtra(Intent.EXTRA_TEXT,imageArray.get(position));
-                context.startActivity(Intent.createChooser(intent,"Share using.."));
-            }
-        });
         share.setVisibility(View.GONE);
         copy.setVisibility(View.GONE);
+        notifyDataSetChanged();
         return row;
     }
 }

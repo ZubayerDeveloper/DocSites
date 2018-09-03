@@ -23,65 +23,67 @@ import static android.widget.Toast.makeText;
 
 public class MyAdapter extends ArrayAdapter<String> {
 
-	public Typeface font;
-	private ArrayList<String> titleArray;
-	private ArrayList<String> imageArray;
-	private TextView image;
-	private Activity context;
+    public Typeface font;
+    private ArrayList<String> titleArray;
+    private ArrayList<String> imageArray;
+    private TextView image;
+    private Activity context;
 
 
-	public MyAdapter(Activity context, ArrayList<String> titles1,ArrayList<String> imageArray) {
-		
-		super(context, R.layout.listview,titles1);
-		this.context=context;
-		this.titleArray=titles1;
-		this.imageArray=imageArray;
-		
-		font= Typeface.createFromAsset(context.getAssets(),"kalpurush.ttf");
-	}
-	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
-		
-		LayoutInflater inflater = context.getLayoutInflater();
-		View row = inflater.inflate(R.layout.customlyst,null,true);
+    public MyAdapter(Activity context, ArrayList<String> titles1, ArrayList<String> imageArray) {
 
-		
-		TextView myTitle = (TextView) row.findViewById(R.id.idTitle);
-		myTitle.setTypeface(font);
-		myTitle.setText(titleArray.get(position));
-		myTitle.setTextColor(Color.parseColor("#123456"));
-		image=(TextView)row.findViewById(R.id.ImageView);
-		TextView copy=(TextView)row.findViewById(R.id.copy) ;
-		image.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent intent= new Intent(Intent.ACTION_SEND);
-				intent.setType("dels/plain");
-				intent.putExtra(Intent.EXTRA_TEXT,imageArray.get(position));
-				context.startActivity(Intent.createChooser(intent,"Share using.."));
-			}
-		});
-		copy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        super(context, R.layout.listview, titles1);
+        this.context = context;
+        this.titleArray = titles1;
+        this.imageArray = imageArray;
 
-                ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("",imageArray.get(position));
-                if(clipboard!=null){
-                    clipboard.setPrimaryClip(clip);
-                    Toast toast = makeText(context, "Link copied", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+        font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
+    }
+
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
+
+        LayoutInflater inflater = context.getLayoutInflater();
+        View row = inflater.inflate(R.layout.customlyst, null, true);
+
+        TextView myTitle = (TextView) row.findViewById(R.id.idTitle);
+        myTitle.setTypeface(font);
+        myTitle.setText(titleArray.get(position));
+        myTitle.setTextColor(Color.parseColor("#123456"));
+        image = (TextView) row.findViewById(R.id.ImageView);
+        TextView copy = (TextView) row.findViewById(R.id.copy);
+        try {
+            image.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setType("dels/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, imageArray.get(position));
+                    context.startActivity(Intent.createChooser(intent, "Share using.."));
                 }
-            }
-        });
-		if(imageArray.isEmpty()){
-			image.setVisibility(View.GONE);
-			copy.setVisibility(View.GONE);
-		}else {
-			image.setVisibility(View.VISIBLE);
-			copy.setVisibility(View.VISIBLE);
-		}
+            });
+            copy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-		return row;
-	}
+                    ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("", imageArray.get(position));
+                    if (clipboard != null) {
+                        clipboard.setPrimaryClip(clip);
+                        Toast toast = makeText(context, "Link copied", Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                    }
+                }
+            });
+        }catch (Exception e){}
+        if (imageArray.isEmpty()) {
+            image.setVisibility(View.GONE);
+            copy.setVisibility(View.GONE);
+        } else {
+            image.setVisibility(View.VISIBLE);
+            copy.setVisibility(View.VISIBLE);
+        }
+        notifyDataSetChanged();
+        return row;
+    }
 }

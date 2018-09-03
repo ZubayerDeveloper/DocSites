@@ -1,4 +1,5 @@
 package zubayer.docsites.adapters;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -16,32 +17,33 @@ import zubayer.docsites.R;
 
 public class GazetteAdapter extends ArrayAdapter<String> {
 
-public Typeface font;
-ArrayList<String> titleArray;
-private Activity context;
+    public Typeface font;
+    ArrayList<String> titleArray;
+    private Activity context;
 
 
-public GazetteAdapter(Activity context, ArrayList<String> titleArray) {
+    public GazetteAdapter(Activity context, ArrayList<String> titleArray) {
 
-        super(context, R.layout.gadgette_layout,titleArray);
-        this.context=context;
-        this.titleArray=titleArray;
+        super(context, R.layout.gadgette_layout, titleArray);
+        this.context = context;
+        this.titleArray = titleArray;
 
-        font= Typeface.createFromAsset(context.getAssets(),"kalpurush.ttf");
-        }
-@Override
-public View getView(final int position, View convertView, ViewGroup parent){
+        font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
+    }
 
-        LayoutInflater inflater=context.getLayoutInflater();
-        View row=inflater.inflate(R.layout.gadgette_layout,null,true);
+    @Override
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
-        TextView myTitle=(TextView)row.findViewById(R.id.idTitle);
+        LayoutInflater inflater = context.getLayoutInflater();
+        View row = inflater.inflate(R.layout.gadgette_layout, null, true);
+
+        TextView myTitle = (TextView) row.findViewById(R.id.idTitle);
         myTitle.setTypeface(font);
         myTitle.setText(titleArray.get(position));
         myTitle.setTextColor(Color.parseColor("#0689BA"));
-        //pica.with(activity).load(imageArray.get(position)).into(image);
+        notifyDataSetChanged();
         return row;
-        }
+    }
 
     @Override
     public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

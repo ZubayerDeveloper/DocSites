@@ -228,8 +228,10 @@ public class GazetteActivity extends Activity {
 
         @Override
         protected void onCancelled() {
-            yearArray.clear();
-            yearUrls.clear();
+            if (yearArray!=null&&yearUrls!=null) {
+                yearArray.clear();
+                yearUrls.clear();
+            }
             super.onCancelled();
         }
 
@@ -274,8 +276,10 @@ public class GazetteActivity extends Activity {
 
         @Override
         protected void onCancelled() {
-            yearArray.clear();
-            yearUrls.clear();
+            if (yearArray!=null&&yearUrls!=null) {
+                yearArray.clear();
+                yearUrls.clear();
+            }
             super.onCancelled();
         }
 
@@ -416,6 +420,7 @@ public class GazetteActivity extends Activity {
     }
 
     public void executeYear() {
+        pareseYear=new YearParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -427,6 +432,7 @@ public class GazetteActivity extends Activity {
     }
 
     public void executeYearNext() {
+        yearNextParser=new YearNextParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";

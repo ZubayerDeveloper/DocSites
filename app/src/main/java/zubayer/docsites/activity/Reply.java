@@ -135,7 +135,9 @@ public class Reply extends Activity {
                     replyUserId.add(snapshot.child("myID").getValue(String.class));
                     notifyMe.add(snapshot.child("notifyMe").getValue(String.class));
                 }
-                progressDialog.dismiss();
+                try {
+                    progressDialog.dismiss();
+                }catch (Exception e){}
                 notifyStatus();
                 recyclerView.setAdapter(adapter);
 
@@ -247,21 +249,21 @@ public class Reply extends Activity {
         notify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                turnOffNotificatioh();
+                turnOffNotification();
                 notifyStatus();
             }
         });
         notifyOff.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                turnOnNotificatioh();
+                turnOnNotification();
                 notifyStatus();
             }
         });
 
     }
 
-    private void turnOffNotificatioh() {
+    private void turnOffNotification() {
         HashMap<String, Object> notifyme = new HashMap<>();
         notifyme.put("notifyMe", "no");
         if (userid.equals(myID)) {
@@ -281,7 +283,7 @@ public class Reply extends Activity {
         }
     }
 
-    private void turnOnNotificatioh() {
+    private void turnOnNotification() {
 
         HashMap<String, Object> notifyme = new HashMap<>();
         notifyme.put("notifyMe", "yes");
@@ -370,7 +372,8 @@ public class Reply extends Activity {
                 notifyPostOwner = dataSnapshot.child("notifyMe").getValue(String.class);
                 postImage_url = dataSnapshot.child("imageUrl").getValue(String.class);
 
-                if (userid != null) {
+                if (userid != null && myID != null) {
+
                     if (userid.equals(myID) || myID.equals("1335608633238560")) {
                         delete_Post.setVisibility(View.VISIBLE);
                     } else {
@@ -433,26 +436,71 @@ public class Reply extends Activity {
             }
         });
 
-        DatabaseReference notificationReference = database.getReference().child("notifications");
+        final DatabaseReference notificationReference = database.getReference().child("notifications");
         HashMap<String, Object> noti = new HashMap<>();
         if (facebook_user_name != null && !userid.equals(myID) && notifyPostOwner.equals("yes")) {
+            //notify post holder except for me
             noti.put("notificationText", "<font color=#990000>" + facebook_user_name + "</font> commented on your post");
             noti.put("mainPostID", postID);
             noti.put("time", replyDate());
             noti.put("myid", myID);
             noti.put("seenUnseen", "unseen");
             notificationReference.child(userid).child(reply_image_name).updateChildren(noti);
+            notificationReference.child(userid).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    ArrayList<String> notificatinSize = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        notificatinSize.add(snapshot.getKey());
+                    }
+                    if (notificatinSize.size() > 10) {
+                        notificationReference.child(userid).child(notificatinSize.get(0)).setValue(null);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
             sendFCMPush(facebook_user_name, "commented on your post...\n\n" + reply_texts, "/topics/" + userid, postID);
 
         }
-
+        //turn off my notification from reply to avoid same multiple notification to every my comment
+        for (int position = 0; position < replyUserId.size(); position++) {
+            if (replyUserId.get(position).equals(myID)) {
+                HashMap<String, Object> yesno = new HashMap<>();
+                yesno.put("notifyMe", "no");
+                replyReference.child(replyPostId.get(position)).updateChildren(yesno);
+            }
+        }
         for (int i = replyUserId.size() - 1; i > -1; i--) {
+            //notify all repliers
             if (facebook_user_name != null && !replyUserId.get(i).equals(myID) && !replyUserId.get(i).equals(userid) && notifyMe.get(i).equals("yes")) {
                 noti.put("notificationText", "<font color=#000099>" + facebook_user_name + "</font> commented on " + "<font color=#000099>" + intentName + "</font>\'s post");
                 noti.put("mainPostID", postID);
                 noti.put("time", replyDate());
                 noti.put("myid", myID);
                 noti.put("seenUnseen", "unseen");
+
+                final int finalI = i;
+                notificationReference.child(replyUserId.get(i)).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        ArrayList<String> notificatinSize = new ArrayList<>();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            notificatinSize.add(snapshot.getKey());
+                        }
+                        if (notificatinSize.size() > 10) {
+                            notificationReference.child(replyUserId.get(finalI)).child(notificatinSize.get(0)).setValue(null);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 notificationReference.child(replyUserId.get(i)).child(reply_image_name).updateChildren(noti);
                 sendFCMPush(facebook_user_name, " commented on " + intentName + "\'s post \n" + reply_texts, "/topics/" + replyUserId.get(i), postID);
             }
@@ -580,7 +628,10 @@ public class Reply extends Activity {
                 finish();
             }
         });
-        alert.show();
+        try {
+            alert.show();
+        } catch (Exception e) {
+        }
     }
 
     private String elapsedTime(String postTimeMillis, String genuine_pot_time) {

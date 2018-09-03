@@ -103,18 +103,18 @@
     <string name="weeklyGazette"><b>বি.জি. প্রেস থেকে প্রকাশিত চাকুরি স্থায়ীকরণের গেজেট</b></string>
 
     <!--addMob add unit id-->
-    <string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>
-    <string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>
-    <string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>
-    <string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>
-    <string name="forum_interstitial">ca-app-pub-6830488664932459/6592190014</string>
+    <!--<string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>-->
+    <!--<string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>-->
+    <!--<string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>-->
+    <!--<string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>-->
+    <!--<string name="forum_interstitial">ca-app-pub-6830488664932459/6592190014</string>-->
 
     <!-- test ad units-->
-    <!--<string name="banner_id_home">ca-app-pub-3940256099942544/6300978111</string>-->
-    <!--<string name="banner_id_browser">ca-app-pub-3940256099942544/6300978111</string>-->
-    <!--<string name="banner_id_gazette">ca-app-pub-3940256099942544/6300978111</string>-->
-    <!--<string name="banner_id_seniorvice">ca-app-pub-3940256099942544/6300978111</string>-->
-    <!--<string name="forum_interstitial">ca-app-pub-3940256099942544/1033173712</string>-->
+    <string name="banner_id_home">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_id_browser">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_id_gazette">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_id_seniorvice">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="forum_interstitial">ca-app-pub-3940256099942544/1033173712</string>
 
     <!--Notice text-->
     <string name="notification">Select the notifications you want daily</string>

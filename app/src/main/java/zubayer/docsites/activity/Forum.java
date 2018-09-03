@@ -398,9 +398,6 @@ public class Forum extends Activity {
                     }
 
                 }
-                if (notificationID.size() > 10) {
-                    notificationReference.child(facebook_id).child(notificationID.get(notificationID.size() - 1)).setValue(null);
-                }
                 recyclerView.setAdapter(forumNotificationAdapter);
             }
 
