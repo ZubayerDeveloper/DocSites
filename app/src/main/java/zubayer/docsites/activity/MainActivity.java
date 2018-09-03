@@ -2067,7 +2067,6 @@ public class MainActivity extends Activity {
                     });
                     checkinternet.show();
                 }
-
                 if (dataSnapshot.child("docNotifyVersion").getValue(Integer.class) > versionCode) {
                     updateNotifier.setVisibility(View.VISIBLE);
                     updateNotifier.setText(dataSnapshot.child("docNotifyMessage").getValue(String.class));
