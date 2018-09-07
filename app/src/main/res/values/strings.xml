@@ -44,6 +44,8 @@
     <string name="residency">Residency/Non Residency</string>
     <string name="admissionEreregi">Admission and e-Registration</string>
     <string name="notice">Notice</string>
+    <string name="courseName_and_duratin">Duration of different Residency courses</string>
+    <string name="affiliated_institution">Institutions with their courses</string>
 
     <!--bcpsOptions-->
     <string name="onlineNotic">Online Notice</string>
@@ -51,6 +53,11 @@
     <string name="registrationFCPS">Registration (FCPS Part-I Pass Trainees)</string>
     <string name="rollResultFCPS">Results by Roll Number</string>
     <string name="fcpsresult">Examination Only Final Result (PDF)\nPart-I, Part-II, MCPS</string>
+    <string name="courseFee">Exam fees</string>
+    <string name="training_institute">Institutes affiliated by the BCPS for imparting training and conducting courses</string>
+    <string name="courseCurriculum">Course curriculum</string>
+    <string name="refundExamFees">Procedure of refund Exam fees</string>
+    <string name="refundExamFeesText">In case a candidate wishes not to appear in any of the examinations of the College after submission of application, he must apply to College on or before the 27th May for the July examination and on or before the 27th November for the January examination about his intention to withdraw. In these circumstances the candidate is eligible to get a refund of his fee after a 25% deduction. No application will be entertained after the date mentioned above and the fee will not be freewill not be refunded.</string>
 
     <!--dghsOptions-->
     <string name="homePageNotice">Home Page Notices and\nFoundation Training orders</string>
@@ -103,18 +110,18 @@
     <string name="weeklyGazette"><b>বি.জি. প্রেস থেকে প্রকাশিত চাকুরি স্থায়ীকরণের গেজেট</b></string>
 
     <!--addMob add unit id-->
-    <!--<string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>-->
-    <!--<string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>-->
-    <!--<string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>-->
-    <!--<string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>-->
-    <!--<string name="forum_interstitial">ca-app-pub-6830488664932459/6592190014</string>-->
+    <string name="banner_id_home">ca-app-pub-6830488664932459/5555910485</string>
+    <string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>
+    <string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>
+    <string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>
+    <string name="forum_interstitial">ca-app-pub-6830488664932459/6592190014</string>
 
     <!-- test ad units-->
-    <string name="banner_id_home">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_id_browser">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_id_gazette">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="banner_id_seniorvice">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="forum_interstitial">ca-app-pub-3940256099942544/1033173712</string>
+    <!--<string name="banner_id_home">ca-app-pub-3940256099942544/6300978111</string>-->
+    <!--<string name="banner_id_browser">ca-app-pub-3940256099942544/6300978111</string>-->
+    <!--<string name="banner_id_gazette">ca-app-pub-3940256099942544/6300978111</string>-->
+    <!--<string name="banner_id_seniorvice">ca-app-pub-3940256099942544/6300978111</string>-->
+    <!--<string name="forum_interstitial">ca-app-pub-3940256099942544/1033173712</string>-->
 
     <!--Notice text-->
     <string name="notification">Select the notifications you want daily</string>
@@ -185,6 +192,5 @@
     <string name="facebook_app_id">2166278010315392</string>
     <string name="fb_login_protocol_scheme">fb2166278010315392</string>
     <string name="serverKey">AAAAXRtRDEE:APA91bEfnj7Ma-jAbSliHsHO9CrML88o8F90vV3QM0RLlLzWsYs-5gobWCi7MXDEMoK2dPHO2Yiwao9TAw0n8WBbmrFFa_TAC7LXE4ubdnJvjiUkRsWlZPCfUxlbNsmZjaHSUPNoWdSJ</string>
-
 
 </resources>

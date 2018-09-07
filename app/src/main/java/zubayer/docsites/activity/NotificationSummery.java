@@ -48,14 +48,12 @@ import static android.widget.Toast.makeText;
 public class NotificationSummery extends Activity {
     AlertDialog Dialog, checkinternet;
     AlertDialog.Builder builder;
-    ArrayList<String> dates, headings, urls, texts, missedNotifications,falseurls,notificatinCount;
-    String date;
+    ArrayList<String> dates, headings, urls, texts, missedNotifications, falseurls, notificatinCount;
+    ArrayList<Boolean> seen;
     View m;
     NotificationListAdapter adaptate;
     ListView notificationList;
-    private AdView mAdView;
-    SharedPreferences preferences;
-    boolean checked;
+    SharedPreferences seenPreference;
     MyAdapter adapter;
     ProgressBar progressBar;
     FabSpeedDial fabspeed;
@@ -72,15 +70,14 @@ public class NotificationSummery extends Activity {
         dates = new ArrayList<>();
         texts = new ArrayList<>();
         urls = new ArrayList<>();
+        seen = new ArrayList<>();
         missedNotifications = new ArrayList<>();
         falseurls = new ArrayList<>();
-        notificatinCount=new ArrayList<>();
+        notificatinCount = new ArrayList<>();
+        seenPreference = getSharedPreferences("seen", Context.MODE_PRIVATE);
         setFont();
         createAdView();
-        readHeading();
-        readDate();
-        readText();
-        readUrl();
+        readNotification();
         readMissedNotification();
         setListView();
         buildAlertDialogue();
@@ -88,19 +85,14 @@ public class NotificationSummery extends Activity {
         equilifyNotificationCount();
         notificationList = findViewById(R.id.notificationListView);
         notificationList.setSelector(R.drawable.bcsdept);
-        adaptate = new NotificationListAdapter(this, headings, dates, texts, urls);
-        notificationList.setAdapter(adaptate);
-
-        notificationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(urls.get(position).length()==0){
-                }else {
-                    browser(urls.get(position));
-                }
+        adaptate = new NotificationListAdapter(this, headings, dates, texts, seen, urls);
+        if (seen.size() == 0) {
+            for (int i = 0; i < headings.size(); i++) {
+                seen.add(false);
             }
-        });
-
+            saveState();
+        }
+        notificationList.setAdapter(adaptate);
 
         fabspeed = (FabSpeedDial) findViewById(R.id.fabsummery);
         fabspeed.setMenuListener(new FabSpeedDial.MenuListener() {
@@ -133,34 +125,17 @@ public class NotificationSummery extends Activity {
 
     private void equilifyNotificationCount() {
         try {
-            SharedPreferences finalsize=getSharedPreferences("finalNotificationCount",Context.MODE_PRIVATE);
-            SharedPreferences oldsize=getSharedPreferences("oldNotificationCount",Context.MODE_PRIVATE);
-            oldsize.edit().putInt("oldsize",finalsize.getInt("finalsize",0)).apply();
-        }catch (Exception e){}
+            SharedPreferences finalsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
+            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
+            oldsize.edit().putInt("oldsize", finalsize.getInt("finalsize", 0)).apply();
+        } catch (Exception e) {
+        }
     }
 
     private void createAdView() {
-        mAdView = (AdView) findViewById(R.id.adViewSummery);
+        AdView mAdView = (AdView) findViewById(R.id.adViewSummery);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
-    }
-
-    public void browser(String inurl) {
-        final String uurl = inurl;
-        try {
-            preferences = getSharedPreferences("setting", 0);
-            checked = preferences.getBoolean("checked", false);
-            if (checked) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(inurl));
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(NotificationSummery.this, Browser.class);
-                intent.putExtra("value", inurl);
-                startActivity(intent);
-
-            }
-        } catch (Exception e) {
-        }
     }
 
     public void readMissedNotification() {
@@ -174,7 +149,7 @@ public class NotificationSummery extends Activity {
         }
     }
 
-    public void readHeading() {
+    public void readNotification() {
         try {
             FileInputStream read = openFileInput("notificationHeadings");
             ObjectInputStream readarray = new ObjectInputStream(read);
@@ -183,9 +158,6 @@ public class NotificationSummery extends Activity {
             read.close();
         } catch (Exception e) {
         }
-    }
-
-    public void readDate() {
         try {
             FileInputStream read = openFileInput("notificationDates");
             ObjectInputStream readarray = new ObjectInputStream(read);
@@ -194,9 +166,6 @@ public class NotificationSummery extends Activity {
             read.close();
         } catch (Exception e) {
         }
-    }
-
-    public void readText() {
         try {
             FileInputStream read = openFileInput("notificationTexts");
             ObjectInputStream readarray = new ObjectInputStream(read);
@@ -205,13 +174,18 @@ public class NotificationSummery extends Activity {
             read.close();
         } catch (Exception e) {
         }
-    }
-
-    public void readUrl() {
         try {
             FileInputStream read = openFileInput("notificationUrls");
             ObjectInputStream readarray = new ObjectInputStream(read);
             urls = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileInputStream read = openFileInput("notificationSeen");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            seen = (ArrayList<Boolean>) readarray.readObject();
             readarray.close();
             read.close();
         } catch (Exception e) {
@@ -277,10 +251,10 @@ public class NotificationSummery extends Activity {
     }
 
     private void buildAlertDialogue() {
-        builder=new AlertDialog.Builder(NotificationSummery.this);
+        builder = new AlertDialog.Builder(NotificationSummery.this);
         Dialog = builder.create();
         Dialog.setCancelable(true);
-        Dialog.setButton("close",new DialogInterface.OnClickListener() {
+        Dialog.setButton("close", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
             }
         });
@@ -308,10 +282,10 @@ public class NotificationSummery extends Activity {
                     checkinternet.show();
                     progressBar.setVisibility(View.GONE);
                 } else {
-                    try{
+                    try {
                         stopFirebaseJobDispatcher();
                         setFirebaseJobDispatcher();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     myToaster("Checking Notifications");
@@ -336,6 +310,7 @@ public class NotificationSummery extends Activity {
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
+
     private void limitArray(ArrayList<String> arrayName) {
         if (arrayName.size() > 200) {
             arrayName.remove(200);
@@ -343,20 +318,21 @@ public class NotificationSummery extends Activity {
     }
 
     private void stopFirebaseJobDispatcher() {
-        jobDispatcher=new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        try{
+        jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        try {
             jobDispatcher.cancel("tags");
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     private void setFirebaseJobDispatcher() {
-        jobDispatcher=new FirebaseJobDispatcher(new GooglePlayDriver(this));
-        Job job=jobDispatcher.newJobBuilder()
+        jobDispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        Job job = jobDispatcher.newJobBuilder()
                 .setService(MyFirebseJobDidpatcher.class)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
                 .setTag("tags")
-                .setTrigger(Trigger.executionWindow(0,21600))
+                .setTrigger(Trigger.executionWindow(0, 21600))
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 .setReplaceCurrent(false)
                 .setConstraints(Constraint.ON_ANY_NETWORK).build();

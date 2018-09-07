@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/stetho1"
+    android:background="@drawable/reply_preview_background"
     android:gravity="center"
     android:orientation="vertical">
     <RelativeLayout
-        android:padding="1dp"
         android:background="#101010"
         android:id="@+id/notification_layer"
         android:layout_width="match_parent"
@@ -47,9 +45,6 @@
         android:layout_height="match_parent"
         android:numColumns="2"
         android:layout_above="@+id/adViewCard"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingTop="2dp"
         android:scrollbars="none" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/forum"
@@ -121,7 +116,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:alpha=".85"
-        ads:fabBackgroundTint="#000099"
+        ads:fabBackgroundTint="#0000ff"
         ads:fabGravity="bottom_end"
         ads:fabMenu="@menu/menu"
         ads:miniFabBackgroundTint="#000000"

@@ -107,14 +107,14 @@ public class MainActivity extends Activity {
             notificationNumberText, queryNotification;
     int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize, bsmmubegin, bsmmuend;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
-            bmdcClicked, resultsClicked, applaunched, checkpop, checked, wifiAvailable, mobileDataAvailable, newNotifications;
+            bmdcClicked, resultsClicked, applaunched, checkpop, wifiAvailable, mobileDataAvailable, newNotifications;
     SharedPreferences preferences, notificationPreference;
     FabSpeedDial fab;
     ImageButton notificationSummery;
     FloatingActionButton forum;
     Button showNotificationNumber;
     FirebaseJobDispatcher jobDispatcher;
-    TextView updateNotifier, forumhelpNotify,appVersion;
+    TextView updateNotifier, forumhelpNotify, appVersion;
 
     @Override
     protected void onDestroy() {
@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
         initializeWidgetVariable();
         createGridView();
         setFont(this, this);
-        adjustScreenSize();
+//        adjustScreenSize();
         manageSettings();
         loadButtonOptions();
         createAdView();
@@ -219,8 +219,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
-                if(queryID.size()!=0){
-                preferences.edit().putString("query", queryID.get(0)).apply();
+                if (queryID.size() != 0) {
+                    preferences.edit().putString("query", queryID.get(0)).apply();
                 }
                 startActivity(new Intent(MainActivity.this, Forum.class));
             }
@@ -277,9 +277,8 @@ public class MainActivity extends Activity {
         Intent intent = getIntent();
         if (intent != null && intent.getExtras() != null) {
             String postID = intent.getExtras().getString("postID");
-            String putBack = intent.getExtras().getString("intent");
             if (postID != null) {
-                startActivity(new Intent(MainActivity.this, Reply.class).putExtra("postID", postID).putExtra("intent", putBack));
+                startActivity(new Intent(MainActivity.this, Reply.class).putExtra("postID", postID));
             }
         }
     }
@@ -1465,6 +1464,16 @@ public class MainActivity extends Activity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    private void bsmmuCourseDuration() {
+        pdfFilter = "http://www.bsmmu.edu.bd/?page=menu&content=139020387254";
+        browser(pdfFilter);
+    }
+
+    private void courseInstitutions() {
+        pdfFilter = "http://www.bsmmu.edu.bd/?page=menu&content=139020390785";
+        browser(pdfFilter);
+    }
+
     private void bcpsHome() {
         pdfFilter = "http://www.bcpsbd.org";
         browser(pdfFilter);
@@ -1500,6 +1509,28 @@ public class MainActivity extends Activity {
     private void fcpsResults() {
         pdfFilter = "http://www.bcpsbd.org/result/";
         browser(pdfFilter);
+    }
+
+    private void traningInstitute() {
+        browser("https://www.bcpsbd.org/institute/Accridated%20Inst-2015.pdf");
+    }
+
+    private void courseCurriculum() {
+        browser("https://www.bcpsbd.org/course.htm");
+    }
+
+    private void refundExamFee() {
+        buttonTexts.clear();
+        urls.clear();
+        Dialog.setTitle("Fee refund");
+        buttonTexts.add(getString(R.string.refundExamFeesText));
+        urls.add("https://www.bcpsbd.org/refund.htm");
+        progressBar.setVisibility(View.GONE);
+        list.setAdapter(adapter);
+    }
+
+    private void examFees() {
+        browser("https://www.bcpsbd.org/exam_fees.htm");
     }
 
     private void dghsHome() {
@@ -1818,20 +1849,7 @@ public class MainActivity extends Activity {
     }
 
     private void browser(String inurl) {
-        try {
-            preferences = getSharedPreferences("setting", 0);
-            checked = preferences.getBoolean("checked", false);
-            if (checked) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(inurl));
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(MainActivity.this, Browser.class);
-                intent.putExtra("value", inurl);
-                startActivity(intent);
-
-            }
-        } catch (Exception e) {
-        }
+        startActivity(new Intent(MainActivity.this, Browser.class).putExtra("value", inurl));
     }
 
     private void myToaster(Context context, String text) {
@@ -2020,7 +2038,7 @@ public class MainActivity extends Activity {
         gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
+                readNotificationCount();
             }
 
             @Override
@@ -2069,7 +2087,8 @@ public class MainActivity extends Activity {
                 }
                 if (dataSnapshot.child("docNotifyVersion").getValue(Integer.class) > versionCode) {
                     updateNotifier.setVisibility(View.VISIBLE);
-                    updateNotifier.setText(dataSnapshot.child("docNotifyMessage").getValue(String.class));
+                    String notify = dataSnapshot.child("docNotifyMessage").getValue(String.class);
+                    updateNotifier.setText(notify);
                 }
 
             }
@@ -2104,6 +2123,12 @@ public class MainActivity extends Activity {
                         bsmmuNotice();
                         Dialog.show();
                         break;
+                    case 4:
+                        bsmmuCourseDuration();
+                        break;
+                    case 5:
+                        courseInstitutions();
+                        break;
                 }
             }
             if (bcpsClicked) {
@@ -2123,7 +2148,19 @@ public class MainActivity extends Activity {
                         fcpsPart1Regi();
                         break;
                     case 4:
+                        examFees();
+                        break;
+                    case 5:
                         fcpsResults();
+                        break;
+                    case 6:
+                        refundExamFee();
+                        break;
+                    case 7:
+                        courseCurriculum();
+                        break;
+                    case 8:
+                        traningInstitute();
                         break;
                 }
             }
@@ -2416,8 +2453,9 @@ public class MainActivity extends Activity {
         showNotificationNumber = (Button) findViewById(R.id.notificationCount);
         forumhelpNotify = (TextView) findViewById(R.id.forumhelpNotify);
         updateNotifier = (TextView) findViewById(R.id.updateNotifier);
-        appVersion= (TextView) findViewById(R.id.version);
-        appVersion.setText(getString(R.string.app_name)+" "+BuildConfig.VERSION_NAME);
+        appVersion = (TextView) findViewById(R.id.version);
+        String app_version = getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME;
+        appVersion.setText(app_version);
         updateNotifier.setVisibility(View.GONE);
         forumhelpNotify.setVisibility(View.GONE);
         showNotificationNumber.setVisibility(View.GONE);
@@ -2429,11 +2467,13 @@ public class MainActivity extends Activity {
         boolean wifiIsAvailable, mobileDataIsAvailable;
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            wifiIsAvailable = networkInfo.isConnected();
-            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            mobileDataIsAvailable = networkInfo.isConnected();
-            dataConnected = wifiIsAvailable || mobileDataIsAvailable;
+            if (connectivityManager != null) {
+                NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                wifiIsAvailable = networkInfo.isConnected();
+                networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                mobileDataIsAvailable = networkInfo.isConnected();
+                dataConnected = wifiIsAvailable || mobileDataIsAvailable;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -2464,9 +2504,10 @@ public class MainActivity extends Activity {
 
                 SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
                 queryNotification = preferences.getString("query", null);
-                if (!queryID.get(0).equals(queryNotification)&&queryID.size()!=0) {
+                if (!queryID.get(0).equals(queryNotification) && queryID.size() != 0) {
                     forumhelpNotify.setVisibility(View.VISIBLE);
-                    forumhelpNotify.setText(queryname.get(0) + " asked...");
+                    String newpost = queryname.get(0) + " asked...";
+                    forumhelpNotify.setText(newpost);
                 } else {
                     forumhelpNotify.setVisibility(View.GONE);
                 }

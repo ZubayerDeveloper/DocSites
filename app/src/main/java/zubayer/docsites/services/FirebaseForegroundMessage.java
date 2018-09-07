@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.PowerManager;
@@ -76,6 +77,7 @@ public class FirebaseForegroundMessage extends FirebaseMessagingService {
                     .setWhen(System.currentTimeMillis())
                     .setVibrate(new long[]{0, 300, 300, 300})
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_foreground))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                     .setChannelId(channel_id).build();
             notification.ledARGB = 0xff990000;
@@ -120,7 +122,8 @@ public class FirebaseForegroundMessage extends FirebaseMessagingService {
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MAX)
                 .setStyle(bigTextStyle)
-                .setSmallIcon(R.mipmap.ic_launcher_foreground);
+                .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_foreground));
         notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = null;

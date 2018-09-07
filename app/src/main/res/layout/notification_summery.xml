@@ -10,9 +10,8 @@
         android:id="@+id/notificationListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#F7EDD0"
-        android:listSelector="@drawable/bcsdept"
-        android:paddingBottom="70dp"
+        android:background="#b4b4b4"
+        android:layout_above="@+id/adViewSummery"
         android:scrollbars="none"
         android:textAlignment="center" />
 

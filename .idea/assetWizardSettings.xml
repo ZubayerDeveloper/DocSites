@@ -55,10 +55,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
+                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="cropped" value="true" />
                                       <entry key="iconShape" value="NONE" />
-                                      <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\fb.png" />
-                                      <entry key="outputName" value="profile" />
+                                      <entry key="imageAsset" value="C:\Users\ZYbyer\Desktop\Department exam\bcps.png" />
+                                      <entry key="outputName" value="bcpslogo" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -95,7 +96,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="NOTIFICATION" />
+                            <entry key="outputIconType" value="LAUNCHER_LEGACY" />
                           </map>
                         </option>
                       </PersistentState>

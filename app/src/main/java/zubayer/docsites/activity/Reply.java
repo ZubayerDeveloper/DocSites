@@ -86,7 +86,7 @@ public class Reply extends Activity {
     StorageReference storageRef;
     HashMap<String, Object> reply_post;
     String userid, intentName, intentText, time, postID, reply_image_name, blocked, postImage_url,
-            facebook_user_name, myID, notifyPostOwner, reply_texts, intentPlayload;
+            facebook_user_name, myID, notifyPostOwner, reply_texts;
     ProgressDialog progressDialog;
     ImageView replyButton, postImage, pic_preview, notify, notifyOff;
     TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser, del_chooser;
@@ -386,14 +386,10 @@ public class Reply extends Activity {
                         varified.setVisibility(View.GONE);
 
                     }
-                    if (dataconnected()) {
-                        graphRequest();
-                    } else {
-                        alertMessage("Turn on data", "Try again", "Exit");
-                    }
                     reply_post_name.setText(intentName);
                     reply_post_text.setText(intentText);
-                    post_time.setText(elapsedTime(postID, time));
+                    String posttime=elapsedTime(postID, time);
+                    post_time.setText(posttime);
                     try {
                         Glide.with(Reply.this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
                         Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
@@ -415,7 +411,6 @@ public class Reply extends Activity {
 
     private void getIntentvalue() {
         postID = getIntent().getExtras().getString("postID");
-        intentPlayload = getIntent().getExtras().getString("intent");
     }
 
     private void myToaster(String text) {
@@ -555,6 +550,8 @@ public class Reply extends Activity {
         recyclerView.setLayoutManager(manager);
         userImage = (CircularImageView) findViewById(R.id.reply_user_image);
         replyImage = (CircularImageView) findViewById(R.id.reply_post_image);
+        SharedPreferences user_name_preference=getSharedPreferences("myname",Context.MODE_PRIVATE);
+        facebook_user_name=user_name_preference.getString("myname",null);
     }
 
     private String replyTime() {
@@ -573,64 +570,27 @@ public class Reply extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        graphRequest();
     }
 
-    private void graphRequest() {
-        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(final JSONObject object, GraphResponse response) {
-
-                try {
-                    facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+    @Override
+    public void onBackPressed() {
+        if(edit_reply.getText().toString().length()!=0||imageUri!=null) {
+            alert.setMessage("Discard reply?");
+            alert.setButton(DialogInterface.BUTTON_POSITIVE, "Discard", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
                 }
-
-            }
-        });
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,first_name,last_name,email,picture");
-        request.setParameters(parameters);
-        request.executeAsync();
-    }
-
-    private boolean dataconnected() {
-        boolean dataConnected = false;
-        boolean wifiIsAvailable, mobileDataIsAvailable;
-        try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            wifiIsAvailable = networkInfo.isConnected();
-            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-            mobileDataIsAvailable = networkInfo.isConnected();
-            dataConnected = wifiIsAvailable || mobileDataIsAvailable;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dataConnected;
-    }
-
-    private void alertMessage(String text, String positiveButtonName, String negativeButtonName) {
-        alert.setMessage(text);
-        alert.setButton(DialogInterface.BUTTON1, positiveButtonName, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Reply.this, Forum.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-            }
-        });
-        alert.setButton(DialogInterface.BUTTON2, negativeButtonName, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-        try {
+            });
+            alert.setButton(DialogInterface.BUTTON_NEGATIVE, "Keep", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
             alert.show();
-        } catch (Exception e) {
+        }else {
+            super.onBackPressed();
+
         }
     }
 
@@ -784,7 +744,7 @@ public class Reply extends Activity {
     }
 
     private void upload(final String reply_image_name) {
-        final StorageReference storageRef = FirebaseStorage.getInstance().getReference("image/");
+        final StorageReference storageRef = FirebaseStorage.getInstance().getReference("uiImage/");
         storageRef.child(reply_image_name).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

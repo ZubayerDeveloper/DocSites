@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -48,6 +49,7 @@ public class MyFirebseJobDidpatcher extends JobService {
     ArrayList<String> notificationTexts = new ArrayList<>();
     ArrayList<String> notificationUrls = new ArrayList<>();
     ArrayList<String> missedNotifications = new ArrayList<>();
+    ArrayList<Boolean> notificationSeen = new ArrayList<>();
     NotificationParser notificationParser;
     int n=0;
 
@@ -56,10 +58,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         super.onCreate();
         try {
             checkConnectivity();
-            readHeading();
-            readDate();
-            readText();
-            readUrl();
+            readNotification();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -978,6 +977,7 @@ public class MyFirebseJobDidpatcher extends JobService {
                     .setVibrate(new long[]{0, 300, 300, 300})
                     .setContentIntent(pendingIntent)
                     .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_foreground))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
                     .setChannelId(channel_id).build();
             notification.ledARGB = 0xff990000;
@@ -1021,7 +1021,8 @@ public class MyFirebseJobDidpatcher extends JobService {
                 .setPriority(Notification.PRIORITY_MAX)
                 .setContentIntent(pendingIntent)
                 .setStyle(bigTextStyle)
-                .setSmallIcon(R.mipmap.ic_launcher_foreground);
+                .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_foreground));
         notificationBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
         PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = null;
@@ -1091,6 +1092,14 @@ public class MyFirebseJobDidpatcher extends JobService {
             write.close();
         } catch (Exception e) {
         }
+        try {
+            FileOutputStream write = openFileOutput("notificationSeen", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(notificationSeen);
+            arrayoutput.close();
+            write.close();
+        } catch (Exception e) {
+        }
     }
 
     private String notificationDate() {
@@ -1106,6 +1115,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         notificationUrls.add(0, notificationUrl);
         notificationDates.add(0, notificationDate);
         notificationHeadings.add(0, notificationHeading);
+        notificationSeen.add(0,false);
     }
 
     private void clearArray() {
@@ -1113,9 +1123,10 @@ public class MyFirebseJobDidpatcher extends JobService {
         notificationUrls.clear();
         notificationDates.clear();
         notificationHeadings.clear();
+        notificationSeen.clear();
     }
 
-    private void readHeading() {
+    private void readNotification() {
         try {
             FileInputStream read = openFileInput("notificationHeadings");
             ObjectInputStream readarray = new ObjectInputStream(read);
@@ -1124,9 +1135,6 @@ public class MyFirebseJobDidpatcher extends JobService {
             read.close();
         } catch (Exception e) {
         }
-    }
-
-    private void readDate() {
         try {
             FileInputStream read = openFileInput("notificationDates");
             ObjectInputStream readarray = new ObjectInputStream(read);
@@ -1135,9 +1143,6 @@ public class MyFirebseJobDidpatcher extends JobService {
             read.close();
         } catch (Exception e) {
         }
-    }
-
-    private void readText() {
         try {
             FileInputStream read = openFileInput("notificationTexts");
             ObjectInputStream readarray = new ObjectInputStream(read);
@@ -1146,13 +1151,18 @@ public class MyFirebseJobDidpatcher extends JobService {
             read.close();
         } catch (Exception e) {
         }
-    }
-
-    private void readUrl() {
         try {
             FileInputStream read = openFileInput("notificationUrls");
             ObjectInputStream readarray = new ObjectInputStream(read);
             notificationUrls = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileInputStream read = openFileInput("notificationSeen");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationSeen = (ArrayList<Boolean>) readarray.readObject();
             readarray.close();
             read.close();
         } catch (Exception e) {

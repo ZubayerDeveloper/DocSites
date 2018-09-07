@@ -35,7 +35,7 @@ public class WeeklyGazettes extends Activity {
     ListView volume,navigation,gazettelist;
     MyAdapter gazetteAdapter;
     ServiceAdapter navigationAdapter,volumeAdapter;
-    AlertDialog Dialog,checkinternet;
+    AlertDialog checkinternet;
     AlertDialog.Builder builder;
     VolumrParser volumeParser;
     NavigationParser navigationParser;
@@ -75,19 +75,6 @@ public class WeeklyGazettes extends Activity {
         navigationAdapter =new ServiceAdapter(this, navigatinArray, navigationUrls);
         gazetteAdapter=new MyAdapter(this, gazetteArray, gazetteUrls);
 
-        builder = new AlertDialog.Builder(this);
-        Dialog = builder.create();
-        Dialog.setCancelable(false);
-        Dialog.setButton("Close", new DialogInterface.OnClickListener() {
-            public void onClick(final DialogInterface dialog, int id) {
-                gazetteArray.clear();
-                gazetteUrls.clear();
-                try{
-                    gazetteParser.cancel(true);
-                }catch (Exception e){}
-            }
-        });
-        Dialog.setView(m);
         parentUrl = "http://www.dpp.gov.bd/bgpress/index.php/document/weekly_gazettes/151";
 
         executeVolume();
@@ -230,7 +217,9 @@ public class WeeklyGazettes extends Activity {
                     }
                 });
 
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
                 progressBar.setVisibility(View.GONE);
             }else if (btxt != null) {
                 volume.setAdapter(volumeAdapter);
@@ -245,7 +234,9 @@ public class WeeklyGazettes extends Activity {
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -273,7 +264,9 @@ public class WeeklyGazettes extends Activity {
                     }
                 });
 
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
                 progressBar.setVisibility(View.GONE);
             }else if (btxt != null) {
                 navigation.setAdapter(navigationAdapter);
@@ -288,7 +281,9 @@ public class WeeklyGazettes extends Activity {
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -315,8 +310,9 @@ public class WeeklyGazettes extends Activity {
                     public void onClick(final DialogInterface dialog, int id) {
                     }
                 });
-
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
                 progressBar.setVisibility(View.GONE);
             }else if (btxt != null) {
                 gazettelist.setAdapter(gazetteAdapter);
@@ -328,11 +324,12 @@ public class WeeklyGazettes extends Activity {
                 checkinternet.setCancelable(false);
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
-                        Dialog.dismiss();
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -373,13 +370,8 @@ public class WeeklyGazettes extends Activity {
         progressDialog = ProgressDialog.show(this, "", "Loading Gazettes...", true, true);
     }
 
-    public  void browser(String inurl){
-        final String uurl=inurl;
-        try {
-                Intent intent = new Intent(WeeklyGazettes.this, Browser.class);
-                intent.putExtra("value", inurl);
-                startActivity(intent);
-        }catch (Exception e){}
+    private void browser(String inurl) {
+        startActivity(new Intent(WeeklyGazettes.this, Browser.class).putExtra("value", inurl));
     }
 
     @Override

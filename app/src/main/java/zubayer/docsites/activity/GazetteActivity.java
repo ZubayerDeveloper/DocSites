@@ -82,7 +82,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
                 checkinternet.setMessage("List of gazette years loading is in progress...");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
 
             }
         });
@@ -117,7 +119,9 @@ public class GazetteActivity extends Activity {
                 } catch (Exception e) {
                     checkinternet = builder.create();
                     checkinternet.setMessage("Something went wrong, try again");
-                    checkinternet.show();
+                    try {
+                        checkinternet.show();
+                    }catch (Exception ex){}
                 }
             }
         });
@@ -247,7 +251,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
 
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }else if (btxt != null) {
                 yearUrl = yearUrlNext;
                 executeYearNext();
@@ -262,7 +268,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -292,11 +300,14 @@ public class GazetteActivity extends Activity {
                 checkinternet.setMessage("Check your network connection");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
-
+                        progressDialog.dismiss();
+                        loadYearAgain();
                     }
                 });
 
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }else if (btxt != null) {
                 yearList.setAdapter(yearAdapter);
                 progressDialog.dismiss();
@@ -311,7 +322,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -337,10 +350,13 @@ public class GazetteActivity extends Activity {
                 checkinternet.setMessage("Check your network connection");
                 checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
+                        progressDialog.dismiss();
                     }
                 });
 
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }else if (btxt != null) {
                 progressDialog.dismiss();
                 it = monthUrls.iterator();
@@ -357,7 +373,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -388,7 +406,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
 
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }else if (btxt != null) {
                 resultList.setAdapter(resultAdapter);
                 progressDialog.dismiss();
@@ -402,7 +422,9 @@ public class GazetteActivity extends Activity {
                             public void onClick(final DialogInterface dialog, int id) {
                             }
                         });
-                        checkinternet.show();
+                        try {
+                            checkinternet.show();
+                        }catch (Exception e){}
                     }
                 }
             } else {
@@ -414,7 +436,9 @@ public class GazetteActivity extends Activity {
                     }
                 });
                 checkinternet.setMessage("Website is not responding");
-                checkinternet.show();
+                try {
+                    checkinternet.show();
+                }catch (Exception e){}
             }
         }
     }
@@ -494,26 +518,14 @@ public class GazetteActivity extends Activity {
                 }
             });
 
-            checkinternet.show();
+            try {
+                checkinternet.show();
+            }catch (Exception e){}
         }
     }
 
-    public void browser(String inurl) {
-        final String uurl = inurl;
-        try {
-            boolean isChecked;
-            SharedPreferences settings = getSharedPreferences("setting", 0);
-            isChecked = settings.getBoolean("checked", false);
-            if (isChecked == false) {
-                Intent intent = new Intent(GazetteActivity.this, Browser.class);
-                intent.putExtra("value", inurl);
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(inurl));
-                startActivity(intent);
-            }
-        } catch (Exception e) {
-        }
+    private void browser(String inurl) {
+        startActivity(new Intent(GazetteActivity.this, Browser.class).putExtra("value", inurl));
     }
 
     @Override
@@ -568,7 +580,9 @@ public class GazetteActivity extends Activity {
                 }
             });
 
-            checkinternet.show();
+            try {
+                checkinternet.show();
+            }catch (Exception e){}
             progressDialog.dismiss();
         } else {
             executeResult();

@@ -103,7 +103,7 @@ public class Forum extends Activity {
     CallbackManager callbackManager;
     CardView chooser_cardview;
     CircularImageView post_image;
-    ImageView send, pic_preview, icon, viewimage;
+    ImageView send, pic_preview, icon;
     ForumAdapter adapter, profileAdapter;
     ForumNotificationAdapter forumNotificationAdapter;
     LollipopAdapter lollipopAdapter, lollipopProfileAdapter;
@@ -218,7 +218,6 @@ public class Forum extends Activity {
                     }
 
                 }
-
 
                 chooser_cardview.setVisibility(View.GONE);
 
@@ -354,8 +353,27 @@ public class Forum extends Activity {
             imageChooser.setVisibility(View.VISIBLE);
             forum_subscription.setVisibility(View.VISIBLE);
         } else {
-            super.onBackPressed();
-            mInterstitialAd.show();
+            if(edit_text.getText().toString().length()!=0||imageUri!=null) {
+                alert.setMessage("Discard post?");
+                alert.setButton(DialogInterface.BUTTON_POSITIVE, "Discard", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mInterstitialAd.show();
+                        finish();
+                    }
+                });
+                alert.setButton(DialogInterface.BUTTON_NEGATIVE, "Keep", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                alert.show();
+            }else {
+                mInterstitialAd.show();
+                super.onBackPressed();
+
+            }
+
         }
 
     }
@@ -721,6 +739,8 @@ public class Forum extends Activity {
                     subscribeTopic(facebook_id);
                     myIDpreference.edit().putString("myID", facebook_id).apply();
                     facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
+                    SharedPreferences user_name_preference=getSharedPreferences("myname",Context.MODE_PRIVATE);
+                    user_name_preference.edit().putString("myname",facebook_user_name).apply();
                     first_name = object.getString("first_name");
                     Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
                     loadForumPost();
@@ -980,32 +1000,33 @@ public class Forum extends Activity {
     private void sendFCMPush(String title, String message, String data) {
 
         JSONObject obj = null;
-        JSONObject objData;
-        JSONObject dataobjData;
+        JSONObject messageContent;
+        JSONObject fcmdataPlayload;
 
         try {
             obj = new JSONObject();
-            objData = new JSONObject();
+            messageContent = new JSONObject();
 
-            objData.put("body", message);
-            objData.put("title", title);
-            objData.put("sound", "default");
-            objData.put("icon", "ic_launcher_foreground");
-
+            messageContent.put("body", message);
+            messageContent.put("title", title);
+            messageContent.put("sound", "default");
+            messageContent.put("icon", "ic_launcher_foreground");
             //   icon_name
 //            objData.put("tag", "tg");
 //            JSONObject put = objData.put("priority", "high");
 
-            dataobjData = new JSONObject();
-            dataobjData.put("postID", data);
-            dataobjData.put("intent", "back");
-//            "/topics/"+salary.getText().toString()
+            fcmdataPlayload = new JSONObject();
+            fcmdataPlayload.put("postID", data);
+            fcmdataPlayload.put("image", "https://ibin.co/2t1lLdpfS06F.png");
+
+            //            "/topics/"+salary.getText().toString()
             obj.put("to", "/topics/forum");
             obj.put("priority", "high");
 
-            obj.put("notification", objData);
-            obj.put("data", dataobjData);
-            Log.e("return here>>", obj.toString());
+            obj.put("notification", messageContent);
+            obj.put("data", fcmdataPlayload);
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1042,7 +1063,7 @@ public class Forum extends Activity {
         FirebaseMessaging.getInstance().unsubscribeFromTopic("forum").addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                if (post_text.equals(" ")) {
+                if (imageUri!=null) {
                     sendFCMPush(facebook_user_name, "Uploaded an image", postID);
                 } else {
                     sendFCMPush(facebook_user_name, post_text, postID);

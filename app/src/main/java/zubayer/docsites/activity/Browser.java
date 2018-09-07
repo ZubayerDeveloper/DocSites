@@ -16,7 +16,6 @@ import com.google.android.gms.ads.AdView;
 import java.util.ArrayList;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
-import me.anwarshahriar.calligrapher.Calligrapher;
 import zubayer.docsites.adapters.MyAdapter;
 import zubayer.docsites.R;
 
@@ -28,7 +27,6 @@ public class Browser extends Activity {
     WebView website;
     ProgressBar progressbar;
     AlertDialog checkinternet;
-    private AdView mAdView;
     String driveViewer, pdfurl;
     AlertDialog Dialog;
     AlertDialog.Builder builder;
@@ -52,7 +50,6 @@ public class Browser extends Activity {
         urlss = new ArrayList<>();
         downloadButton = (Button) findViewById(R.id.downloadButton);
 
-//        setFont();
         setAdd();
         setProgressBar();
         initializeWebViewAndUrls();
@@ -62,11 +59,7 @@ public class Browser extends Activity {
         reloadAdviceDialogue();
         webViewSettings();
         filterUrlPDF();
-        if (urls.contains("pdf")) {
-            downloadButton.setVisibility(View.VISIBLE);
-        } else {
-            downloadButton.setVisibility(View.GONE);
-        }
+
         website.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -280,13 +273,14 @@ public class Browser extends Activity {
     }
 
     private void setAdd() {
-        mAdView = (AdView) findViewById(R.id.adViewBrowser);
+        AdView mAdView = (AdView) findViewById(R.id.adViewBrowser);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
 
     private void filterUrlPDF() {
         if (urls.contains("pdf")) {
+            downloadButton.setVisibility(View.VISIBLE);
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
         } else if (urls.contains("download")) {
@@ -317,6 +311,7 @@ public class Browser extends Activity {
                 loadProgressBar();
             }
         } else {
+            downloadButton.setVisibility(View.GONE);
             website.loadUrl(urls);
             loadProgressBar();
         }

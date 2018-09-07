@@ -29,13 +29,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/adViewGazette"
             android:paddingLeft="5dp"
             android:paddingRight="5dp">
 
             <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="25dp">
+                android:layout_height="match_parent">
 
                 <TableRow>
 
@@ -45,7 +45,7 @@
                         android:layout_weight="6"
                         android:gravity="center"
                         android:text="@string/vloumes"
-                        android:textSize="15dp"></TextView>
+                        android:textSize="15dp" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -66,7 +66,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="6"
                         android:background="@drawable/bcsdept"
-                        android:paddingBottom="50dp"
                         android:scrollbars="none"
                         android:textAlignment="center" />
 
@@ -74,7 +73,6 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:paddingBottom="50dp"
                         android:scrollbars="none" />
 
                     <ListView
@@ -83,7 +81,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1.7"
                         android:background="@drawable/bcsdept"
-                        android:paddingBottom="50dp"
                         android:scrollbars="none"
                         android:textAlignment="center" />
                 </TableRow>
