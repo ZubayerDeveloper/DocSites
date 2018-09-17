@@ -41,7 +41,8 @@
         <item>@string/homePage</item>
         <item>@string/residency</item>
         <item>@string/admissionEreregi</item>
-        <item>@string/notice</item>
+        <item>@string/academic_notice</item>
+        <item>@string/administrative_notice</item>
         <item>@string/courseName_and_duratin</item>
         <item>@string/affiliated_institution</item>
     </array>

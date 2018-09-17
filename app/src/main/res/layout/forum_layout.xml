@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_main"
+    android:id="@+id/forum_layouts"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
@@ -222,6 +222,16 @@
                         android:layout_height="wrap_content" />
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
+            <com.google.android.gms.ads.AdView
+                android:id="@+id/adViewCard"
+                android:layout_marginTop="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/replyImageHolder"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                ads:adSize="SMART_BANNER"
+                ads:adUnitId="@string/banner_id_home" />
 
         </RelativeLayout>
 

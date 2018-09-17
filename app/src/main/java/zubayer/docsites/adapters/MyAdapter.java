@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +24,9 @@ import static android.widget.Toast.makeText;
 
 public class MyAdapter extends ArrayAdapter<String> {
 
-    public Typeface font;
+    private Typeface font;
     private ArrayList<String> titleArray;
     private ArrayList<String> imageArray;
-    private TextView image;
     private Activity context;
 
 
@@ -40,18 +40,19 @@ public class MyAdapter extends ArrayAdapter<String> {
         font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
     }
 
+    @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-
-        LayoutInflater inflater = context.getLayoutInflater();
-        View row = inflater.inflate(R.layout.customlyst, null, true);
-
-        TextView myTitle = (TextView) row.findViewById(R.id.idTitle);
+    public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
+        if (convertView == null) {
+            LayoutInflater inflater = context.getLayoutInflater();
+            convertView = inflater.inflate(R.layout.customlyst, null, true);
+        }
+        TextView myTitle = (TextView) convertView.findViewById(R.id.idTitle);
         myTitle.setTypeface(font);
         myTitle.setText(titleArray.get(position));
         myTitle.setTextColor(Color.parseColor("#123456"));
-        image = (TextView) row.findViewById(R.id.ImageView);
-        TextView copy = (TextView) row.findViewById(R.id.copy);
+        TextView image = (TextView) convertView.findViewById(R.id.ImageView);
+        TextView copy = (TextView) convertView.findViewById(R.id.copy);
         try {
             image.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -75,7 +76,8 @@ public class MyAdapter extends ArrayAdapter<String> {
                     }
                 }
             });
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         if (imageArray.isEmpty()) {
             image.setVisibility(View.GONE);
             copy.setVisibility(View.GONE);
@@ -84,6 +86,6 @@ public class MyAdapter extends ArrayAdapter<String> {
             copy.setVisibility(View.VISIBLE);
         }
         notifyDataSetChanged();
-        return row;
+        return convertView;
     }
 }

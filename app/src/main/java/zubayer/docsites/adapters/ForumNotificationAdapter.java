@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,14 +27,13 @@ import zubayer.docsites.R;
 import zubayer.docsites.activity.Reply;
 
 public class ForumNotificationAdapter extends RecyclerView.Adapter<ForumNotificationAdapter.VHolder> {
-    ArrayList<String> notification_text, notification_time, users_sources, main_postID, seen_unseen,notification_ID;
-    Activity context;
-    Typeface forum_font;
-    FirebaseDatabase database;
-    DatabaseReference notification_Reference;
-    SharedPreferences myIDpreference;
-    String myID;
-
+    private ArrayList<String> notification_text, notification_time, users_sources, main_postID, seen_unseen,notification_ID;
+    private Activity context;
+    private Typeface forum_font;
+    private FirebaseDatabase database;
+    private DatabaseReference notification_Reference;
+    private String myID;
+    private Animation animation;
     public ForumNotificationAdapter(Activity context,
                                     ArrayList<String> notification_ID,
                                     ArrayList<String> users_sources,
@@ -47,11 +48,12 @@ public class ForumNotificationAdapter extends RecyclerView.Adapter<ForumNotifica
         this.main_postID = main_postID;
         this.seen_unseen = seen_unseen;
         this.context = context;
+        animation= AnimationUtils.loadAnimation(context,R.anim.fade_in);
         database = FirebaseDatabase.getInstance();
         forum_font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
-        myIDpreference = context.getSharedPreferences("myID", Context.MODE_PRIVATE);
+        SharedPreferences myIDpreference = context.getSharedPreferences("myID", Context.MODE_PRIVATE);
         notification_Reference=database.getReference().child("notifications");
-        myID=myIDpreference.getString("myID",null);
+        myID= myIDpreference.getString("myID",null);
     }
 
     @NonNull
@@ -77,7 +79,24 @@ public class ForumNotificationAdapter extends RecyclerView.Adapter<ForumNotifica
             @Override
             public void onClick(View v) {
                 try {
-                    notification_Reference.child(myID).child(notification_ID.get(position)).setValue(null);
+                    animateDelete(holder);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            notification_Reference.child(myID).child(notification_ID.get(position)).setValue(null);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+
                 }catch (Exception e){}
             }
         });
@@ -118,4 +137,12 @@ public class ForumNotificationAdapter extends RecyclerView.Adapter<ForumNotifica
             relativeLayout=(RelativeLayout)itemView.findViewById(R.id.relativelayout);
         }
     }
+    private void animateDelete(VHolder holder) {
+        holder.notifiationText.startAnimation(animation);
+        holder.time.startAnimation(animation);
+        holder.del.startAnimation(animation);
+        holder.userSource.startAnimation(animation);
+        holder.relativeLayout.startAnimation(animation);
+    }
+
 }

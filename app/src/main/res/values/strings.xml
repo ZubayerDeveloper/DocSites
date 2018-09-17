@@ -43,7 +43,8 @@
     <!--bsmmuOptions-->
     <string name="residency">Residency/Non Residency</string>
     <string name="admissionEreregi">Admission and e-Registration</string>
-    <string name="notice">Notice</string>
+    <string name="academic_notice">Academic notice</string>
+    <string name="administrative_notice">Administrative notice</string>
     <string name="courseName_and_duratin">Duration of different Residency courses</string>
     <string name="affiliated_institution">Institutions with their courses</string>
 
@@ -114,6 +115,7 @@
     <string name="banner_id_browser">ca-app-pub-6830488664932459/9658534926</string>
     <string name="banner_id_gazette">ca-app-pub-6830488664932459/4818115013</string>
     <string name="banner_id_seniorvice">ca-app-pub-6830488664932459/1155632796</string>
+    <string name="banner_id_notification_summery">ca-app-pub-6830488664932459/4886118189</string>
     <string name="forum_interstitial">ca-app-pub-6830488664932459/6592190014</string>
 
     <!-- test ad units-->
@@ -121,12 +123,14 @@
     <!--<string name="banner_id_browser">ca-app-pub-3940256099942544/6300978111</string>-->
     <!--<string name="banner_id_gazette">ca-app-pub-3940256099942544/6300978111</string>-->
     <!--<string name="banner_id_seniorvice">ca-app-pub-3940256099942544/6300978111</string>-->
+    <!--<string name="banner_id_notification_summery">ca-app-pub-3940256099942544/6300978111</string>-->
     <!--<string name="forum_interstitial">ca-app-pub-3940256099942544/1033173712</string>-->
+
 
     <!--Notice text-->
     <string name="notification">Select the notifications you want daily</string>
     <string name="residencySetting">1. BSMMU: (For residents only) exam notice for phase A, phase B, results</string>
-    <string name="noticeSetting">2. Diploma, M.Phil admission notice, seat plan, result </string>
+    <string name="noticeSetting">2. Diploma, M.Phil admission notice, seat plan, result and other administrative notice</string>
     <string name="dghsSetting">3. Foundation training orders and other orders from DGHS</string>
     <string name="resultBcsSetting"><b>4. BCS exam:</b> Results and other notice</string>
     <string name="regiDeptSetting"><b>5. Departmental exam:</b> Notify me when online registration starts</string>
@@ -180,8 +184,8 @@
     </string>
     <string name="settingDialog">\nManage your notifications\n</string>
     <string name="vloumeHeading">\বছর</string>
-    <string name="vloumes">\ভলিউম</string>
-    <string name="volumeNavigation">\গেজেট</string>
+    <string name="vloumes">গেজেট</string>
+    <string name="volumeNavigation">পরবর্তী\nপৃষ্ঠা</string>
     <string name="dialogueText">\গেজেট দেখার জন্য এখানে ক্লিক করুন</string>
     <string name="text">\⇦ লিস্ট থেকে বছর নির্বাচন করুন</string>
     <string name="openInBrowser">Links Open in Browser</string>

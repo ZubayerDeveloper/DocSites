@@ -12,8 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,15 +39,14 @@ import zubayer.docsites.activity.ImageViewer;
 import static android.widget.Toast.makeText;
 
 public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
-    ArrayList<String> reply_doc_name,reply_doc_text,reply_user_id, post_reply_time,reply_id,repy_image_url;
-    Activity context;
-    Typeface forum_font;
-    FirebaseDatabase database;
-    DatabaseReference delete_reply_Reference,imageReference;
-    SharedPreferences postIdPreference,myIDpreference;
-    StorageReference storageRef;
-    HashMap<String,Object>test;
-    String postID,myID;
+    private ArrayList<String> reply_doc_name,reply_doc_text,reply_user_id, post_reply_time,reply_id,repy_image_url;
+    private Activity context;
+    private Typeface forum_font;
+    private FirebaseDatabase database;
+    private DatabaseReference delete_reply_Reference,imageReference;
+    private StorageReference storageRef;
+    private String postID;
+    private Animation animation;
     public ReplyAdapter(Activity context,
                         ArrayList<String> reply_doc_name,
                         ArrayList<String> reply_doc_text,
@@ -59,11 +61,10 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         this.reply_id=reply_id;
         this.repy_image_url=repy_image_url;
         this.context=context;
+        animation= AnimationUtils.loadAnimation(context,R.anim.fade_in);
         database= FirebaseDatabase.getInstance();
-        postIdPreference=context.getSharedPreferences("postid",Context.MODE_PRIVATE);
-        postID=postIdPreference.getString("postid",null);
-        test=new HashMap<>();
-        test.put("test","texr");
+        SharedPreferences postIdPreference = context.getSharedPreferences("postid", Context.MODE_PRIVATE);
+        postID= postIdPreference.getString("postid",null);
         forum_font= Typeface.createFromAsset(context.getAssets(),"kalpurush.ttf");
     }
 
@@ -75,7 +76,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ReplyAdapter.VHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ReplyAdapter.VHolder holder, final int position) {
         holder.docName.setText(reply_doc_name.get(position));
         holder.docName.setTypeface(forum_font);
         holder.docText.setText(reply_doc_text.get(position));
@@ -95,8 +96,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         delete_reply_Reference=database.getReference().child("user").child(postID).child("reply");
         imageReference = database.getReference().child("imageReference");
         storageRef = FirebaseStorage.getInstance().getReference("image/");
-        myIDpreference = context.getSharedPreferences("myID",Context.MODE_PRIVATE);
-        myID=myIDpreference.getString("myID",null);
+        SharedPreferences myIDpreference = context.getSharedPreferences("myID", Context.MODE_PRIVATE);
+        String myID = myIDpreference.getString("myID", null);
         holder.replyImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,20 +123,37 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         }else {
             holder.varified.setVisibility(View.GONE);
         }
-        if(reply_user_id.get(position).equals(myID)||myID.equals("1335608633238560")) {
+        if(reply_user_id.get(position).equals(myID)|| myID.equals("1335608633238560")) {
             holder.delete_reply.setVisibility(View.VISIBLE);
             holder.delete_reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    delete_reply_Reference.child(reply_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    animateDelete(holder);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            notifyDataSetChanged();
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            delete_reply_Reference.child(reply_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    notifyDataSetChanged();
+                                }
+                            });
+
+                            storageRef.child(reply_id.get(position)).delete();
+                            imageReference.child(reply_id.get(position)).setValue(null);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
                         }
                     });
 
-                    storageRef.child(reply_id.get(position)).delete();
-                    imageReference.child(reply_id.get(position)).setValue(null);
                 }
             });
         }else {
@@ -154,6 +172,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         CircularImageView pic;
         ImageView replyImage;
         ProgressBar progressBar;
+        RelativeLayout relativeLayout;
         private VHolder(View itemView) {
             super(itemView);
             docName=(TextView)itemView.findViewById(R.id.reply_name);
@@ -163,6 +182,7 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
             varified = (TextView) itemView.findViewById(R.id.varified);
             pic=(CircularImageView)itemView.findViewById(R.id.reply_image);
             replyImage = (ImageView) itemView.findViewById(R.id.replyImage);
+            relativeLayout = (RelativeLayout) itemView.findViewById(R.id.reply_layouts);
             progressBar=(ProgressBar)itemView.findViewById(R.id.reply_layout_progressbar);
         }
     }
@@ -171,6 +191,17 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.VHolder> {
         intent.putExtra("value", inurl);
         context.startActivity(intent);
     }
+    private void animateDelete(VHolder holder) {
+        holder.relativeLayout.startAnimation(animation);
+        holder.docName.startAnimation(animation);
+        holder.docText.startAnimation(animation);
+        holder.postTime.startAnimation(animation);
+        holder.varified.startAnimation(animation);
+        holder.replyImage.startAnimation(animation);
+        holder.pic.startAnimation(animation);
+        holder.progressBar.startAnimation(animation);
+    }
+
 }
 
 

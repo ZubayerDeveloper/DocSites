@@ -1,8 +1,10 @@
 package zubayer.docsites.activity;
 
 import android.app.*;
+import android.graphics.Color;
 import android.os.*;
 import android.content.*;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.design.internal.NavigationMenu;
 import android.webkit.*;
 import android.net.*;
@@ -284,28 +286,11 @@ public class Browser extends Activity {
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
         } else if (urls.contains("download")) {
-            if (Build.VERSION.SDK_INT > 23) {
-                try {
-                    Intent intentNew = new Intent(Intent.ACTION_VIEW, Uri.parse(urls));
-                    startActivity(intentNew);
-                } catch (ActivityNotFoundException e) {
-                    builder = new AlertDialog.Builder(Browser.this);
-                    checkinternet = builder.create();
-                    checkinternet.setCancelable(true);
-                    checkinternet.setMessage("You need to download Google Chrome");
-                    checkinternet.setButton("Download", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, int id) {
-                            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.android.chrome"));
-                            startActivity(i);
-                        }
-                    });
-                    checkinternet.setButton3("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, int id) {
-
-                        }
-                    });
-                    checkinternet.show();
-                }
+            if (Build.VERSION.SDK_INT >23) {
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                builder.setToolbarColor(Color.parseColor("#305168"));
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(this, Uri.parse(urls));
             } else {
                 website.loadUrl(urls);
                 loadProgressBar();

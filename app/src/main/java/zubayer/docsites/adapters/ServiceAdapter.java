@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,39 +29,35 @@ import static android.widget.Toast.makeText;
 
 public class ServiceAdapter extends ArrayAdapter<String> {
 
-    public Typeface font;
-    ArrayList<String> titleArray;
-    ArrayList<String> imageArray;
-    TextView share;
+    private Typeface font;
+    private ArrayList<String> titleArray;
     private Activity context;
 
-
-    public ServiceAdapter(Activity context, ArrayList<String> titles1,ArrayList<String> imageArray) {
+    public ServiceAdapter(Activity context, ArrayList<String> titles1) {
 
         super(context, R.layout.listview2,titles1);
         this.context=context;
         this.titleArray=titles1;
-        this.imageArray=imageArray;
 
         font= Typeface.createFromAsset(context.getAssets(),"kalpurush.ttf");
     }
+    @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-
-        LayoutInflater inflater = context.getLayoutInflater();
-        View row = inflater.inflate(R.layout.customlyst,null,true);
-
-
-        TextView myTitle = (TextView) row.findViewById(R.id.idTitle);
-        TextView copy=(TextView)row.findViewById(R.id.copy) ;
+    public View getView(final int position, View convertView,@NonNull ViewGroup parent) {
+        if(convertView==null) {
+            LayoutInflater inflater = context.getLayoutInflater();
+            convertView = inflater.inflate(R.layout.customlyst, null, true);
+        }
+        TextView myTitle = (TextView) convertView.findViewById(R.id.idTitle);
+        TextView copy=(TextView)convertView.findViewById(R.id.copy) ;
         myTitle.setTypeface(font);
         myTitle.setText(titleArray.get(position));
         myTitle.setTextColor(Color.parseColor("#123456"));
-        share=(TextView)row.findViewById(R.id.ImageView);
+        TextView share = (TextView) convertView.findViewById(R.id.ImageView);
         share.setVisibility(View.GONE);
         copy.setVisibility(View.GONE);
         notifyDataSetChanged();
-        return row;
+        return convertView;
     }
 }
 

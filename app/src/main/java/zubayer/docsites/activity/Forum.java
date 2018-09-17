@@ -155,12 +155,7 @@ public class Forum extends Activity {
         chooser_cardview.setVisibility(View.GONE);
         progressDialog = ProgressDialog.show(this, "", "Connecting to Database...", true, false);
         genetatekeyHash();
-        if (dataconnected()) {
-            facebookLigin();
-        } else {
-            alertMessage("Turn on data", "Try again", "Exit");
-        }
-
+        facebookLigin();
         loadADD();
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -353,7 +348,7 @@ public class Forum extends Activity {
             imageChooser.setVisibility(View.VISIBLE);
             forum_subscription.setVisibility(View.VISIBLE);
         } else {
-            if(edit_text.getText().toString().length()!=0||imageUri!=null) {
+            if (edit_text.getText().toString().length() != 0 || imageUri != null) {
                 alert.setMessage("Discard post?");
                 alert.setButton(DialogInterface.BUTTON_POSITIVE, "Discard", new DialogInterface.OnClickListener() {
                     @Override
@@ -368,7 +363,7 @@ public class Forum extends Activity {
                     }
                 });
                 alert.show();
-            }else {
+            } else {
                 mInterstitialAd.show();
                 super.onBackPressed();
 
@@ -552,8 +547,6 @@ public class Forum extends Activity {
                         perPost_reportCount(snapshot.getKey());
                     }
                 }
-
-                progressDialog.dismiss();
                 getSize();
                 loadReportedIDlist();
                 loadBlocklist();
@@ -685,7 +678,7 @@ public class Forum extends Activity {
                     total_comments_each_post.clear();
                     recyclerView.setAdapter(adapter);
                 }
-
+                progressDialog.dismiss();
             }
 
             @Override
@@ -739,8 +732,9 @@ public class Forum extends Activity {
                     subscribeTopic(facebook_id);
                     myIDpreference.edit().putString("myID", facebook_id).apply();
                     facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
-                    SharedPreferences user_name_preference=getSharedPreferences("myname",Context.MODE_PRIVATE);
-                    user_name_preference.edit().putString("myname",facebook_user_name).apply();
+                    myIDpreference.edit().putString("myName", facebook_user_name).apply();
+                    SharedPreferences user_name_preference = getSharedPreferences("myname", Context.MODE_PRIVATE);
+                    user_name_preference.edit().putString("myname", facebook_user_name).apply();
                     first_name = object.getString("first_name");
                     Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
                     loadForumPost();
@@ -758,30 +752,39 @@ public class Forum extends Activity {
     }
 
     private void facebookLigin() {
-        callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
+        if (dataconnected()) {
+            boolean logged = myIDpreference.getBoolean("logged", false);
+            if (!logged) {
+                callbackManager = CallbackManager.Factory.create();
+                LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
+                LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        myIDpreference.edit().putBoolean("logged", true).apply();
+                        graphRequest();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        progressDialog.dismiss();
+                        alertMessage("You need to log in first", "Try again", "Exit");
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        progressDialog.dismiss();
+                        alertMessage("Log in failed", "Try again", "Exit");
+                        Log.d("error", error.getMessage());
+                        LoginManager.getInstance().logOut();
+                    }
+                });
+            } else {
                 graphRequest();
-
             }
-
-            @Override
-            public void onCancel() {
-                progressDialog.dismiss();
-                alertMessage("You need to log in first", "Try again", "Exit");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                progressDialog.dismiss();
-                alertMessage("Log in failed", "Try again", "Exit");
-                Log.d("error", error.getMessage());
-                LoginManager.getInstance().logOut();
-            }
-        });
-
+        } else {
+            alertMessage("Turn on data", "Try again", "Exit");
+        }
     }
 
     private void postQuery(String current_post_time, String post_text) {
@@ -1063,7 +1066,7 @@ public class Forum extends Activity {
         FirebaseMessaging.getInstance().unsubscribeFromTopic("forum").addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                if (imageUri!=null) {
+                if (imageUri != null) {
                     sendFCMPush(facebook_user_name, "Uploaded an image", postID);
                 } else {
                     sendFCMPush(facebook_user_name, post_text, postID);

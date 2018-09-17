@@ -8,8 +8,7 @@
     android:paddingBottom="5dp"
     android:paddingRight="10dp"
     android:paddingLeft="10dp"
-    android:id="@+id/linearlayout"
-    android:background="#F7EDD0">
+    android:id="@+id/linearlayout">
     <TextView
         android:textSize="18sp"
         android:textColor="#0000ff"

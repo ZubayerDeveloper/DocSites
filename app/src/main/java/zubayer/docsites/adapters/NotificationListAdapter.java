@@ -14,9 +14,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -27,18 +30,17 @@ import zubayer.docsites.activity.Browser;
 import zubayer.docsites.activity.NotificationSummery;
 
 public class NotificationListAdapter extends ArrayAdapter<String> {
-    public Typeface font;
-    ArrayList<String> names, dates,texts, url;
-    ArrayList<Boolean> seen;
-    Activity context;
-    AlertDialog checkinternet;
-    AlertDialog.Builder builder;
+    private Typeface font;
+    private ArrayList<String> names, dates, texts, url, seens;
+    private Context context;
+    private AlertDialog checkinternet;
+    private Animation anim;
 
-    public NotificationListAdapter(Activity context,
+    public NotificationListAdapter(Context context,
                                    ArrayList<String> names,
                                    ArrayList<String> dates,
                                    ArrayList<String> text,
-                                   ArrayList<Boolean> seen,
+                                   ArrayList<String> seens,
                                    ArrayList<String> url) {
 
         super(context, R.layout.card_view, names);
@@ -46,24 +48,28 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
         this.names = names;
         this.dates = dates;
         this.texts = text;
-        this.seen = seen;
+        this.seens = seens;
         this.url = url;
         font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
-        builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         checkinternet = builder.create();
         checkinternet.setCancelable(true);
-        checkinternet.setMessage("Sure you want to delete?");
+        checkinternet.setMessage("Delete notification?");
+        anim= AnimationUtils.loadAnimation(context,R.anim.fade_in);
     }
 
+    @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull final ViewGroup parent) {
-        LayoutInflater inflater = context.getLayoutInflater();
-        View row = inflater.inflate(R.layout.card_view, null);
-        TextView nam = row.findViewById(R.id.name);
-        TextView dat = row.findViewById(R.id.date);
-        TextView delv = row.findViewById(R.id.delv);
-        TextView text = row.findViewById(R.id.text);
-        final LinearLayout linearlayout = row.findViewById(R.id.linearlayout);
+        if (convertView == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            convertView = inflater.inflate(R.layout.card_view, null, true);
+        }
+        final TextView nam = convertView.findViewById(R.id.name);
+        final TextView dat = convertView.findViewById(R.id.date);
+        TextView delv = convertView.findViewById(R.id.delv);
+        final TextView text = convertView.findViewById(R.id.text);
+        final LinearLayout linearlayout = convertView.findViewById(R.id.linearlayout);
         nam.setTypeface(font);
         dat.setTypeface(font);
         text.setTypeface(font);
@@ -71,44 +77,60 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
         dat.setText(dates.get(position));
         text.setText(texts.get(position));
 
-        if (seen.get(position)) {
-            linearlayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        }
-
+        String color =seens.get(position);
+        linearlayout.setBackgroundColor(Color.parseColor(color));
         linearlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                linearlayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                saveSeen(position);
-                browser(url.get(position));
+                seens.remove(position);
+                seens.add(position, "#FFFFFF");
+                saveSeen();
                 notifyDataSetChanged();
+                browser(url.get(position));
             }
         });
         delv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkinternet.setButton("Yes", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
-                        names.remove(position);
-                        dates.remove(position);
-                        texts.remove(position);
-                        seen.remove(position);
-                        url.remove(position);
-                        saveSeen(position);
-                        notifyDataSetChanged();
+                        linearlayout.startAnimation(anim);
+                        anim.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                names.remove(position);
+                                dates.remove(position);
+                                texts.remove(position);
+                                url.remove(position);
+                                seens.remove(position);
+                                saveSeen();
+                                notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+
+
                     }
                 });
-                checkinternet.setButton3("Delete all", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_NEUTRAL, "Delete all", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         names.clear();
                         dates.clear();
                         texts.clear();
-                        seen.clear();
+                        seens.clear();
                         url.clear();
                         notifyDataSetChanged();
                     }
                 });
-                checkinternet.setButton2("No", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                     }
                 });
@@ -117,20 +139,22 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
 
             }
         });
-        return row;
+
+        return convertView;
     }
-    private void saveSeen(int position) {
+
+    private void saveSeen() {
         try {
-            seen.remove(position);
-            seen.add(position,true);
             FileOutputStream write = context.openFileOutput("notificationSeen", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-            arrayoutput.writeObject(seen);
+            arrayoutput.writeObject(seens);
             arrayoutput.close();
             write.close();
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
     public void browser(String inurl) {
         context.startActivity(new Intent(context, Browser.class).putExtra("value", inurl));
     }

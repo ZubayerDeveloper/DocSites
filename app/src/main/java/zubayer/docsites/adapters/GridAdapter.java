@@ -21,14 +21,16 @@ import java.util.ArrayList;
 import zubayer.docsites.R;
 
 public class GridAdapter extends ArrayAdapter<String> {
-    ArrayList<String> heading,description,contents;
-    Activity context;
-    LayoutInflater inflater;
-    public Typeface font;
-    int density;
+    private  ArrayList<String> heading,description,contents;
+    private Activity context;
+    private Typeface font;
+    private int density;
 
-    public GridAdapter(@NonNull Activity context, ArrayList<String> heading,ArrayList<String> description,ArrayList<String> contents) {
-        super(context, R.layout.grid,heading);
+    public GridAdapter(@NonNull Activity context,
+                       ArrayList<String> heading,
+                       ArrayList<String> description,
+                       ArrayList<String> contents) {
+        super(context, R.layout.recycer_grid,heading);
         this.heading=heading;
         this.description=description;
         this.contents=contents;
@@ -40,12 +42,17 @@ public class GridAdapter extends ArrayAdapter<String> {
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        inflater=context.getLayoutInflater();
-        View row=inflater.inflate(R.layout.grid,null,true);
-        TextView title=(TextView)row.findViewById(R.id.bsmmu1);
-        TextView elaborate=(TextView)row.findViewById(R.id.bsmmu2);
-        TextView hint=(TextView)row.findViewById(R.id.bsmmu3);
-        ImageView backgroundImage=(ImageView)row.findViewById(R.id.backgroundImage);
+        if(convertView==null) {
+            LayoutInflater inflater = context.getLayoutInflater();
+            convertView = inflater.inflate(R.layout.recycer_grid, null, true);
+        }
+        TextView title=(TextView)convertView.findViewById(R.id.bsmmu1);
+        TextView elaborate=(TextView)convertView.findViewById(R.id.bsmmu2);
+        TextView hint=(TextView)convertView.findViewById(R.id.bsmmu3);
+        ImageView backgroundImage=(ImageView)convertView.findViewById(R.id.backgroundImage);
+        ImageView background=(ImageView)convertView.findViewById(R.id.background);
+        Glide.with(context).load("https://firebasestorage.googleapis.com/v0/b/docsites-c20b8.appspot.com/o/uiImage%2F1536944761914?alt=media&token=2e60f3e7-d347-44f3-b0e2-798cf2bfd7cd").into(background);
+
         title.setText(heading.get(position));
 
         if (density < DisplayMetrics.DENSITY_HIGH) {
@@ -59,27 +66,6 @@ public class GridAdapter extends ArrayAdapter<String> {
         elaborate.setTypeface(font);
         hint.setTypeface(font);
         switch (position){
-//            case 0:
-//                Glide.with(context).load(R.drawable.bsmmulogo).into(backgroundImage);
-//                break;
-//            case 1: Glide.with(context).load(R.drawable.bcpslogo).into(backgroundImage);
-//                break;
-//            case 2: Glide.with(context).load(R.drawable.dghslogo).into(backgroundImage);
-//                break;
-//            case 3: Glide.with(context).load(R.drawable.govtlogo).into(backgroundImage);
-//                break;
-//            case 4: Glide.with(context).load(R.drawable.govtlogo).into(backgroundImage);
-//                break;
-//            case 5: Glide.with(context).load(R.drawable.govtlogo).into(backgroundImage);
-//                break;
-//            case 6: Glide.with(context).load(R.drawable.dgfplogo).into(backgroundImage);
-//                break;
-//            case 7: Glide.with(context).load(R.drawable.dlplogo).into(backgroundImage);
-//                break;
-//            case 8: Glide.with(context).load(R.drawable.bmdclogo).into(backgroundImage);
-//                break;
-//            case 9: Glide.with(context).load(R.drawable.medicallogo).into(backgroundImage);
-//                break;
             case 0:
                 Glide.with(context).load("https://firebasestorage.googleapis.com/v0/b/docsites-c20b8.appspot.com/o/uiImage%2F1536342915895?alt=media&token=274a9d19-64f1-410e-8da7-924e4f9f60cf").into(backgroundImage);
                 break;
@@ -103,6 +89,6 @@ public class GridAdapter extends ArrayAdapter<String> {
                 break;
         }
 
-        return row;
+        return convertView;
     }
 }

@@ -18,8 +18,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,11 +56,12 @@ import zubayer.docsites.activity.Reply;
 
 import static android.widget.Toast.makeText;
 
-public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolder>{
-    ArrayList<String> doc_name, doc_text, post_Time, user_id,postImageUrl,post_id,commentCount;
-    Activity context;
-    Typeface fonts;
-    String myID,myName;
+public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolder> {
+    private ArrayList<String> doc_name, doc_text, post_Time, user_id, postImageUrl, post_id, commentCount;
+    private Activity context;
+    private Typeface fonts;
+    private String myID, myName;
+    private Animation animation;
     public LollipopAdapter(Activity context,
                            ArrayList<String> doc_name,
                            ArrayList<String> user_id,
@@ -74,6 +78,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         this.post_id = post_id;
         this.commentCount = commentCount;
         this.context = context;
+        animation= AnimationUtils.loadAnimation(context,R.anim.fade_in);
         fonts = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
         SharedPreferences myIDpreference = context.getSharedPreferences("myID", Context.MODE_PRIVATE);
         myID = myIDpreference.getString("myID", null);
@@ -87,7 +92,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final VHolder holder, final int position) {
         holder.docName.setText(doc_name.get(position));
         holder.docName.setTypeface(fonts);
 
@@ -105,13 +110,13 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         } else {
             holder.docText.setText(doc_text.get(position));
         }
-        if(doc_text.get(position).length()<100){
+        if (doc_text.get(position).length() < 100) {
             holder.docText.setTextSize(27);
         }
         holder.docText.setTypeface(fonts);
         holder.postTime.setText(post_Time.get(position));
         holder.postTime.setTypeface(fonts);
-        try{
+        try {
             holder.reply.setText(commentCount.get(position));
             if (user_id.get(position).equals(myID) || user_id.get(position).equals("1335608633238560")) {
                 holder.report.setVisibility(View.GONE);
@@ -124,7 +129,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                 holder.varified.setVisibility(View.GONE);
             }
             if (user_id.get(position).equals(myID)) {
-                FirebaseDatabase database=FirebaseDatabase.getInstance();
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
                 final DatabaseReference rootReference = database.getReference().child("user");
                 final StorageReference storageRef = FirebaseStorage.getInstance().getReference("image/");
                 final DatabaseReference imageReference = database.getReference().child("imageReference");
@@ -133,42 +138,57 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                     @Override
                     public void onClick(View v) {
                         AlertDialog dialog;
-                        AlertDialog.Builder builder=new AlertDialog.Builder(context);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         dialog = builder.create();
                         dialog.setMessage("Delete post?");
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-                                rootReference.child(post_id.get(position)).child("reply").addValueEventListener(new ValueEventListener() {
+                                animateDelete(holder);
+                                animation.setAnimationListener(new Animation.AnimationListener() {
                                     @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    public void onAnimationStart(Animation animation) {
 
-                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            storageRef.child(snapshot.getKey()).delete();
-                                            imageReference.child(snapshot.getKey()).setValue(null);
-                                        }
+                                    }
 
-                                        rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onAnimationEnd(Animation animation) {
+                                        rootReference.child(post_id.get(position)).child("reply").addValueEventListener(new ValueEventListener() {
                                             @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                notifyDataSetChanged();
-                                                myToast("Post deleted");
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                    storageRef.child(snapshot.getKey()).delete();
+                                                    imageReference.child(snapshot.getKey()).setValue(null);
+                                                }
+
+                                                rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        notifyDataSetChanged();
+                                                        myToast("Post deleted");
+                                                    }
+                                                });
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                             }
                                         });
 
+
+                                        storageRef.child(post_id.get(position)).delete();
+                                        imageReference.child(post_id.get(position)).setValue(null);
+                                        notifyDataSetChanged();
                                     }
 
                                     @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    public void onAnimationRepeat(Animation animation) {
 
                                     }
                                 });
-
-
-                                storageRef.child(post_id.get(position)).delete();
-                                imageReference.child(post_id.get(position)).setValue(null);
-
                             }
                         });
                         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
@@ -184,7 +204,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
                 holder.delete_post.setVisibility(View.GONE);
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             context.startActivity(new Intent(context, Forum.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
         try {
@@ -193,7 +213,8 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
             if (postImageUrl.get(position).equals("blank")) {
                 holder.progressBar.setVisibility(View.GONE);
             }
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
         holder.docText.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -212,7 +233,7 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
             @Override
             public void onClick(View v) {
                 graphRequest();
-                final FirebaseDatabase database=FirebaseDatabase.getInstance();
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 final DatabaseReference blockReference = database.getReference().child("user").child(post_id.get(position));
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 AlertDialog dialog = builder.create();
@@ -262,9 +283,23 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
         holder.postImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context,ImageViewer.class).putExtra("showImage",postImageUrl.get(position)));
+                context.startActivity(new Intent(context, ImageViewer.class).putExtra("showImage", postImageUrl.get(position)));
             }
         });
+    }
+
+    private void animateDelete(VHolder holder) {
+        holder.relativeLayout.startAnimation(animation);
+        holder.cardView.startAnimation(animation);
+        holder.docName.startAnimation(animation);
+        holder.docText.startAnimation(animation);
+        holder.postTime.startAnimation(animation);
+        holder.delete_post.startAnimation(animation);
+        holder.varified.startAnimation(animation);
+        holder.report.startAnimation(animation);
+        holder.postImage.startAnimation(animation);
+        holder.pic.startAnimation(animation);
+        holder.progressBar.startAnimation(animation);
     }
 
     @Override
@@ -273,17 +308,18 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
     }
 
     public class VHolder extends RecyclerView.ViewHolder {
-        TextView docName,docText, postTime,delete_post,report,reply,varified;
+        TextView docName, docText, postTime, delete_post, report, reply, varified;
         CircularImageView pic;
         CardView cardView;
         ImageView postImage;
         ProgressBar progressBar;
+        RelativeLayout relativeLayout;
 
         private VHolder(View itemView) {
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.lollipopcardview);
             docName = (TextView) itemView.findViewById(R.id.user_name);
-            pic=(CircularImageView)itemView.findViewById(R.id.user_image);
+            pic = (CircularImageView) itemView.findViewById(R.id.user_image);
             docText = (TextView) itemView.findViewById(R.id.user_text);
             postTime = (TextView) itemView.findViewById(R.id.time);
             postImage = (ImageView) itemView.findViewById(R.id.postImage);
@@ -292,12 +328,13 @@ public class LollipopAdapter extends RecyclerView.Adapter<LollipopAdapter.VHolde
             report = (TextView) itemView.findViewById(R.id.report);
             reply = (TextView) itemView.findViewById(R.id.reply);
             varified = (TextView) itemView.findViewById(R.id.lollipopvarified);
+            relativeLayout = (RelativeLayout) itemView.findViewById(R.id.lollipoop);
         }
     }
 
     private void intentPutExtra(int position) {
         Intent intent = new Intent(context, Reply.class);
-        if(post_id.get(position)!=null) {
+        if (post_id.get(position) != null) {
             intent.putExtra("postID", post_id.get(position));
             context.startActivity(intent);
         }

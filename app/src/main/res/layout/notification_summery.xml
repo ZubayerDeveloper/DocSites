@@ -23,7 +23,7 @@
         android:layout_centerHorizontal="true"
         android:gravity="center"
         ads:adSize="SMART_BANNER"
-        ads:adUnitId="ca-app-pub-6830488664932459/4886118189" />
+        ads:adUnitId="@string/banner_id_notification_summery" />
 
     <io.github.yavski.fabspeeddial.FabSpeedDial
         android:id="@+id/fabsummery"

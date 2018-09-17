@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.firebase.jobdispatcher.JobParameters;
 import com.firebase.jobdispatcher.JobService;
@@ -35,6 +36,7 @@ import zubayer.docsites.R;
 import zubayer.docsites.activity.Browser;
 import zubayer.docsites.activity.MainActivity;
 import zubayer.docsites.activity.Settings;
+import zubayer.docsites.adapters.NotificationListAdapter;
 
 public class MyFirebseJobDidpatcher extends JobService {
     String btxt, url, paramUrl, paramTagForText, paramTagForLink, paramLink, previousSaved,
@@ -49,9 +51,9 @@ public class MyFirebseJobDidpatcher extends JobService {
     ArrayList<String> notificationTexts = new ArrayList<>();
     ArrayList<String> notificationUrls = new ArrayList<>();
     ArrayList<String> missedNotifications = new ArrayList<>();
-    ArrayList<Boolean> notificationSeen = new ArrayList<>();
+    ArrayList<String> notificationSeens = new ArrayList<>();
     NotificationParser notificationParser;
-    int n=0;
+    int n = 0;
 
     @Override
     public void onCreate() {
@@ -67,6 +69,7 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     @Override
     public boolean onStartJob(final JobParameters job) {
+
         notificationParser = new NotificationParser() {
             @Override
             protected void onPostExecute(Void aVoid) {
@@ -96,14 +99,13 @@ public class MyFirebseJobDidpatcher extends JobService {
         @Override
         protected Void doInBackground(Void... voids) {
             driveViewer = "https://docs.google.com/viewer?url=";
-
+            preferences = getSharedPreferences("notification", Context.MODE_PRIVATE);
             try {
-                preferences = getSharedPreferences("residencySetting", 0);
+
                 checked = preferences.getBoolean("residencyChecked", false);
 
                 if (checked) {
                     bsmmuTag();
-                    preferences = getSharedPreferences("residency", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("residency", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -124,12 +126,10 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("noticeSetting", 0);
                 checked = preferences.getBoolean("noticeChecked", false);
                 if (checked) {
                     bsmmuNotice();
                     executableTag();
-                    preferences = getSharedPreferences("bsmmuNotice", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("bsmmuNotice", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -138,24 +138,43 @@ public class MyFirebseJobDidpatcher extends JobService {
                         addToMissedNotificaton("M.phil, Diploma exam notice");
                         saveMissedNotificationList();
                     } else {
-                        addToSymmery(btxt, url, "BSMMU Notice", notificationDate());
+                        addToSymmery(btxt, url, "BSMMU academic Notice", notificationDate());
                         saveState();
                         finalNotificationCount();
                         myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         myIntent.putExtra("value", url);
                         pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 1, myIntent, 0);
-                        notification("channel_1", "notice", "BSMMU Notice", btxt, 1);
+                        notification("channel_1", "notice", "BSMMU academic Notice", btxt, 1);
                         preferences.edit().putString("bsmmuNotice", btxt).apply();
 
                     }
+                    bsmmuNoticeAdministrative();
+                    executableTag();
+                    previousSaved = preferences.getString("bsmmuNoticeAdmin", null);
+
+                    if (btxt.equalsIgnoreCase(previousSaved)) {
+//                    summeryIntent.putExtra("1",getString(R.string.residencySetting));
+                    } else if (btxt.length() == 0) {
+                        addToMissedNotificaton("Administrative notice");
+                        saveMissedNotificationList();
+                    } else {
+                        addToSymmery(btxt, url, "BSMMU Administrative Notice", notificationDate());
+                        saveState();
+                        finalNotificationCount();
+                        myIntent = new Intent(MyFirebseJobDidpatcher.this, Browser.class);
+                        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        myIntent.putExtra("value", url);
+                        pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 199, myIntent, 0);
+                        notification("channel_199", "notice", "BSMMU Administrative Notice", btxt, 199);
+                        preferences.edit().putString("bsmmuNoticeAdmin", btxt).apply();
+
+                    }
                 }
-                preferences = getSharedPreferences("dghsSetting", 0);
                 checked = preferences.getBoolean("dghsChecked", false);
                 if (checked) {
                     dghsHomeLinks();
                     executableTag();
-                    preferences = getSharedPreferences("dghs", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dghs", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -176,12 +195,10 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("resultDeptSetting", 0);
                 checked = preferences.getBoolean("resultDeptChecked", false);
                 if (checked) {
                     resultDept();
                     executableTag();
-                    preferences = getSharedPreferences("dept", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dept", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -202,12 +219,10 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("resultSeniorSetting", 0);
                 checked = preferences.getBoolean("resultSeniorChecked", false);
                 if (checked) {
                     resultSenior();
                     executableTag();
-                    preferences = getSharedPreferences("senior", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("senior", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -228,12 +243,10 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("reultBcsSetting", 0);
                 checked = preferences.getBoolean("reultBcsChecked", false);
                 if (checked) {
                     resultBCS();
                     executableTag();
-                    preferences = getSharedPreferences("bcs", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("bcs", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -254,7 +267,6 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("regiDeptSetting", 0);
                 checked = preferences.getBoolean("regiDeptChecked", false);
                 if (checked) {
                     regiDeptStarts();
@@ -271,14 +283,11 @@ public class MyFirebseJobDidpatcher extends JobService {
                         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 61, myIntent, 0);
                         notification("channel_61", "deptstarts", "Departmental Exam", getString(R.string.regideptStarted), 61);
-
-                        preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
                         preferences.edit().remove("regideptExpired").apply();
 
                     }
                     regiDeptExpire();
                     executableTag();
-                    preferences = getSharedPreferences("regideptExpired", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("deptExpired", null);
                     if (btxt.length() == 0) {
                         addToMissedNotificaton("Departmental exam online registration");
@@ -299,7 +308,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                         }
                     }
                 }
-                preferences = getSharedPreferences("regiSeniorSetting", 0);
                 checked = preferences.getBoolean("regiSeniorChecked", false);
                 if (checked) {
                     regiSeniorStsrts();
@@ -317,13 +325,11 @@ public class MyFirebseJobDidpatcher extends JobService {
                         pendingIntent = PendingIntent.getActivity(MyFirebseJobDidpatcher.this, 71, myIntent, 0);
                         notification("channel_71", "seniorstarts", "Senior Scale Exam", getString(R.string.regiseniortext), 71);
 
-                        preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                         preferences.edit().remove("regiSeniorExpired").apply();
 
                     }
                     regiSeniorExpre();
                     executableTag();
-                    preferences = getSharedPreferences("regiSeniorExpired", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("seniorExpired", null);
                     if (btxt.length() == 0) {
                         addToMissedNotificaton("Senior scale exam online registration");
@@ -344,13 +350,11 @@ public class MyFirebseJobDidpatcher extends JobService {
                         }
                     }
                 }
-                preferences = getSharedPreferences("assistantSurgeonSetting", 0);
                 checked = preferences.getBoolean("assistantSurgeonChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.assistantSurgeon);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("assistantSurgeon", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("assistantSurgeon", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -371,13 +375,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("juniorConsultantSetting", 0);
                 checked = preferences.getBoolean("juniorConsultantChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.juniorConsultant);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("juniorConsultant", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("juniorConsultant", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -398,13 +400,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("seniorConsultantSetting", 0);
                 checked = preferences.getBoolean("seniorConsultantChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.seniorConsultant);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("seniorConsultant", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("seniorConsultant", null);
 
 
@@ -426,13 +426,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("assistantProfessorSetting", 0);
                 checked = preferences.getBoolean("assistantProfessorChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.assistantProfessor);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("assistantProfessor", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("assistantProfessor", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -453,13 +451,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("associateProfessorSetting", 0);
                 checked = preferences.getBoolean("associateProfessorChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.associateProfessor);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("associateProfessorSetting", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("associateProfessor", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -480,13 +476,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("professorSetting", 0);
                 checked = preferences.getBoolean("professorChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.professor);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("professor", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("professor", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -507,13 +501,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("civilSurgeonSetting", 0);
                 checked = preferences.getBoolean("civilSurgeonChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.civilSurgeon);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("civilSurgeon", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("civilSurgeon", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -534,13 +526,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("adhocSetting", 0);
                 checked = preferences.getBoolean("adhocChecked", false);
                 if (checked) {
                     filterContent = getString(R.string.adhoc);
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("adhoc", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("adhoc", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -561,14 +551,12 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("mohfwSetting", 0);
                 checked = preferences.getBoolean("mohfwChecked", false);
                 if (checked) {
                     filterContent = "Per";
                     filterContent2 = "aaaaaaa";
                     executeService();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("mohfw", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("mohfw", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -589,13 +577,11 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     }
                 }
-                preferences = getSharedPreferences("deputationSetting", 0);
                 checked = preferences.getBoolean("deputationChecked", false);
                 if (checked) {
                     filterContent = "ME-";
                     executeDeputation();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("deputation", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("deputation", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -617,13 +603,11 @@ public class MyFirebseJobDidpatcher extends JobService {
                     }
                 }
 
-                preferences = getSharedPreferences("leaveSetting", 0);
                 checked = preferences.getBoolean("leaveChecked", false);
                 if (checked) {
                     filterContent = "HR-";
                     executeLeave();
                     serviceConfirmTag();
-                    preferences = getSharedPreferences("leave", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("leave", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -645,13 +629,11 @@ public class MyFirebseJobDidpatcher extends JobService {
                     }
                 }
 
-                preferences = getSharedPreferences("ccdSetting", 0);
                 checked = preferences.getBoolean("ccdChecked", false);
 
                 if (checked) {
                     executeCCD1();
                     executableTag();
-                    preferences = getSharedPreferences("ccd", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("ccd", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -673,7 +655,6 @@ public class MyFirebseJobDidpatcher extends JobService {
 
                     executeCCD2();
                     executableTag();
-                    preferences = getSharedPreferences("ccd2", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("ccd2", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -694,13 +675,11 @@ public class MyFirebseJobDidpatcher extends JobService {
                     }
                 }
 
-                preferences = getSharedPreferences("dgfpSetting", 0);
                 checked = preferences.getBoolean("dgfpChecked", false);
 
                 if (checked) {
                     dgfpOrder();
                     executableTag();
-                    preferences = getSharedPreferences("dgfp1", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dgfp1", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -721,7 +700,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                     }
                     dgfpNotice();
                     executableTag();
-                    preferences = getSharedPreferences("dgfp2", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dgfp2", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -742,7 +720,6 @@ public class MyFirebseJobDidpatcher extends JobService {
                     }
                     dgfpNOC();
                     executableTag();
-                    preferences = getSharedPreferences("dgfp3", Context.MODE_PRIVATE);
                     previousSaved = preferences.getString("dgfp3", null);
 
                     if (btxt.equalsIgnoreCase(previousSaved)) {
@@ -763,7 +740,7 @@ public class MyFirebseJobDidpatcher extends JobService {
                     }
                 }
 
-                } catch (Exception ignored) {
+            } catch (Exception ignored) {
             }
             return null;
         }
@@ -772,11 +749,18 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     private void bsmmuNotice() {
         paramUrl = "http://www.bsmmu.edu.bd";
-        paramTagForText = "h3";
+        paramTagForText = "#tab4 h3";
         paramTagForLink = "h3 a";
         paramLink = "abs:href";
         textMin = 0;
-        linkBegin = 0;
+    }
+
+    private void bsmmuNoticeAdministrative() {
+        paramUrl = "http://www.bsmmu.edu.bd";
+        paramTagForText = "#tab2 h3";
+        paramTagForLink = "h3 a";
+        paramLink = "abs:href";
+        textMin = 0;
     }
 
     private void dghsHomeLinks() {
@@ -785,7 +769,6 @@ public class MyFirebseJobDidpatcher extends JobService {
         paramTagForLink = "#system a";
         paramLink = "abs:href";
         textMin = 0;
-        linkBegin = 0;
     }
 
     private void regiDeptExpire() {
@@ -822,7 +805,6 @@ public class MyFirebseJobDidpatcher extends JobService {
         paramTagForLink = "tr a";
         paramLink = "abs:href";
         textMin = 1;
-        linkBegin = 0;
     }
 
     private void resultDept() {
@@ -831,7 +813,6 @@ public class MyFirebseJobDidpatcher extends JobService {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        linkBegin = 1;
     }
 
     private void resultSenior() {
@@ -840,28 +821,27 @@ public class MyFirebseJobDidpatcher extends JobService {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        linkBegin = 1;
     }
 
     private void executeService() {
         paramUrl = "http://mohfw.gov.bd/index.php?option=com_content&view=article&id=111:bcs-health&catid=38:bcs-health&Itemid=&lang=en";
         paramTagForText = "#wrapper table tbody tr td table tbody tr td table tbody tr";
         paramLink = "abs:href";
-        textMin = 12;
+        textMin = 0;
     }
 
     private void executeDeputation() {
         paramUrl = "http://www.mohfw.gov.bd/index.php?option=com_content&view=article&id=61%3Amedical-education&catid=46%3Amedical-education&Itemid=&lang=en";
         paramTagForText = "#wrapper table tbody tr td table tbody tr td table tbody tr";
         paramLink = "abs:href";
-        textMin = 29;
+        textMin = 0;
     }
 
     private void executeLeave() {
         paramUrl = "http://mohfw.gov.bd/index.php?option=com_content&view=article&id=121%3Aearn-leave&catid=101%3Aearn-leave-ex-bangladesh-leave&Itemid=&lang=en";
         paramTagForText = "#wrapper table tbody tr td table tbody tr td table tbody tr";
         paramLink = "abs:href";
-        textMin = 29;
+        textMin = 0;
     }
 
     private void executeCCD1() {
@@ -901,14 +881,14 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     public void serviceConfirmTag() {
         try {
-            btxt="";
-            url="";
+            btxt = "";
+            url = "";
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
             int textMax = links.size();
             for (int i = textMin; i <= textMax; i++) {
                 Element link = links.get(i);
-                if(link.text().contains(filterContent)){
+                if (link.text().contains(filterContent)) {
                     btxt = link.text();
                     url = link.select("a").attr(paramLink);
                     break;
@@ -921,8 +901,8 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     public void executableTag() {
         try {
-            btxt="";
-            url="";
+            btxt = "";
+            url = "";
             Document doc = Jsoup.connect(paramUrl).get();
             Elements links = doc.select(paramTagForText);
             Element link = links.get(textMin);
@@ -933,10 +913,10 @@ public class MyFirebseJobDidpatcher extends JobService {
         }
     }
 
-    private  void bsmmuTag() {
+    private void bsmmuTag() {
         try {
-            btxt="";
-            url="";
+            btxt = "";
+            url = "";
             Document doc = Jsoup.connect("http://bsmmu.edu.bd/").get();
             Elements links = doc.select("a");
             linkBegin = 0;
@@ -949,11 +929,9 @@ public class MyFirebseJobDidpatcher extends JobService {
                     break;
                 }
             }
-            for (int i = linkBegin; i < linkBegin+1; i++) {
-                Element link = links.get(i);
+                Element link = links.get(linkBegin);
                 btxt = link.text();
                 url = link.select("a").attr("abs:href");
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1060,7 +1038,7 @@ public class MyFirebseJobDidpatcher extends JobService {
 
     private void saveState() {
         try {
-            FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationHeading", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             arrayoutput.writeObject(notificationHeadings);
             arrayoutput.close();
@@ -1069,7 +1047,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationDates", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationDate", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             arrayoutput.writeObject(notificationDates);
             arrayoutput.close();
@@ -1077,7 +1055,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationTexts", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationText", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             arrayoutput.writeObject(notificationTexts);
             arrayoutput.close();
@@ -1085,7 +1063,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationUrls", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationUrl", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             arrayoutput.writeObject(notificationUrls);
             arrayoutput.close();
@@ -1093,11 +1071,54 @@ public class MyFirebseJobDidpatcher extends JobService {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationSeen", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationColor", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
-            arrayoutput.writeObject(notificationSeen);
+            arrayoutput.writeObject(notificationSeens);
             arrayoutput.close();
             write.close();
+        } catch (Exception e) {
+        }
+    }
+
+    private void readNotification() {
+        try {
+            FileInputStream read = openFileInput("notificationHeading");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationHeadings = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileInputStream read = openFileInput("notificationDate");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationDates = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileInputStream read = openFileInput("notificationText");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationTexts = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileInputStream read = openFileInput("notificationUrl");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationUrls = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
+        } catch (Exception e) {
+        }
+        try {
+            FileInputStream read = openFileInput("notificationColor");
+            ObjectInputStream readarray = new ObjectInputStream(read);
+            notificationSeens = (ArrayList<String>) readarray.readObject();
+            readarray.close();
+            read.close();
         } catch (Exception e) {
         }
     }
@@ -1115,7 +1136,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         notificationUrls.add(0, notificationUrl);
         notificationDates.add(0, notificationDate);
         notificationHeadings.add(0, notificationHeading);
-        notificationSeen.add(0,false);
+        notificationSeens.add(0, "#F7EDD0");
     }
 
     private void clearArray() {
@@ -1123,50 +1144,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         notificationUrls.clear();
         notificationDates.clear();
         notificationHeadings.clear();
-        notificationSeen.clear();
-    }
-
-    private void readNotification() {
-        try {
-            FileInputStream read = openFileInput("notificationHeadings");
-            ObjectInputStream readarray = new ObjectInputStream(read);
-            notificationHeadings = (ArrayList<String>) readarray.readObject();
-            readarray.close();
-            read.close();
-        } catch (Exception e) {
-        }
-        try {
-            FileInputStream read = openFileInput("notificationDates");
-            ObjectInputStream readarray = new ObjectInputStream(read);
-            notificationDates = (ArrayList<String>) readarray.readObject();
-            readarray.close();
-            read.close();
-        } catch (Exception e) {
-        }
-        try {
-            FileInputStream read = openFileInput("notificationTexts");
-            ObjectInputStream readarray = new ObjectInputStream(read);
-            notificationTexts = (ArrayList<String>) readarray.readObject();
-            readarray.close();
-            read.close();
-        } catch (Exception e) {
-        }
-        try {
-            FileInputStream read = openFileInput("notificationUrls");
-            ObjectInputStream readarray = new ObjectInputStream(read);
-            notificationUrls = (ArrayList<String>) readarray.readObject();
-            readarray.close();
-            read.close();
-        } catch (Exception e) {
-        }
-        try {
-            FileInputStream read = openFileInput("notificationSeen");
-            ObjectInputStream readarray = new ObjectInputStream(read);
-            notificationSeen = (ArrayList<Boolean>) readarray.readObject();
-            readarray.close();
-            read.close();
-        } catch (Exception e) {
-        }
+        notificationSeens.clear();
     }
 
     private void addToMissedNotificaton(String missedNotification) {

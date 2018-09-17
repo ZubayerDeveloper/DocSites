@@ -48,8 +48,7 @@ import static android.widget.Toast.makeText;
 public class NotificationSummery extends Activity {
     AlertDialog Dialog, checkinternet;
     AlertDialog.Builder builder;
-    ArrayList<String> dates, headings, urls, texts, missedNotifications, falseurls, notificatinCount;
-    ArrayList<Boolean> seen;
+    ArrayList<String> dates,seens, headings, urls, texts, missedNotifications, falseurls, notificatinCount;
     View m;
     NotificationListAdapter adaptate;
     ListView notificationList;
@@ -70,7 +69,7 @@ public class NotificationSummery extends Activity {
         dates = new ArrayList<>();
         texts = new ArrayList<>();
         urls = new ArrayList<>();
-        seen = new ArrayList<>();
+        seens = new ArrayList<>();
         missedNotifications = new ArrayList<>();
         falseurls = new ArrayList<>();
         notificatinCount = new ArrayList<>();
@@ -85,13 +84,8 @@ public class NotificationSummery extends Activity {
         equilifyNotificationCount();
         notificationList = findViewById(R.id.notificationListView);
         notificationList.setSelector(R.drawable.bcsdept);
-        adaptate = new NotificationListAdapter(this, headings, dates, texts, seen, urls);
-        if (seen.size() == 0) {
-            for (int i = 0; i < headings.size(); i++) {
-                seen.add(false);
-            }
-            saveState();
-        }
+        adaptate = new NotificationListAdapter(this, headings, dates, texts, seens, urls);
+
         notificationList.setAdapter(adaptate);
 
         fabspeed = (FabSpeedDial) findViewById(R.id.fabsummery);
@@ -151,7 +145,7 @@ public class NotificationSummery extends Activity {
 
     public void readNotification() {
         try {
-            FileInputStream read = openFileInput("notificationHeadings");
+            FileInputStream read = openFileInput("notificationHeading");
             ObjectInputStream readarray = new ObjectInputStream(read);
             headings = (ArrayList<String>) readarray.readObject();
             readarray.close();
@@ -159,7 +153,7 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileInputStream read = openFileInput("notificationDates");
+            FileInputStream read = openFileInput("notificationDate");
             ObjectInputStream readarray = new ObjectInputStream(read);
             dates = (ArrayList<String>) readarray.readObject();
             readarray.close();
@@ -167,7 +161,7 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileInputStream read = openFileInput("notificationTexts");
+            FileInputStream read = openFileInput("notificationText");
             ObjectInputStream readarray = new ObjectInputStream(read);
             texts = (ArrayList<String>) readarray.readObject();
             readarray.close();
@@ -175,7 +169,7 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileInputStream read = openFileInput("notificationUrls");
+            FileInputStream read = openFileInput("notificationUrl");
             ObjectInputStream readarray = new ObjectInputStream(read);
             urls = (ArrayList<String>) readarray.readObject();
             readarray.close();
@@ -183,9 +177,9 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileInputStream read = openFileInput("notificationSeen");
+            FileInputStream read = openFileInput("notificationColor");
             ObjectInputStream readarray = new ObjectInputStream(read);
-            seen = (ArrayList<Boolean>) readarray.readObject();
+            seens = (ArrayList<String>) readarray.readObject();
             readarray.close();
             read.close();
         } catch (Exception e) {
@@ -206,7 +200,7 @@ public class NotificationSummery extends Activity {
 
     public void saveState() {
         try {
-            FileOutputStream write = openFileOutput("notificationHeadings", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationHeading", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             limitArray(headings);
             arrayoutput.writeObject(headings);
@@ -216,7 +210,7 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationDates", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationDate", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             limitArray(dates);
             arrayoutput.writeObject(dates);
@@ -225,7 +219,7 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationTexts", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationText", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             limitArray(texts);
             arrayoutput.writeObject(texts);
@@ -234,7 +228,7 @@ public class NotificationSummery extends Activity {
         } catch (Exception e) {
         }
         try {
-            FileOutputStream write = openFileOutput("notificationUrls", Context.MODE_PRIVATE);
+            FileOutputStream write = openFileOutput("notificationUrl", Context.MODE_PRIVATE);
             ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
             limitArray(urls);
             arrayoutput.writeObject(urls);
@@ -242,7 +236,13 @@ public class NotificationSummery extends Activity {
             write.close();
         } catch (Exception e) {
         }
-
+        try {
+            FileOutputStream write = openFileOutput("notificationColor", Context.MODE_PRIVATE);
+            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+            arrayoutput.writeObject(seens);
+            arrayoutput.close();
+            write.close();
+        }catch (Exception e){}
     }
 
     private void setFont() {

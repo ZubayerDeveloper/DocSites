@@ -20,10 +20,7 @@ import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -62,7 +59,6 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Iterator;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
@@ -130,12 +126,12 @@ public class MainActivity extends Activity {
         initializeWidgetVariable();
         createGridView();
         setFont(this, this);
-//        adjustScreenSize();
+        checkApplaunched();
         manageSettings();
         loadButtonOptions();
         createAdView();
         checkStoragePermission();
-        checkApplaunched();
+
         stopFirebaseJobDispatcher();
         setFirebaseJobDispatcher(300, 21600);
         setListView();
@@ -218,7 +214,6 @@ public class MainActivity extends Activity {
         forum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
                 if (queryID.size() != 0) {
                     preferences.edit().putString("query", queryID.get(0)).apply();
                 }
@@ -228,7 +223,6 @@ public class MainActivity extends Activity {
         forumhelpNotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
                 preferences.edit().putString("query", queryID.get(0)).apply();
                 startActivity(new Intent(MainActivity.this, Forum.class));
             }
@@ -390,7 +384,7 @@ public class MainActivity extends Activity {
     }
 
     public void ccdExecutableTag(String Url, String TagForText, String tagForLink,
-                                 String Attr, int begin, int end, int lBegin, int lEnd) {
+                                 String Attr, int begin, int end) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -418,7 +412,7 @@ public class MainActivity extends Activity {
     }
 
     public void ccdExecutableTag2(String Url, String TagForText, String tagForLink,
-                                  String Attr, int begin, int end, int lBegin, int lEnd) {
+                                  String Attr, int begin, int end) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -441,7 +435,7 @@ public class MainActivity extends Activity {
     }
 
     public void bpscTag(String Url, String TagForText, String tagForLink,
-                        String Attr, int begin, int end, int lBegin, int lEnd) {
+                        String Attr, int begin, int end) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -459,14 +453,12 @@ public class MainActivity extends Activity {
                 buttonTexts.add(btxt);
                 urls.add(url);
             }
-            buttonTexts.add(position, newline);
-            urls.add(position, newline);
         } catch (Exception e) {
         }
     }
 
     public void executableTag(String Url, String TagForText, String tagForLink,
-                              String Attr, int begin, int end, int lBegin, int lEnd) {
+                              String Attr, int begin, int end) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -484,14 +476,12 @@ public class MainActivity extends Activity {
                 buttonTexts.add(btxt);
                 urls.add(url);
             }
-            buttonTexts.add(position, newline);
-            urls.add(position, newline);
         } catch (Exception e) {
         }
     }
 
     public void dghsTag(String Url, String TagForText, String tagForLink,
-                        String Attr, int begin, int end, int lBegin, int lEnd) {
+                        String Attr, int begin, int end) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -514,7 +504,7 @@ public class MainActivity extends Activity {
     }
 
     public void dghsTag2(String Url, String TagForText, String tagForLink,
-                         String Attr, int begin, int end, int lBegin, int lEnd) {
+                         String Attr, int begin, int end) {
 
         paramUrl = Url;
         paramTagForLink = tagForLink;
@@ -536,9 +526,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void serviceConfirmTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end,
-                                  int lBegin, int lEnd) {
-        Url = "http://mohfw.gov.bd/index.php?option=com_content&view=article&id=111:bcs-health&catid=38:bcs-health&Itemid=&lang=en";
+    public void serviceConfirmTag(String TagForText, String tagForLink, String Attr, int begin, int end) {
+        String Url = "http://mohfw.gov.bd/index.php?option=com_content&view=article&id=111:bcs-health&catid=38:bcs-health&Itemid=&lang=en";
         paramTagForLink = tagForLink;
         paramTagForText = TagForText;
         paramLink = Attr;
@@ -570,7 +559,7 @@ public class MainActivity extends Activity {
     class CcdParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            ccdExecutableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            ccdExecutableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -611,12 +600,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            ccdNotices1();
                         }
                     });
 
@@ -634,7 +631,7 @@ public class MainActivity extends Activity {
     class CcdParser2 extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            ccdExecutableTag2(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            ccdExecutableTag2(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -677,12 +674,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            ccdNotices2();
                         }
                     });
 
@@ -697,7 +702,7 @@ public class MainActivity extends Activity {
     class BpscParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            bpscTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            bpscTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -741,12 +746,19 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
-                            url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            loadBpscOptions();
+                            list.setAdapter(adapter);
                         }
                     });
 
@@ -764,7 +776,7 @@ public class MainActivity extends Activity {
     class HtmlParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            executableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            executableTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -807,7 +819,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -815,7 +827,14 @@ public class MainActivity extends Activity {
                             Dialog.dismiss();
                         }
                     });
-
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            bsmmuNotice();
+                        }
+                    });
                     try {
                         checkinternet.show();
                     } catch (Exception e) {
@@ -861,13 +880,13 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void b) {
-            super.onPostExecute(b);
+
             try {
                 if (!dataconnected()) {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -891,12 +910,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            residency();
                         }
                     });
 
@@ -908,6 +935,7 @@ public class MainActivity extends Activity {
                 }
             } catch (Exception e) {
             }
+            super.onPostExecute(b);
         }
     }
 
@@ -975,12 +1003,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            admission();
                         }
                     });
 
@@ -998,7 +1034,7 @@ public class MainActivity extends Activity {
     class DghsParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            dghsTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            dghsTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -1042,12 +1078,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            dghsHomeLinks();
                         }
                     });
 
@@ -1065,7 +1109,7 @@ public class MainActivity extends Activity {
     class DghsParser2 extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            dghsTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            dghsTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -1109,12 +1153,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            dghsHomeLinks2();
                         }
                     });
 
@@ -1132,7 +1184,7 @@ public class MainActivity extends Activity {
     class DghsParser3 extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            dghsTag2(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            dghsTag2(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -1175,12 +1227,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not Responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            dghsHomeLinks3();
                         }
                     });
 
@@ -1198,7 +1258,7 @@ public class MainActivity extends Activity {
     class ServiceParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            serviceConfirmTag(paramUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            serviceConfirmTag(paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -1241,12 +1301,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Website is not responding");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
                             url = null;
                             Dialog.dismiss();
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            executeService();
                         }
                     });
 
@@ -1362,12 +1430,20 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setMessage("Website is not responding");
                     checkinternet.setCancelable(false);
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
+                            url = null;
                             Dialog.dismiss();
-                            btxt = null;
+                        }
+                    });
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, int id) {
+                            buttonTexts.clear();
+                            urls.clear();
+                            url = null;
+                            bcpsGuideline();
                         }
                     });
                     try {
@@ -1456,10 +1532,18 @@ public class MainActivity extends Activity {
         paramLink = "abs:href";
         textMin = 0;
         textMax = 34;
-        linkBegin = 0;
-        linkEnd = 34;
-        position = 15;
-        newline = "★Administrative notice★";
+        back.execute();
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void bsmmuNoticeAdministrative() {
+        back = new HtmlParser();
+        paramUrl = "http://www.bsmmu.edu.bd";
+        paramTagForText = "#tab2 h3";
+        paramTagForLink = "h3 a";
+        paramLink = "abs:href";
+        textMin = 0;
+        textMax = 34;
         back.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1492,10 +1576,7 @@ public class MainActivity extends Activity {
         paramTagForLink = "a";
         paramLink = "abs:href";
         textMin = 2;
-        linkBegin = 2;
         textMax = 4;
-        linkEnd = 4;
-        position = 15;
         back.execute();
         bcps.execute();
         progressBar.setVisibility(View.VISIBLE);
@@ -1545,11 +1626,7 @@ public class MainActivity extends Activity {
         paramTagForLink = "#system h1 a";
         paramLink = "abs:href";
         textMin = 0;
-        linkBegin = 0;
         textMax = 17;
-        linkEnd = 17;
-        position = 19;
-        newline = "★★★";
         dghsParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1585,11 +1662,7 @@ public class MainActivity extends Activity {
         paramTagForLink = "#system a";
         paramLink = "abs:href";
         textMin = 0;
-        linkBegin = 0;
         textMax = 4;
-        linkEnd = 4;
-        position = 5;
-        newline = "★★★";
         back.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1626,11 +1699,7 @@ public class MainActivity extends Activity {
         paramTagForLink = "h5 a";
         paramLink = "abs:href";
         textMin = 1;
-        linkBegin = 0;
         textMax = 7;
-        linkEnd = 7;
-        position = 8;
-        newline = "";
         back.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1641,10 +1710,8 @@ public class MainActivity extends Activity {
         paramTagForText = "a";
         paramTagForLink = "a";
         paramLink = "abs:href";
-        textMin = linkBegin = 15;
-        textMax = linkEnd = 20;
-        position = 7;
-        newline = "wah";
+        textMin =15;
+        textMax = 20;
         back.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1656,10 +1723,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 122;
-        linkBegin = 0;
-        linkEnd = 123;
-        position = 125;
         bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1671,11 +1734,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 40;
-        linkBegin = 0;
-        linkEnd = 40;
-        position = 42;
-        newline = "★ Click to download pdf:";
         bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1687,11 +1745,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 38;
-        linkBegin = 0;
-        linkEnd = 38;
-        position = 40;
-        newline = "★ Click to download pdf:";
         bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1703,11 +1756,7 @@ public class MainActivity extends Activity {
         paramTagForLink = "#box-5 a";
         paramLink = "abs:href";
         textMin = 77;
-        linkBegin = 0;
         textMax = 81;
-        linkEnd = 7;
-        position = 9;
-        newline = "★ Click to dowload pdf file:";
         back.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1740,7 +1789,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "table tbody tr td table tbody tr td table tbody tr a";
         paramLink = "abs:href";
         textMin = 0;
-        linkBegin = 0;
         serviceParser.execute();
     }
 
@@ -1781,9 +1829,7 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 9;
-        linkBegin = 9;
         textMax = 14;
-        linkEnd = 14;
         ccdParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1796,9 +1842,6 @@ public class MainActivity extends Activity {
         paramLink = "abs:href";
         textMin = 2;
         textMax = 3;
-        linkBegin = 2;
-        linkEnd = 3;
-        position = 5;
         ccdParser2.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1810,10 +1853,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 122;
-        linkBegin = 1;
-        linkEnd = 123;
-        position = 125;
         bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1825,10 +1864,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 122;
-        linkBegin = 1;
-        linkEnd = 123;
-        position = 125;
         bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1840,10 +1875,6 @@ public class MainActivity extends Activity {
         paramTagForLink = "tr td a";
         paramLink = "abs:href";
         textMin = 1;
-        textMax = 122;
-        linkBegin = 0;
-        linkEnd = 123;
-        position = 125;
         bpscParser.execute();
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -1858,48 +1889,33 @@ public class MainActivity extends Activity {
         toast.show();
     }
 
-    public void selectDeselect(String preferenceName, String putBooleanName) {
-        SharedPreferences settings = getSharedPreferences(preferenceName, 0);
-        settings.edit().putBoolean(putBooleanName, true).apply();
+    public void selectDeselect(String putBooleanName) {
+        preferences.edit().putBoolean(putBooleanName, true).apply();
     }
 
     public void selectAll() {
-        selectDeselect("residencySetting", "residencyChecked");
-        selectDeselect("noticeSetting", "noticeChecked");
-        selectDeselect("dghsSetting", "dghsChecked");
-        selectDeselect("reultBcsSetting", "reultBcsChecked");
-        selectDeselect("resultDeptSetting", "resultDeptChecked");
-        selectDeselect("resultSeniorSetting", "resultSeniorChecked");
-        selectDeselect("regiDeptSetting", "regiDeptChecked");
-        selectDeselect("regiSeniorSetting", "regiSeniorChecked");
-        selectDeselect("assistantSurgeonSetting", "assistantSurgeonChecked");
-        selectDeselect("juniorConsultantSetting", "juniorConsultantChecked");
-        selectDeselect("seniorConsultantSetting", "seniorConsultantChecked");
-        selectDeselect("assistantProfessorSetting", "assistantProfessorChecked");
-        selectDeselect("associateProfessorSetting", "associateProfessorChecked");
-        selectDeselect("professorSetting", "professorChecked");
-        selectDeselect("civilSurgeonSetting", "civilSurgeonChecked");
-        selectDeselect("adhocSetting", "adhocChecked");
-        selectDeselect("mohfwSetting", "mohfwChecked");
-        selectDeselect("deputationSetting", "deputationChecked");
-        selectDeselect("dgfpSetting", "dgfpChecked");
-        selectDeselect("ccdSetting", "ccdChecked");
-        selectDeselect("leaveSetting", "leaveChecked");
-        selectDeselect("appLaunched", "appLaunchedchecked");
-    }
-
-    private void adjustScreenSize() {
-        int density = getResources().getDisplayMetrics().densityDpi;
-        if (density >= DisplayMetrics.DENSITY_XXHIGH) {
-            gridView.setHorizontalSpacing(22);
-            gridView.setVerticalSpacing(22);
-        } else if (density < DisplayMetrics.DENSITY_HIGH) {
-            gridView.setHorizontalSpacing(5);
-            gridView.setVerticalSpacing(5);
-        } else {
-            gridView.setHorizontalSpacing(10);
-            gridView.setVerticalSpacing(10);
-        }
+        selectDeselect("residencyChecked");
+        selectDeselect("noticeChecked");
+        selectDeselect("dghsChecked");
+        selectDeselect("reultBcsChecked");
+        selectDeselect( "resultDeptChecked");
+        selectDeselect( "resultSeniorChecked");
+        selectDeselect("regiDeptChecked");
+        selectDeselect( "regiSeniorChecked");
+        selectDeselect("assistantSurgeonChecked");
+        selectDeselect("juniorConsultantChecked");
+        selectDeselect("seniorConsultantChecked");
+        selectDeselect("assistantProfessorChecked");
+        selectDeselect("associateProfessorChecked");
+        selectDeselect( "professorChecked");
+        selectDeselect("civilSurgeonChecked");
+        selectDeselect("adhocChecked");
+        selectDeselect("mohfwChecked");
+        selectDeselect("deputationChecked");
+        selectDeselect( "dgfpChecked");
+        selectDeselect( "ccdChecked");
+        selectDeselect("leaveChecked");
+        selectDeselect("appLaunchedchecked");
     }
 
     private void loadButtonHeading() {
@@ -1959,14 +1975,12 @@ public class MainActivity extends Activity {
         checkinternet.setMessage(getString(R.string.settingDialog));
         checkinternet.setButton("Go to setting", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
-                preferences = getSharedPreferences("wentToSetting", 0);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("wentToSetting", true).apply();
                 Intent settingIntent = new Intent(MainActivity.this, Settings.class);
                 startActivity(settingIntent);
             }
         });
-        preferences = getSharedPreferences("wentToSetting", 0);
         checkpop = preferences.getBoolean("wentToSetting", false);
         if (checkpop) {
 
@@ -1977,7 +1991,7 @@ public class MainActivity extends Activity {
 
     private void checkApplaunched() {
         versionCode = BuildConfig.VERSION_CODE;
-        preferences = getSharedPreferences("appLaunched", 0);
+        preferences = getSharedPreferences("notification", Context.MODE_PRIVATE);
         applaunched = preferences.getBoolean("appLaunchedchecked", false);
         if (applaunched) {
         } else {
@@ -2012,6 +2026,14 @@ public class MainActivity extends Activity {
                     back.cancel(true);
                     bcps.cancel(true);
                     serviceParser.cancel(true);
+                    parsebsmmu.cancel(true);
+                    parsebsmmu2.cancel(true);
+                    ccdParser.cancel(true);
+                    ccdParser2.cancel(true);
+                    dghsParser.cancel(true);
+                    dghsParser2.cancel(true);
+                    dghsParser3.cancel(true);
+                    bpscParser.cancel(true);
                 } catch (Exception e) {
                 }
             }
@@ -2124,9 +2146,14 @@ public class MainActivity extends Activity {
                         Dialog.show();
                         break;
                     case 4:
-                        bsmmuCourseDuration();
+                        buttonTexts.clear();
+                        bsmmuNoticeAdministrative();
+                        Dialog.show();
                         break;
                     case 5:
+                        bsmmuCourseDuration();
+                        break;
+                    case 6:
                         courseInstitutions();
                         break;
                 }
@@ -2428,7 +2455,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void readNotificationCount() {
+    public void readNotificationCount() {
         try {
             SharedPreferences oldsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
             oldNotificatinSize = oldsize.getInt("finalsize", 0);
@@ -2502,7 +2529,6 @@ public class MainActivity extends Activity {
                     queryname.add(0, snapshot.child("first_name").getValue(String.class));
                 }
 
-                SharedPreferences preferences = getSharedPreferences("newQuery", Context.MODE_PRIVATE);
                 queryNotification = preferences.getString("query", null);
                 if (!queryID.get(0).equals(queryNotification) && queryID.size() != 0) {
                     forumhelpNotify.setVisibility(View.VISIBLE);

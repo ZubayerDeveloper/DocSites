@@ -18,8 +18,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +30,8 @@ import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -58,17 +63,17 @@ import zubayer.docsites.activity.Reply;
 import static android.widget.Toast.makeText;
 
 public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
-    ArrayList<String> doc_name, doc_text, post_Time, user_id, post_id, reply_preview, reply_preview_name,
+    private  ArrayList<String> doc_name, doc_text, post_Time, user_id, post_id, reply_preview, reply_preview_name,
             replier_id, commentCount, postImageUrl, replyImageUrl;
-    Activity context;
-    Typeface forum_font;
-    SharedPreferences myIDpreference;
-    String myID, myName;
-    FirebaseDatabase database;
-    DatabaseReference rootReference, blockReference, imageReference;
-    StorageReference storageRef;
-    AlertDialog dialog;
-    AlertDialog.Builder builder;
+    private Activity context;
+    private Typeface forum_font;
+    private String myID, myName;
+    private FirebaseDatabase database;
+    private DatabaseReference rootReference, blockReference, imageReference;
+    private StorageReference storageRef;
+    private AlertDialog dialog;
+    private AlertDialog.Builder builder;
+    private Animation animation;
 
     public ForumAdapter(Activity context,
                         ArrayList<String> doc_name,
@@ -93,11 +98,10 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         this.commentCount = commentCount;
         this.postImageUrl = postImageUrl;
         this.replyImageUrl = replyImageUrl;
-
         this.context = context;
-
+        animation= AnimationUtils.loadAnimation(context,R.anim.fade_in);
         forum_font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
-        myIDpreference = context.getSharedPreferences("myID", Context.MODE_PRIVATE);
+        SharedPreferences myIDpreference = context.getSharedPreferences("myID", Context.MODE_PRIVATE);
         myID = myIDpreference.getString("myID", null);
 
         database = FirebaseDatabase.getInstance();
@@ -339,36 +343,52 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
                         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Delete", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                animateDelete(holder);
 
-                                rootReference.child(post_id.get(position)).child("reply").addValueEventListener(new ValueEventListener() {
+                                animation.setAnimationListener(new Animation.AnimationListener() {
                                     @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    public void onAnimationStart(Animation animation) {
 
-                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            storageRef.child(snapshot.getKey()).delete();
-                                            imageReference.child(snapshot.getKey()).setValue(null);
-                                        }
+                                    }
 
-                                        rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onAnimationEnd(Animation animation) {
+                                        rootReference.child(post_id.get(position)).child("reply").addValueEventListener(new ValueEventListener() {
                                             @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                notifyDataSetChanged();
-                                                myToast("Post deleted");
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                    storageRef.child(snapshot.getKey()).delete();
+                                                    imageReference.child(snapshot.getKey()).setValue(null);
+                                                }
+
+                                                rootReference.child(post_id.get(position)).setValue(null).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                                        myToast("Post deleted");
+                                                    }
+                                                });
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
                                             }
                                         });
 
+
+                                        storageRef.child(post_id.get(position)).delete();
+                                        imageReference.child(post_id.get(position)).setValue(null);
+                                        notifyDataSetChanged();
                                     }
 
                                     @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    public void onAnimationRepeat(Animation animation) {
 
                                     }
                                 });
-
-
-                                storageRef.child(post_id.get(position)).delete();
-                                imageReference.child(post_id.get(position)).setValue(null);
-
                             }
                         });
                         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
@@ -387,6 +407,34 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         } catch (Exception e) {
             context.startActivity(new Intent(context, Forum.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         }
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        if(position%2==0) {
+//            holder.mAdView.setVisibility(View.VISIBLE);
+//            holder.mAdView.loadAd(adRequest);
+//        }else {
+            holder.mAdView.setVisibility(View.GONE);
+//        }
+    }
+
+    private void animateDelete(VHolder holder) {
+        holder.relativeLayout.startAnimation(animation);
+        holder.cardView.startAnimation(animation);
+        holder.docName.startAnimation(animation);
+        holder.docText.startAnimation(animation);
+        holder.postTime.startAnimation(animation);
+        holder.delete_post.startAnimation(animation);
+        holder.preview_reply.startAnimation(animation);
+        holder.preview_reply_name.startAnimation(animation);
+        holder.varified.startAnimation(animation);
+        holder.varified_reply.startAnimation(animation);
+        holder.block.startAnimation(animation);
+        holder.comment_count.startAnimation(animation);
+        holder.report.startAnimation(animation);
+        holder.postImage.startAnimation(animation);
+        holder.replyImage.startAnimation(animation);
+        holder.pic.startAnimation(animation);
+        holder.preview_pic.startAnimation(animation);
+        holder.progressBar.startAnimation(animation);
     }
 
     private void intentPutExtra(int position) {
@@ -411,6 +459,8 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
         CardView cardView;
         ImageView postImage, replyImage;
         ProgressBar progressBar;
+        AdView mAdView;
+        RelativeLayout relativeLayout;
 
         private VHolder(View itemView) {
             super(itemView);
@@ -431,6 +481,8 @@ public class ForumAdapter extends RecyclerView.Adapter<ForumAdapter.VHolder> {
             pic = (CircularImageView) itemView.findViewById(R.id.user_image);
             preview_pic = (CircularImageView) itemView.findViewById(R.id.reply_preview_image);
             progressBar = (ProgressBar) itemView.findViewById(R.id.forum_layout_progressbar);
+            mAdView = (AdView) itemView.findViewById(R.id.adViewCard);
+            relativeLayout = (RelativeLayout) itemView.findViewById(R.id.forum_layouts);
         }
     }
 

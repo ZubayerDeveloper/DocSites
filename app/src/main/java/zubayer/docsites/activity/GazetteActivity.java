@@ -44,7 +44,6 @@ public class GazetteActivity extends Activity {
     MonthParser monthParser;
     ResultParser resultParser;
     View m;
-    private AdView mAdView;
     String btxt, url, urlText, yearUrl, yearUrlNext, monthUrl, yearName, monthName, resultUrl, paramTagForText,
             paramTagForLink, paramLink, filterContent, message, examName, pdfFilter, driveViewer;
     int i, textMin, textMax, linkBegin, linkEnd, aa, resultMin, resulttMax, reslinkBegin, reslinkEnd;
@@ -71,7 +70,7 @@ public class GazetteActivity extends Activity {
                 checkinternet.setCancelable(false);
                 checkinternet.setButton("Wait", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
-                        if(yearArray.isEmpty()) {
+                        if (yearArray.isEmpty()) {
                             progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading list of gazette years...", true, true);
                         }
                     }
@@ -84,7 +83,8 @@ public class GazetteActivity extends Activity {
                 checkinternet.setMessage("List of gazette years loading is in progress...");
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
 
             }
         });
@@ -121,14 +121,14 @@ public class GazetteActivity extends Activity {
                     checkinternet.setMessage("Something went wrong, try again");
                     try {
                         checkinternet.show();
-                    }catch (Exception ex){}
+                    } catch (Exception ex) {
+                    }
                 }
             }
         });
     }
 
-    public void yearExecutableTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end,
-                                  int lBegin, int lEnd) {
+    public void yearExecutableTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end) {
 
         yearUrl = Url;
         paramTagForLink = tagForLink;
@@ -156,8 +156,7 @@ public class GazetteActivity extends Activity {
         }
     }
 
-    public void monthExecutableTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end,
-                                   int lBegin, int lEnd) {
+    public void monthExecutableTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end) {
 
         monthUrl = Url;
         paramTagForLink = tagForLink;
@@ -185,8 +184,7 @@ public class GazetteActivity extends Activity {
         }
     }
 
-    public void resultExecutableTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end,
-                                    int lBegin, int lEnd) {
+    public void resultExecutableTag(String Url, String TagForText, String tagForLink, String Attr, int begin, int end) {
         try {
             Url = it.next();
         } catch (Exception e) {
@@ -226,13 +224,13 @@ public class GazetteActivity extends Activity {
     class YearParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            yearExecutableTag(yearUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            yearExecutableTag(yearUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
         @Override
         protected void onCancelled() {
-            if (yearArray!=null&&yearUrls!=null) {
+            if (yearArray != null && yearUrls != null) {
                 yearArray.clear();
                 yearUrls.clear();
             }
@@ -242,35 +240,49 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, int id) {
-                    }
-                });
-
-                try {
-                    checkinternet.show();
-                }catch (Exception e){}
-            }else if (btxt != null) {
-                yearUrl = yearUrlNext;
-                executeYearNext();
-                btxt = null;
-            } else {
-                checkinternet = builder.create();
-                checkinternet.setCancelable(false);
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         progressDialog.dismiss();
                         loadYearAgain();
                     }
                 });
-                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
+            } else if (btxt != null) {
+                executeYearNext();
+                btxt = null;
+            } else {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Reload", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        progressDialog.dismiss();
+                        loadYearAgain();
+                    }
+                });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+
+                try {
+                    checkinternet.show();
+                } catch (Exception e) {
+                }
             }
         }
     }
@@ -278,13 +290,13 @@ public class GazetteActivity extends Activity {
     class YearNextParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            yearExecutableTag(yearUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            yearExecutableTag(yearUrlNext, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
         @Override
         protected void onCancelled() {
-            if (yearArray!=null&&yearUrls!=null) {
+            if (yearArray != null && yearUrls != null) {
                 yearArray.clear();
                 yearUrls.clear();
             }
@@ -294,37 +306,50 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         progressDialog.dismiss();
                         loadYearAgain();
                     }
                 });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
 
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
-            }else if (btxt != null) {
+                } catch (Exception e) {
+                }
+            } else if (btxt != null) {
                 yearList.setAdapter(yearAdapter);
                 progressDialog.dismiss();
                 resultArray.add(getString(R.string.text));
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Reload", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         progressDialog.dismiss();
                         loadYearAgain();
                     }
                 });
-                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
         }
     }
@@ -332,7 +357,7 @@ public class GazetteActivity extends Activity {
     class MonthParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            monthExecutableTag(monthUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax, linkBegin, linkEnd);
+            monthExecutableTag(monthUrl, paramTagForText, paramTagForLink, paramLink, textMin, textMax);
             return null;
         }
 
@@ -344,11 +369,17 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Try again", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        progressDialog.dismiss();
+                        executeMonth();
+                    }
+                });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE,"Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         progressDialog.dismiss();
                     }
@@ -356,8 +387,9 @@ public class GazetteActivity extends Activity {
 
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
-            }else if (btxt != null) {
+                } catch (Exception e) {
+                }
+            } else if (btxt != null) {
                 progressDialog.dismiss();
                 it = monthUrls.iterator();
                 name = monthArray.iterator();
@@ -366,16 +398,23 @@ public class GazetteActivity extends Activity {
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Reload", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         progressDialog.dismiss();
                         loadYearAgain();
                     }
                 });
-                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
         }
     }
@@ -383,7 +422,7 @@ public class GazetteActivity extends Activity {
     class ResultParser extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            resultExecutableTag(resultUrl, paramTagForText, paramTagForLink, paramLink, resultMin, resulttMax, reslinkBegin, reslinkEnd);
+            resultExecutableTag(resultUrl, paramTagForText, paramTagForLink, paramLink, resultMin, resulttMax);
             return null;
         }
 
@@ -397,21 +436,30 @@ public class GazetteActivity extends Activity {
         @Override
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
-            if(!dataconnected()){
+            if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
                 checkinternet.setMessage("Check your network connection");
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Try again", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
+                        progressDialog.dismiss();
+                        executeResult();
+                    }
+                });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE,"Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        progressDialog.dismiss();
                     }
                 });
 
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
-            }else if (btxt != null) {
+                } catch (Exception e) {
+                }
+            } else if (btxt != null) {
                 resultList.setAdapter(resultAdapter);
                 progressDialog.dismiss();
+                btxt=null;
                 if (it.hasNext()) {
                     checkConnectivity();
                 } else {
@@ -424,27 +472,37 @@ public class GazetteActivity extends Activity {
                         });
                         try {
                             checkinternet.show();
-                        }catch (Exception e){}
+                        } catch (Exception e) {
+                        }
                     }
                 }
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
-                checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Reload", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        progressDialog.dismiss();
+                        executeResult();
+                    }
+                });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE,"Close", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, int id) {
                         progressDialog.dismiss();
                     }
                 });
-                checkinternet.setMessage("Website is not responding");
+
                 try {
                     checkinternet.show();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
         }
     }
 
     public void executeYear() {
-        pareseYear=new YearParser();
+        yearUrl = "http://www.dpp.gov.bd/bgpress/bangla/index.php/document/extraordinary_gazettes/285";
+        pareseYear = new YearParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -456,7 +514,8 @@ public class GazetteActivity extends Activity {
     }
 
     public void executeYearNext() {
-        yearNextParser=new YearNextParser();
+        yearUrlNext = yearUrl + "/publication_date/12";
+        yearNextParser = new YearNextParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -468,8 +527,8 @@ public class GazetteActivity extends Activity {
     }
 
     private void executeMonth() {
-        monthParser=new MonthParser();
-        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading gazette months for " + yearName, true, true);
+        monthParser = new MonthParser();
+        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "This may take some time, please wait..", true, true);
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "abs:href";
@@ -488,8 +547,8 @@ public class GazetteActivity extends Activity {
             e.printStackTrace();
         }
 
-        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Searching gazettes on " + monthName, true, true);
-        resultParser=new ResultParser();
+        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Searching " + monthName, true, true);
+        resultParser = new ResultParser();
         paramTagForText = "#MyResult tr";
         paramTagForLink = "#MyResult tr a";
         paramLink = "href";
@@ -499,29 +558,11 @@ public class GazetteActivity extends Activity {
     }
 
     private void loadYearAgain() {
-        if (yearArray.isEmpty()) {
-            checkinternet = builder.create();
-            checkinternet.setMessage("You need to reload again");
-            checkinternet.setCancelable(false);
-            checkinternet.setButton("Reload", new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, int id) {
-                    progressDialog.dismiss();
-                    yearUrls.clear();
-                    yearArray.clear();
-                    progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading gazette years...", true, false);
-                    executeYear();
-                }
-            });
-            checkinternet.setButton3("Exit", new DialogInterface.OnClickListener() {
-                public void onClick(final DialogInterface dialog, int id) {
-                    finish();
-                }
-            });
-
-            try {
-                checkinternet.show();
-            }catch (Exception e){}
-        }
+        progressDialog.dismiss();
+        yearUrls.clear();
+        yearArray.clear();
+        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading gazette years...", true, false);
+        executeYear();
     }
 
     private void browser(String inurl) {
@@ -536,13 +577,13 @@ public class GazetteActivity extends Activity {
             yearNextParser.cancel(true);
             monthParser.cancel(true);
             resultParser.cancel(true);
-            yearAdapter=null;
-            yearArray=null;
-            yearList=null;
-            yearUrls=null;
-            monthArray=null;
-            monthUrls=null;
-            resultAdapter=null;
+            yearAdapter = null;
+            yearArray = null;
+            yearList = null;
+            yearUrls = null;
+            monthArray = null;
+            monthUrls = null;
+            resultAdapter = null;
             finish();
         } catch (Exception e) {
         }
@@ -563,7 +604,7 @@ public class GazetteActivity extends Activity {
             checkinternet = builder.create();
             checkinternet.setCancelable(false);
             checkinternet.setMessage("Data connection interrupted!");
-            checkinternet.setButton("Reload", new DialogInterface.OnClickListener() {
+            checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Reload", new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, int id) {
                     progressDialog.dismiss();
                     resultArray.clear();
@@ -574,6 +615,10 @@ public class GazetteActivity extends Activity {
                     executeMonth();
                 }
             });
+            checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE,"Close", new DialogInterface.OnClickListener() {
+                public void onClick(final DialogInterface dialog, int id) {
+                }
+            });
             checkinternet.setButton3("close", new DialogInterface.OnClickListener() {
                 public void onClick(final DialogInterface dialog, int id) {
                     progressDialog.dismiss();
@@ -582,7 +627,8 @@ public class GazetteActivity extends Activity {
 
             try {
                 checkinternet.show();
-            }catch (Exception e){}
+            } catch (Exception e) {
+            }
             progressDialog.dismiss();
         } else {
             executeResult();
@@ -590,7 +636,7 @@ public class GazetteActivity extends Activity {
     }
 
     private void createAddView() {
-        mAdView = (AdView) findViewById(R.id.adViewGazette);
+        AdView mAdView = (AdView) findViewById(R.id.adViewGazette);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
@@ -616,8 +662,6 @@ public class GazetteActivity extends Activity {
         yearAdapter = new GazetteAdapter(GazetteActivity.this, yearArray);
         resultAdapter = new MyAdapter(GazetteActivity.this, resultArray, listUrls);
         driveViewer = "https://docs.google.com/viewer?url=";
-        yearUrl = "http://www.dpp.gov.bd/bgpress/bangla/index.php/document/extraordinary_gazettes/285";
-        yearUrlNext = yearUrl + "/publication_date/12";
         monthParser = new MonthParser();
         pareseYear = new YearParser();
         yearNextParser = new YearNextParser();
@@ -636,15 +680,15 @@ public class GazetteActivity extends Activity {
     }
 
     private boolean dataconnected() {
-        boolean dataConnected=false;
-        boolean wifiIsAvailable,mobileDataIsAvailable;
+        boolean dataConnected = false;
+        boolean wifiIsAvailable, mobileDataIsAvailable;
         try {
             ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
             wifiIsAvailable = networkInfo.isConnected();
             networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
             mobileDataIsAvailable = networkInfo.isConnected();
-            dataConnected=wifiIsAvailable||mobileDataIsAvailable;
+            dataConnected = wifiIsAvailable || mobileDataIsAvailable;
         } catch (Exception e) {
             e.printStackTrace();
         }

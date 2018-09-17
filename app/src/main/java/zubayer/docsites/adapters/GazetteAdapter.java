@@ -17,8 +17,8 @@ import zubayer.docsites.R;
 
 public class GazetteAdapter extends ArrayAdapter<String> {
 
-    public Typeface font;
-    ArrayList<String> titleArray;
+    private Typeface font;
+    private ArrayList<String> titleArray;
     private Activity context;
 
 
@@ -30,19 +30,19 @@ public class GazetteAdapter extends ArrayAdapter<String> {
 
         font = Typeface.createFromAsset(context.getAssets(), "kalpurush.ttf");
     }
-
+    @NonNull
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-
-        LayoutInflater inflater = context.getLayoutInflater();
-        View row = inflater.inflate(R.layout.gadgette_layout, null, true);
-
-        TextView myTitle = (TextView) row.findViewById(R.id.idTitle);
+    public View getView(final int position, View convertView,@NonNull ViewGroup parent) {
+        if(convertView==null) {
+            LayoutInflater inflater = context.getLayoutInflater();
+            convertView = inflater.inflate(R.layout.gadgette_layout, null, true);
+        }
+        TextView myTitle = (TextView) convertView.findViewById(R.id.idTitle);
         myTitle.setTypeface(font);
         myTitle.setText(titleArray.get(position));
         myTitle.setTextColor(Color.parseColor("#0689BA"));
         notifyDataSetChanged();
-        return row;
+        return convertView;
     }
 
     @Override
