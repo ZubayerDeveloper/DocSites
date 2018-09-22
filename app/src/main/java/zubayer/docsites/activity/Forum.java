@@ -31,6 +31,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,6 +85,7 @@ import java.util.Map;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import me.anwarshahriar.calligrapher.Calligrapher;
+import zubayer.docsites.BuildConfig;
 import zubayer.docsites.adapters.BlockListAdapter;
 import zubayer.docsites.adapters.ForumAdapter;
 import zubayer.docsites.adapters.ForumNotificationAdapter;
@@ -118,13 +120,14 @@ public class Forum extends Activity {
     FirebaseDatabase database;
     DatabaseReference rootReference, reply_preview_reference, blockReference, imageReference;
     HashMap<String, Object> post;
+    ProgressBar progressBar;
     ProgressDialog progressDialog;
     String facebook_id, facebook_user_name, postID, blocked, reported, post_ID_reference_for_Imge,
             replierID, replierName, facebook_post_time, replyImage, post_image_name, first_name,
             post_text;
 
     StorageReference storageRef;
-    TextView imageChooser, del_chooser, notifications, my_profile;
+    TextView imageChooser, del_chooser, notifications, my_profile, writeNotify, writeforeceUpdate;
     Uri imageUri;
     long postSize, reportSize;
     boolean clicked = false;
@@ -143,24 +146,68 @@ public class Forum extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
-        setContentView(R.layout.forum);
+        setContentView(R.layout.activity_forum);
 
         initialize();
         getreportSize();
         setFont(this, this);
         chooser_cardview.setVisibility(View.GONE);
-        progressDialog = ProgressDialog.show(this, "", "Connecting to Database...", true, false);
         genetatekeyHash();
         facebookLigin();
         loadADD();
+        writeNotify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edit_text.getText().toString().length() != 0) {
+                    alert.setMessage("Notify user about udate?");
+                    alert.setButton(DialogInterface.BUTTON_POSITIVE, "Notify user", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DatabaseReference wrieNotify = database.getReference();
+                            wrieNotify.child("docNotifyMessage").setValue(edit_text.getText().toString());
+                            wrieNotify.child("docNotifyVersion").setValue(BuildConfig.VERSION_CODE);
+                        }
+                    });
+                    alert.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    alert.show();
+                }
+            }
+        });
+        writeforeceUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (edit_text.getText().toString().length() != 0) {
+                    alert.setMessage("Force user to update?");
+                    alert.setButton(DialogInterface.BUTTON_POSITIVE, "Force update", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            DatabaseReference wrieNotify = database.getReference();
+                            wrieNotify.child("docUpdateMessage").setValue(edit_text.getText().toString());
+                            wrieNotify.child("docUpdateVersion").setValue(BuildConfig.VERSION_CODE);
+                        }
+                    });
+                    alert.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    alert.show();
+                }
+            }
+        });
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (facebook_id.equals("1335608633238560")) {
+                if (facebook_id!=null&&facebook_id.equals("1335608633238560")) {
                     showBlocklist();
                     clicked = true;
                 }
@@ -224,6 +271,7 @@ public class Forum extends Activity {
                 chooseImage();
             }
         });
+
         del_chooser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -321,8 +369,10 @@ public class Forum extends Activity {
                     previewreplierID.add(preview_replierID.get(i));
                     replyimageUrl.add(reply_imageUrl.get(i));
                     recyclerView.setAdapter(profileAdapter);
+                    profileAdapter.notifyDataSetChanged();
                 } else {
                     recyclerView.setAdapter(lollipopProfileAdapter);
+                    lollipopProfileAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -341,6 +391,7 @@ public class Forum extends Activity {
                 recyclerView.setAdapter(adapter);
             } else {
                 recyclerView.setAdapter(lollipopAdapter);
+                lollipopAdapter.notifyDataSetChanged();
             }
             post_image.setVisibility(View.VISIBLE);
             edit_text.setVisibility(View.VISIBLE);
@@ -382,6 +433,7 @@ public class Forum extends Activity {
         final ArrayList<String> seenUnseen = new ArrayList<>();
         forumNotificationAdapter = new ForumNotificationAdapter(Forum.this, notificationID, userSource, notifyText, notifytime, mainPostID, seenUnseen);
         final DatabaseReference notificationReference = database.getReference().child("notifications");
+        if (facebook_id != null) {
         notificationReference.child(facebook_id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -412,6 +464,7 @@ public class Forum extends Activity {
 
                 }
                 recyclerView.setAdapter(forumNotificationAdapter);
+                forumNotificationAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -419,6 +472,7 @@ public class Forum extends Activity {
 
             }
         });
+    }
     }
 
     private void showBlocklist() {
@@ -462,6 +516,8 @@ public class Forum extends Activity {
     }
 
     private void upload(final String post_image_name) {
+        progressDialog = ProgressDialog.show(Forum.this, "", "uploading...", true, true);
+
         storageRef.child(post_image_name).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -659,6 +715,7 @@ public class Forum extends Activity {
                         comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comments");
                         total_comments_each_post.clear();
                         recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } else {
                         preview_replierText.add(0, postID);
                         preview_replierName.add(0, replierName);
@@ -667,6 +724,7 @@ public class Forum extends Activity {
                         comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comment");
                         total_comments_each_post.clear();
                         recyclerView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     }
 
                 } else {
@@ -677,8 +735,9 @@ public class Forum extends Activity {
                     reply_imageUrl.add(0, "blank");
                     total_comments_each_post.clear();
                     recyclerView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 }
-                progressDialog.dismiss();
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -702,15 +761,18 @@ public class Forum extends Activity {
                         comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comments");
                         total_comments_each_post.clear();
                         recyclerView.setAdapter(lollipopAdapter);
+                        lollipopAdapter.notifyDataSetChanged();
                     } else {
                         comment_count.add(0, Integer.toString(total_comments_each_post.size()) + " comment");
                         total_comments_each_post.clear();
                         recyclerView.setAdapter(lollipopAdapter);
+                        lollipopAdapter.notifyDataSetChanged();
                     }
 
                 } else {
                     comment_count.add(0, "Reply");
                     recyclerView.setAdapter(lollipopAdapter);
+                    lollipopAdapter.notifyDataSetChanged();
                 }
 
             }
@@ -726,18 +788,24 @@ public class Forum extends Activity {
         request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(final JSONObject object, GraphResponse response) {
-
                 try {
-                    facebook_id = object.getString("id");
-                    subscribeTopic(facebook_id);
-                    myIDpreference.edit().putString("myID", facebook_id).apply();
-                    facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
-                    myIDpreference.edit().putString("myName", facebook_user_name).apply();
-                    SharedPreferences user_name_preference = getSharedPreferences("myname", Context.MODE_PRIVATE);
-                    user_name_preference.edit().putString("myname", facebook_user_name).apply();
-                    first_name = object.getString("first_name");
-                    Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
-                    loadForumPost();
+                    if(object!=null){
+                        facebook_id = object.getString("id");
+                        subscribeTopic(facebook_id);
+                        myIDpreference.edit().putString("myID", facebook_id).apply();
+                        facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
+                        myIDpreference.edit().putString("myName", facebook_user_name).apply();
+                        SharedPreferences user_name_preference = getSharedPreferences("myname", Context.MODE_PRIVATE);
+                        user_name_preference.edit().putString("myname", facebook_user_name).apply();
+                        first_name = object.getString("first_name");
+                        Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
+                        loadForumPost();
+                        loadAdminButton();
+                    }else {
+                        progressBar.setVisibility(View.GONE);
+                        alertMessage("Server error","Try again","Exit");
+                    }
+
                 } catch (JSONException e) {
                     myToaster(e.getMessage());
                 }
@@ -751,11 +819,17 @@ public class Forum extends Activity {
         request.executeAsync();
     }
 
+    private void loadAdminButton() {
+        if (facebook_id.equals("1335608633238560")) {
+            writeNotify.setVisibility(View.VISIBLE);
+            writeforeceUpdate.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void facebookLigin() {
         if (dataconnected()) {
             boolean logged = myIDpreference.getBoolean("logged", false);
             if (!logged) {
-                callbackManager = CallbackManager.Factory.create();
                 LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
@@ -767,13 +841,13 @@ public class Forum extends Activity {
 
                     @Override
                     public void onCancel() {
-                        progressDialog.dismiss();
+                        progressBar.setVisibility(View.GONE);
                         alertMessage("You need to log in first", "Try again", "Exit");
                     }
 
                     @Override
                     public void onError(FacebookException error) {
-                        progressDialog.dismiss();
+                        progressBar.setVisibility(View.GONE);
                         alertMessage("Log in failed", "Try again", "Exit");
                         Log.d("error", error.getMessage());
                         LoginManager.getInstance().logOut();
@@ -784,6 +858,7 @@ public class Forum extends Activity {
             }
         } else {
             alertMessage("Turn on data", "Try again", "Exit");
+            progressBar.setVisibility(View.GONE);
         }
     }
 
@@ -809,6 +884,8 @@ public class Forum extends Activity {
     }
 
     private void initialize() {
+        callbackManager = CallbackManager.Factory.create();
+        progressBar=(ProgressBar)findViewById(R.id.forumProgressbar);
         alertBuilder = new AlertDialog.Builder(Forum.this);
         alert = alertBuilder.create();
         chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
@@ -816,6 +893,10 @@ public class Forum extends Activity {
         imageChooser = (TextView) findViewById(R.id.imageChooser);
         del_chooser = (TextView) findViewById(R.id.del_chooser);
         notifications = (TextView) findViewById(R.id.updateNotifier);
+        writeforeceUpdate = (TextView) findViewById(R.id.updateforce);
+        writeforeceUpdate.setVisibility(View.GONE);
+        writeNotify = (TextView) findViewById(R.id.notifyServer);
+        writeNotify.setVisibility(View.GONE);
         notificationCount = (Button) findViewById(R.id.notificationCount);
         notificationCount.setVisibility(View.GONE);
         my_profile = (TextView) findViewById(R.id.my_profile);
@@ -974,7 +1055,7 @@ public class Forum extends Activity {
         alert = alertBuilder.create();
         alert.setCancelable(false);
         alert.setMessage(text);
-        alert.setButton(DialogInterface.BUTTON1, positiveButtonName, new DialogInterface.OnClickListener() {
+        alert.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonName, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Forum.this, Forum.class);
@@ -982,7 +1063,7 @@ public class Forum extends Activity {
                 startActivity(intent);
             }
         });
-        alert.setButton(DialogInterface.BUTTON2, negativeButtonName, new DialogInterface.OnClickListener() {
+        alert.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonName, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 finish();
@@ -1038,13 +1119,11 @@ public class Forum extends Activity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Log.e("True", response + "");
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("False", error.getMessage());
                     }
                 }) {
             @Override
@@ -1199,7 +1278,6 @@ public class Forum extends Activity {
 
                         }
                     });
-
 
                 }
             }

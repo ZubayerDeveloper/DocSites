@@ -7,45 +7,62 @@
     android:background="@drawable/reply_preview_background"
     android:gravity="center"
     android:orientation="vertical">
+
     <RelativeLayout
-        android:background="#101010"
         android:id="@+id/notification_layer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#101010">
+
         <ImageView
             android:id="@+id/icon"
-            android:layout_marginLeft="5dp"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/ic_launcher_foreground"/>
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/ic_launcher_foreground" />
+
         <TextView
             android:id="@+id/version"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:textColor="#FFFFFF"
-            android:layout_toRightOf="@+id/icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/icon"
+            android:layout_toRightOf="@+id/icon"
+            android:textColor="#FFFFFF" />
+
         <TextView
             android:id="@+id/updateNotifier"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
-            android:padding="3dp"
-            android:layout_centerInParent="true"
-            android:layout_below="@+id/version"
-            android:background="@drawable/notify_forum"
-            android:textColor="#FC0E00"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/version"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/notify_forum"
+            android:padding="3dp"
+            android:textColor="#FC0E00" />
     </RelativeLayout>
-    <GridView
-        android:id="@+id/grid"
-        android:layout_below="@+id/notification_layer"
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="2"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/adViewCard"
-        android:scrollbars="none" />
+        android:layout_below="@+id/notification_layer"
+        android:fillViewport="true">
+
+        <GridView
+            android:id="@+id/grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:numColumns="2"
+            android:scrollbars="none" />
+    </ScrollView>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/forum"
         android:layout_width="55dp"
@@ -63,37 +80,41 @@
         android:focusable="true"
         android:padding="10dp"
         android:src="@drawable/forum" />
+
     <TextView
-        android:layout_marginTop="4dp"
         android:id="@+id/forumhelpNotify"
-        android:layout_above="@+id/adViewCard"
-        android:layout_toLeftOf="@+id/forum"
-        android:layout_marginBottom="65dp"
         android:layout_width="wrap_content"
-        android:padding="7dp"
-        android:alpha=".8"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/adViewCard"
+        android:layout_marginBottom="65dp"
+        android:layout_marginTop="4dp"
+        android:layout_toLeftOf="@+id/forum"
+        android:layout_toStartOf="@+id/forum"
+        android:alpha=".8"
         android:background="@drawable/notify_forum"
+        android:padding="7dp"
         android:textColor="#00a2ff"
         android:textSize="12sp" />
+
     <ImageButton
-        android:layout_marginTop="4dp"
         android:id="@+id/notificationSumery"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
         android:alpha=".85"
         android:background="@drawable/bpsc_govt"
         android:padding="5dp"
         android:src="@drawable/notification" />
 
     <Button
-        android:layout_marginTop="4dp"
         android:id="@+id/notificationCount"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
         android:background="@drawable/bcps"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
@@ -128,7 +149,6 @@
         ads:miniFabTitlesEnabled="true"
         ads:touchGuard="true"
         ads:touchGuardDrawable="@color/cardview_shadow_start_color" />
-
 
 
 </RelativeLayout>

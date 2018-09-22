@@ -9,13 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.internal.NavigationMenu;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -62,8 +60,9 @@ public class NotificationSummery extends Activity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.notification_summery);
+        setContentView(R.layout.activity_notification_summery);
 
         headings = new ArrayList<>();
         dates = new ArrayList<>();
@@ -85,8 +84,8 @@ public class NotificationSummery extends Activity {
         notificationList = findViewById(R.id.notificationListView);
         notificationList.setSelector(R.drawable.bcsdept);
         adaptate = new NotificationListAdapter(this, headings, dates, texts, seens, urls);
-
         notificationList.setAdapter(adaptate);
+        adaptate.notifyDataSetChanged();
 
         fabspeed = (FabSpeedDial) findViewById(R.id.fabsummery);
         fabspeed.setMenuListener(new FabSpeedDial.MenuListener() {

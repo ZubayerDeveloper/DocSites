@@ -142,22 +142,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.Browser"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:name=".activity.Browser"/>
         <activity
-            android:name=".activity.Settings"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:name=".activity.Settings"/>
         <activity
-            android:name=".activity.WeeklyGazettes"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
-        <activity
-            android:name=".activity.NotificationSummery"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:name=".activity.NotificationSummery"/>
 
         <!-- android:theme="@style/transparent" -->
         <activity
-            android:name=".activity.GazetteActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:name=".activity.GazetteActivity"/>
 
         <service android:name=".services.FirebaseForegroundMessage">
             <intent-filter>

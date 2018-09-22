@@ -1,85 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical">
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="7dp"
-        android:paddingTop="7dp">
-
-        <TextView
-            android:id="@+id/heading"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="7dp"
-            android:gravity="center"
-            android:textColor="#62330E"
-            android:textSize="30sp" />
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="7dp"
+        android:gravity="center"
+        android:textColor="#62330E"
+        android:textSize="30sp"
+        android:padding="10dp"/>
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/adViewGazette"
+            android:layout_below="@+id/heading"
             android:paddingLeft="5dp"
             android:paddingRight="5dp">
-
             <TableRow>
-
                 <TextView
+                    android:id="@+id/yearHeading"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1.3"
                     android:gravity="center"
                     android:text="@string/vloumeHeading"
-                    android:textSize="15sp"/>
-
+                    android:textSize="15sp" />
                 <TextView
+                    android:id="@+id/resultHeading"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="6"
                     android:gravity="center"
                     android:text="@string/vloumes"
                     android:textSize="15sp">
-
                 </TextView>
             </TableRow>
 
             <TableRow>
-
                 <ListView
                     android:id="@+id/year"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1.3"
+                    android:layout_weight="1.7"
                     android:background="@drawable/bcsdept"
                     android:scrollbars="none"
                     android:textAlignment="center" />
-
-                <ListView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="0.1"
-                    android:scrollbars="none" />
 
                 <ListView
                     android:id="@+id/result"
+                    android:layout_marginLeft="1dp"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="6"
+                    android:layout_weight="6.5"
                     android:background="@drawable/bcsdept"
                     android:scrollbars="none"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:layout_marginStart="1dp" />
             </TableRow>
         </TableLayout>
 
@@ -92,5 +75,4 @@
             android:gravity="center"
             ads:adSize="SMART_BANNER"
             ads:adUnitId="@string/banner_id_seniorvice" />
-    </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>

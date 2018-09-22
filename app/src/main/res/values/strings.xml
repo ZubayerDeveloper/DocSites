@@ -89,7 +89,7 @@
 
     <!--bmdcOptions-->
     <string name="findDoctor">Find Registered Doctors</string>
-    <string name="bmdcDownloadbleForms">Registreation forms:\nTemporary/Renewal</string>
+    <string name="bmdcDownloadbleForms">Registration forms:\nTemporary/Renewal</string>
 
     <!--resultsOption-->
     <string name="mbbs">Results of MBBS</string>
@@ -186,7 +186,7 @@
     <string name="vloumeHeading">\বছর</string>
     <string name="vloumes">গেজেট</string>
     <string name="volumeNavigation">পরবর্তী\nপৃষ্ঠা</string>
-    <string name="dialogueText">\গেজেট দেখার জন্য এখানে ক্লিক করুন</string>
+    <string name="volume">ভলিউম</string>
     <string name="text">\⇦ লিস্ট থেকে বছর নির্বাচন করুন</string>
     <string name="openInBrowser">Links Open in Browser</string>
 

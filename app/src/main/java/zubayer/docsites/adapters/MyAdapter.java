@@ -32,7 +32,7 @@ public class MyAdapter extends ArrayAdapter<String> {
 
     public MyAdapter(Activity context, ArrayList<String> titles1, ArrayList<String> imageArray) {
 
-        super(context, R.layout.listview, titles1);
+        super(context, R.layout.customlyst, titles1);
         this.context = context;
         this.titleArray = titles1;
         this.imageArray = imageArray;
@@ -46,6 +46,7 @@ public class MyAdapter extends ArrayAdapter<String> {
         if (convertView == null) {
             LayoutInflater inflater = context.getLayoutInflater();
             convertView = inflater.inflate(R.layout.customlyst, null, true);
+            notifyDataSetChanged();
         }
         TextView myTitle = (TextView) convertView.findViewById(R.id.idTitle);
         myTitle.setTypeface(font);

@@ -40,12 +40,13 @@ public class Browser extends Activity {
     View m;
     ArrayList<String> buttonTexts, urlss;
     Button downloadButton;
+    boolean downloadButtonVisible=true,errorConnection=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO: Implement this method
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.browser);
+        setContentView(R.layout.activity_browser);
 
         buttonTexts = new ArrayList<>();
         buttonTexts.add(getString(R.string.browseralert));
@@ -63,6 +64,15 @@ public class Browser extends Activity {
         filterUrlPDF();
 
         website.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedError(WebView view, int errorCode,String description, String failingUrl) {
+                if(downloadButtonVisible){
+                    website.loadUrl("file:///android_asset/error2.html");
+                }else {
+                    website.loadUrl("file:///android_asset/error.html");
+                }
+                errorConnection=true;
+            }
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.contains("pdf")) {
@@ -154,9 +164,14 @@ public class Browser extends Activity {
     @Override
     public void onBackPressed() {
         if (website.canGoBack()) {
-            website.goBack();
-            progressbar.setProgress(0);
-            loadProgressBar();
+            if(errorConnection){
+                finish();
+            }else {
+                website.goBack();
+                progressbar.setProgress(0);
+                loadProgressBar();
+            }
+
 
         } else {
             finish();
@@ -176,12 +191,12 @@ public class Browser extends Activity {
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.reload:
-                        website.reload();
+                        website.loadUrl(urls);
                         loadProgressBar();
                         break;
                     case R.id.copy:
                         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clipData = ClipData.newPlainText("url", website.getUrl());
+                        ClipData clipData = ClipData.newPlainText("url", urls);
                         if (clipboardManager != null) {
                             clipboardManager.setPrimaryClip(clipData);
                         }
@@ -283,6 +298,7 @@ public class Browser extends Activity {
     private void filterUrlPDF() {
         if (urls.contains("pdf")) {
             downloadButton.setVisibility(View.VISIBLE);
+            downloadButtonVisible=true;
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
         } else if (urls.contains("download")) {
@@ -297,6 +313,7 @@ public class Browser extends Activity {
             }
         } else {
             downloadButton.setVisibility(View.GONE);
+            downloadButtonVisible=false;
             website.loadUrl(urls);
             loadProgressBar();
         }

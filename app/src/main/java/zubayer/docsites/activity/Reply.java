@@ -24,6 +24,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,6 +81,7 @@ public class Reply extends Activity {
     AlertDialog alert;
     AlertDialog.Builder alertBuilder;
     CardView chooser_cardview;
+    CallbackManager callbackManager;
     CircularImageView userImage, replyImage;
     ReplyAdapter adapter;
     LinearLayoutManager manager;
@@ -95,6 +97,7 @@ public class Reply extends Activity {
     String userid, intentName, intentText, time, postID, reply_image_name, blocked, postImage_url,
             facebook_user_name, myID, notifyPostOwner, reply_texts, first_name;
     ProgressDialog progressDialog;
+    ProgressBar replyProgressbar;
     ImageView replyButton, postImage, pic_preview, notify, notifyOff;
     TextView reply_post_name, reply_post_text, post_time, delete_Post, varified, imageChooser, del_chooser;
     Uri imageUri;
@@ -102,6 +105,7 @@ public class Reply extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 11 && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
@@ -112,18 +116,17 @@ public class Reply extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.reply);
+        setContentView(R.layout.activity_reply);
 
         getIntentvalue();
         initialize();
         checkFacebookOginStatus();
-        setValueToMainPost();
-
         loadBlocklist();
         chooser_cardview.setVisibility(View.GONE);
-        progressDialog = ProgressDialog.show(this, "", "Connecting to Database...", true, false);
+        replyProgressbar.setVisibility(View.VISIBLE);
         replyReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -145,11 +148,12 @@ public class Reply extends Activity {
                     notifyMe.add(snapshot.child("notifyMe").getValue(String.class));
                 }
                 try {
-                    progressDialog.dismiss();
+                    replyProgressbar.setVisibility(View.GONE);
                 } catch (Exception e) {
                 }
                 notifyStatus();
                 recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
 
             }
 
@@ -276,8 +280,9 @@ public class Reply extends Activity {
     private void checkFacebookOginStatus() {
         boolean logged = myIdPreference.getBoolean("logged", false);
         if (!logged) {
-            myToaster("false");
             facebookLigin();
+        }else {
+            setValueToMainPost();
         }
     }
 
@@ -381,50 +386,50 @@ public class Reply extends Activity {
 
     private void setValueToMainPost() {
 
-            rootReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    intentName = dataSnapshot.child("name").getValue(String.class);
-                    intentText = dataSnapshot.child("text").getValue(String.class);
-                    userid = dataSnapshot.child("id").getValue(String.class);
-                    time = dataSnapshot.child("time").getValue(String.class);
-                    notifyPostOwner = dataSnapshot.child("notifyMe").getValue(String.class);
-                    postImage_url = dataSnapshot.child("imageUrl").getValue(String.class);
+        rootReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                intentName = dataSnapshot.child("name").getValue(String.class);
+                intentText = dataSnapshot.child("text").getValue(String.class);
+                userid = dataSnapshot.child("id").getValue(String.class);
+                time = dataSnapshot.child("time").getValue(String.class);
+                notifyPostOwner = dataSnapshot.child("notifyMe").getValue(String.class);
+                postImage_url = dataSnapshot.child("imageUrl").getValue(String.class);
 
-                    if (userid != null && myID != null) {
+                if (userid != null && myID != null) {
 
-                        if (userid.equals(myID) || myID.equals("1335608633238560")) {
-                            delete_Post.setVisibility(View.VISIBLE);
-                        } else {
-                            delete_Post.setVisibility(View.GONE);
-
-                        }
-                        if (userid.equals("1335608633238560")) {
-                            varified.setVisibility(View.VISIBLE);
-                        } else {
-                            varified.setVisibility(View.GONE);
-
-                        }
-                        reply_post_name.setText(intentName);
-                        reply_post_text.setText(intentText);
-                        String posttime = elapsedTime(postID, time);
-                        post_time.setText(posttime);
-                        try {
-                            Glide.with(Reply.this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
-                            Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
-                            Glide.with(Reply.this).load(postImage_url).into(postImage);
-                        } catch (Exception e) {
-                        }
+                    if (userid.equals(myID) || myID.equals("1335608633238560")) {
+                        delete_Post.setVisibility(View.VISIBLE);
                     } else {
-                        finish();
+                        delete_Post.setVisibility(View.GONE);
+
                     }
-                }
+                    if (userid.equals("1335608633238560")) {
+                        varified.setVisibility(View.VISIBLE);
+                    } else {
+                        varified.setVisibility(View.GONE);
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    }
+                    reply_post_name.setText(intentName);
+                    reply_post_text.setText(intentText);
+                    String posttime = elapsedTime(postID, time);
+                    post_time.setText(posttime);
+                    try {
+                        Glide.with(Reply.this).load("https://graph.facebook.com/" + userid + "/picture?width=800").into(userImage);
+                        Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
+                        Glide.with(Reply.this).load(postImage_url).into(postImage);
+                    } catch (Exception e) {
+                    }
+                } else {
+//                    finish();
                 }
-            });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
 
     }
@@ -447,7 +452,7 @@ public class Reply extends Activity {
         replyReference.child(reply_image_name).setValue(reply_post).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                myToaster("failed");
+                myToaster("Reply failed");
             }
         });
 
@@ -539,6 +544,7 @@ public class Reply extends Activity {
         varified = (TextView) findViewById(R.id.varified);
         notify = (ImageView) findViewById(R.id.notify);
         notifyOff = (ImageView) findViewById(R.id.notifyOff);
+        replyProgressbar = (ProgressBar) findViewById(R.id.replyProgressbar);
 
         replyName = new ArrayList<>();
         replyTexts = new ArrayList<>();
@@ -554,7 +560,7 @@ public class Reply extends Activity {
         postIdPreference.edit().putString("postid", postID).apply();
         devicetokenPreference = getSharedPreferences("token", Context.MODE_PRIVATE);
         database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference().child("user").child(postID);
+        if(postID!=null){rootReference = database.getReference().child("user").child(postID);}
         replyReference = database.getReference().child("user").child(postID).child("reply");
         imageReference = database.getReference().child("imageReference");
         storageRef = FirebaseStorage.getInstance().getReference("image/");
@@ -764,7 +770,8 @@ public class Reply extends Activity {
     }
 
     private void upload(final String reply_image_name) {
-        final StorageReference storageRef = FirebaseStorage.getInstance().getReference("uiImage/");
+        progressDialog = ProgressDialog.show(Reply.this, "", "uploading...", true, true);
+        final StorageReference storageRef = FirebaseStorage.getInstance().getReference("image/");
         storageRef.child(reply_image_name).putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -826,7 +833,7 @@ public class Reply extends Activity {
     private void facebookLigin() {
         myIdPreference.edit().putBoolean("logged", true).apply();
         if (dataconnected()) {
-            CallbackManager callbackManager = CallbackManager.Factory.create();
+            callbackManager = CallbackManager.Factory.create();
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
@@ -836,15 +843,14 @@ public class Reply extends Activity {
 
                 @Override
                 public void onCancel() {
-                    progressDialog.dismiss();
+                    replyProgressbar.setVisibility(View.VISIBLE);
                     alertMessage("You need to log in first", "Try again", "Exit");
                 }
 
                 @Override
                 public void onError(FacebookException error) {
-                    progressDialog.dismiss();
+                    replyProgressbar.setVisibility(View.VISIBLE);
                     alertMessage("Log in failed", "Try again", "Exit");
-                    Log.d("error", error.getMessage());
                     LoginManager.getInstance().logOut();
                 }
             });
@@ -873,7 +879,7 @@ public class Reply extends Activity {
         alert = alertBuilder.create();
         alert.setCancelable(false);
         alert.setMessage(text);
-        alert.setButton(DialogInterface.BUTTON1, positiveButtonName, new DialogInterface.OnClickListener() {
+        alert.setButton(DialogInterface.BUTTON_POSITIVE, positiveButtonName, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Reply.this, Forum.class);
@@ -881,7 +887,7 @@ public class Reply extends Activity {
                 startActivity(intent);
             }
         });
-        alert.setButton(DialogInterface.BUTTON2, negativeButtonName, new DialogInterface.OnClickListener() {
+        alert.setButton(DialogInterface.BUTTON_NEGATIVE, negativeButtonName, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 finish();
@@ -899,16 +905,21 @@ public class Reply extends Activity {
                     myID = object.getString("id");
                     subscribeTopic(myID);
                     myIdPreference.edit().putString("myID", myID).apply();
-                    facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
-                    myIdPreference.edit().putString("myName", facebook_user_name).apply();
-                    SharedPreferences user_name_preference = getSharedPreferences("myname", Context.MODE_PRIVATE);
-                    user_name_preference.edit().putString("myname", facebook_user_name).apply();
-                    first_name = object.getString("first_name");
+                    if(object!=null){
+                        facebook_user_name = object.getString("first_name") + " " + object.getString("last_name");
+                        myIdPreference.edit().putString("myName", facebook_user_name).apply();
+                        SharedPreferences user_name_preference = getSharedPreferences("myname", Context.MODE_PRIVATE);
+                        user_name_preference.edit().putString("myname", facebook_user_name).apply();
+                        first_name = object.getString("first_name");
+                    }else {
+                        startActivity(new Intent(Reply.this,Forum.class));
+                    }
+
                     Glide.with(Reply.this).load("https://graph.facebook.com/" + myID + "/picture?width=800").into(replyImage);
                 } catch (JSONException e) {
                     myToaster(e.getMessage());
                 }
-
+                setValueToMainPost();
             }
         });
 

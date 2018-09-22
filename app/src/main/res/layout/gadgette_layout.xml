@@ -8,7 +8,6 @@
         android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:text="Text"
         android:id="@+id/idTitle"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#353433"

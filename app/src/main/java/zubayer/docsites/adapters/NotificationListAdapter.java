@@ -1,14 +1,11 @@
 package zubayer.docsites.adapters;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -19,7 +16,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -27,7 +23,6 @@ import java.util.ArrayList;
 
 import zubayer.docsites.R;
 import zubayer.docsites.activity.Browser;
-import zubayer.docsites.activity.NotificationSummery;
 
 public class NotificationListAdapter extends ArrayAdapter<String> {
     private Typeface font;
@@ -55,7 +50,7 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
         checkinternet = builder.create();
         checkinternet.setCancelable(true);
         checkinternet.setMessage("Delete notification?");
-        anim= AnimationUtils.loadAnimation(context,R.anim.fade_in);
+        anim = AnimationUtils.loadAnimation(context, R.anim.fade_in);
     }
 
     @NonNull
@@ -64,6 +59,7 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.card_view, null, true);
+            notifyDataSetChanged();
         }
         final TextView nam = convertView.findViewById(R.id.name);
         final TextView dat = convertView.findViewById(R.id.date);
@@ -77,7 +73,7 @@ public class NotificationListAdapter extends ArrayAdapter<String> {
         dat.setText(dates.get(position));
         text.setText(texts.get(position));
 
-        String color =seens.get(position);
+        String color = seens.get(position);
         linearlayout.setBackgroundColor(Color.parseColor(color));
         linearlayout.setOnClickListener(new View.OnClickListener() {
             @Override

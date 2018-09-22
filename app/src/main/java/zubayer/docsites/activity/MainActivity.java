@@ -113,11 +113,6 @@ public class MainActivity extends Activity {
     TextView updateNotifier, forumhelpNotify, appVersion;
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
@@ -593,6 +588,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                         ccdNotices2();
                     } catch (Exception e) {
                     }
@@ -668,6 +664,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -740,6 +737,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -759,6 +757,7 @@ public class MainActivity extends Activity {
                             urls.clear();
                             loadBpscOptions();
                             list.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
                         }
                     });
 
@@ -813,6 +812,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -904,6 +904,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -997,6 +998,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -1071,6 +1073,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                     dghsHomeLinks2();
@@ -1146,6 +1149,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                     dghsHomeLinks3();
@@ -1221,6 +1225,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -1295,6 +1300,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -1424,6 +1430,7 @@ public class MainActivity extends Activity {
                     try {
                         progressBar.setVisibility(View.GONE);
                         list.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                     } catch (Exception e) {
                     }
                 } else {
@@ -1608,6 +1615,7 @@ public class MainActivity extends Activity {
         urls.add("https://www.bcpsbd.org/refund.htm");
         progressBar.setVisibility(View.GONE);
         list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private void examFees() {
@@ -1762,20 +1770,15 @@ public class MainActivity extends Activity {
     }
 
     private void seniorGazette() {
-        Intent intent = new Intent(MainActivity.this, GazetteActivity.class);
-        intent.putExtra("examname", getString(R.string.filterSeniorScale));
-        startActivity(intent);
+        startActivity(new Intent(MainActivity.this, GazetteActivity.class).putExtra("examname", getString(R.string.filterSeniorScale)));
     }
 
     private void departmentalGazette() {
-        Intent intent = new Intent(MainActivity.this, GazetteActivity.class);
-        intent.putExtra("examname", getString(R.string.filterDepartmental));
-        startActivity(intent);
+        startActivity(new Intent(MainActivity.this, GazetteActivity.class).putExtra("examname", getString(R.string.filterDepartmental)));
     }
 
     private void weeklyGazette() {
-        Intent intent = new Intent(MainActivity.this, WeeklyGazettes.class);
-        startActivity(intent);
+        startActivity(new Intent(MainActivity.this,GazetteActivity.class).putExtra("examname", getString(R.string.weeklyGazetteHeading)));
     }
 
     private void serviceConfirmGazette() {
@@ -2048,6 +2051,7 @@ public class MainActivity extends Activity {
         list = (ListView) m.findViewById(R.id.ListView);
         manager = new LinearLayoutManager(MainActivity.this);
         list.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         progressBar = (ProgressBar) m.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
     }
