@@ -278,7 +278,7 @@ public class Reply extends Activity {
     }
 
     private void checkFacebookOginStatus() {
-        boolean logged = myIdPreference.getBoolean("logged", false);
+        boolean logged = myIdPreference.getBoolean("islogged", false);
         if (!logged) {
             facebookLigin();
         }else {
@@ -831,7 +831,7 @@ public class Reply extends Activity {
     }
 
     private void facebookLigin() {
-        myIdPreference.edit().putBoolean("logged", true).apply();
+        myIdPreference.edit().putBoolean("islogged", true).apply();
         if (dataconnected()) {
             callbackManager = CallbackManager.Factory.create();
             LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));

@@ -98,10 +98,10 @@ public class MainActivity extends Activity {
     ServiceParser serviceParser;
     CcdParser ccdParser;
     CcdParser2 ccdParser2;
-    String btxt, newline, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
+    String btxt, url, paramUrl, paramTagForText, paramTagForLink, paramLink,
             pdfFilter, driveViewer, filterContent, filterContent2,
             notificationNumberText, queryNotification;
-    int position, textMin, textMax, linkBegin, linkEnd, versionCode, oldNotificatinSize, bsmmubegin, bsmmuend;
+    int textMin, textMax, linkBegin, versionCode, oldNotificatinSize, bsmmubegin, bsmmuend;
     boolean bsmmuClicked, bcpsClicked, dghsClicked, mohfwClicked, bpscClicked, gazetteClicked, ccdClicked, dgfpClicked,
             bmdcClicked, resultsClicked, applaunched, checkpop, wifiAvailable, mobileDataAvailable, newNotifications;
     SharedPreferences preferences, notificationPreference;
@@ -117,6 +117,7 @@ public class MainActivity extends Activity {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         initializeWidgetVariable();
         createGridView();
@@ -163,7 +164,6 @@ public class MainActivity extends Activity {
                         Dialog.setTitle("App Developer:");
                         Dialog.show();
                         progressBar.setVisibility(View.GONE);
-
                         break;
                     case R.id.check:
                         try {
@@ -190,7 +190,7 @@ public class MainActivity extends Activity {
                         } else {
                             try {
                                 stopFirebaseJobDispatcher();
-                                setFirebaseJobDispatcher(1, 21600);
+                                setFirebaseJobDispatcher(1, 5);
                                 myToaster(MainActivity.this, "Checking Notifications");
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -213,6 +213,7 @@ public class MainActivity extends Activity {
                     preferences.edit().putString("query", queryID.get(0)).apply();
                 }
                 startActivity(new Intent(MainActivity.this, Forum.class));
+//                startActivity(new Intent(MainActivity.this, Reply.class).putExtra("postID","1537808231617"));
             }
         });
         forumhelpNotify.setOnClickListener(new View.OnClickListener() {
@@ -1945,9 +1946,11 @@ public class MainActivity extends Activity {
         String[] dgfpOption = getResources().getStringArray(R.array.dgfpOptions);
 //        String[] ccdOption = getResources().getStringArray(R.array.ccdOptions);
         driveViewer = "https://docs.google.com/viewer?url=";
+
         buttonTexts = new ArrayList<>();
         buttonTexts2 = new ArrayList<>();
         urls = new ArrayList<>();
+
         bsmmuOptions = new ArrayList<>();
         bcpsOptions = new ArrayList<>();
         dghsOptions = new ArrayList<>();

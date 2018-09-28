@@ -98,7 +98,6 @@ import com.google.android.gms.ads.AdRequest;
 import static android.widget.Toast.makeText;
 
 public class Forum extends Activity {
-
     AlertDialog alert;
     AlertDialog.Builder alertBuilder;
     Button notificationCount;
@@ -169,7 +168,12 @@ public class Forum extends Activity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             DatabaseReference wrieNotify = database.getReference();
-                            wrieNotify.child("docNotifyMessage").setValue(edit_text.getText().toString());
+                            wrieNotify.child("docNotifyMessage").setValue(edit_text.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    edit_text.setText(null);
+                                }
+                            });
                             wrieNotify.child("docNotifyVersion").setValue(BuildConfig.VERSION_CODE);
                         }
                     });
@@ -191,7 +195,12 @@ public class Forum extends Activity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             DatabaseReference wrieNotify = database.getReference();
-                            wrieNotify.child("docUpdateMessage").setValue(edit_text.getText().toString());
+                            wrieNotify.child("docUpdateMessage").setValue(edit_text.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    edit_text.setText(null);
+                                }
+                            });
                             wrieNotify.child("docUpdateVersion").setValue(BuildConfig.VERSION_CODE);
                         }
                     });
@@ -425,6 +434,7 @@ public class Forum extends Activity {
     }
 
     private void showNotification() {
+        progressBar.setVisibility(View.INVISIBLE);
         final ArrayList<String> notifytime = new ArrayList<>();
         final ArrayList<String> notificationID = new ArrayList<>();
         final ArrayList<String> userSource = new ArrayList<>();
@@ -828,13 +838,13 @@ public class Forum extends Activity {
 
     private void facebookLigin() {
         if (dataconnected()) {
-            boolean logged = myIDpreference.getBoolean("logged", false);
+            boolean logged = myIDpreference.getBoolean("islogged", false);
             if (!logged) {
                 LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        myIDpreference.edit().putBoolean("logged", true).apply();
+                        myIDpreference.edit().putBoolean("islogged", true).apply();
                         graphRequest();
 
                     }
@@ -1031,8 +1041,6 @@ public class Forum extends Activity {
     public void setFont(Context context, Activity activity) {
         Calligrapher font = new Calligrapher(context);
         font.setFont(activity, "kalpurush.ttf", true);
-        Typeface fontnull = Typeface.createFromAsset(getAssets(), "times.ttf");
-        notificationCount.setTypeface(fontnull);
     }
 
     private boolean dataconnected() {

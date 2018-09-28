@@ -46,10 +46,10 @@ import static android.widget.Toast.makeText;
 public class NotificationSummery extends Activity {
     AlertDialog Dialog, checkinternet;
     AlertDialog.Builder builder;
-    ArrayList<String> dates,seens, headings, urls, texts, missedNotifications, falseurls, notificatinCount;
+    ArrayList<String> dates, seens, headings, urls, texts, missedNotifications, falseurls, notificatinCount;
     View m;
     NotificationListAdapter adaptate;
-    ListView notificationList;
+    ListView notificationList,missedList;
     SharedPreferences seenPreference;
     MyAdapter adapter;
     ProgressBar progressBar;
@@ -64,15 +64,7 @@ public class NotificationSummery extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification_summery);
 
-        headings = new ArrayList<>();
-        dates = new ArrayList<>();
-        texts = new ArrayList<>();
-        urls = new ArrayList<>();
-        seens = new ArrayList<>();
-        missedNotifications = new ArrayList<>();
-        falseurls = new ArrayList<>();
-        notificatinCount = new ArrayList<>();
-        seenPreference = getSharedPreferences("seen", Context.MODE_PRIVATE);
+        initializer();
         setFont();
         createAdView();
         readNotification();
@@ -81,11 +73,7 @@ public class NotificationSummery extends Activity {
         buildAlertDialogue();
         saveState();
         equilifyNotificationCount();
-        notificationList = findViewById(R.id.notificationListView);
-        notificationList.setSelector(R.drawable.bcsdept);
-        adaptate = new NotificationListAdapter(this, headings, dates, texts, seens, urls);
-        notificationList.setAdapter(adaptate);
-        adaptate.notifyDataSetChanged();
+
 
         fabspeed = (FabSpeedDial) findViewById(R.id.fabsummery);
         fabspeed.setMenuListener(new FabSpeedDial.MenuListener() {
@@ -105,6 +93,9 @@ public class NotificationSummery extends Activity {
                         Dialog.show();
                         progressBar.setVisibility(View.GONE);
                         break;
+                    case R.id.refresh:
+                        readNotification();
+                        break;
                 }
                 return false;
             }
@@ -116,11 +107,23 @@ public class NotificationSummery extends Activity {
         });
     }
 
+    private void initializer() {
+        headings = new ArrayList<>();
+        dates = new ArrayList<>();
+        texts = new ArrayList<>();
+        urls = new ArrayList<>();
+        seens = new ArrayList<>();
+        missedNotifications = new ArrayList<>();
+        falseurls = new ArrayList<>();
+        notificatinCount = new ArrayList<>();
+        notificationList = findViewById(R.id.notificationListView);
+        seenPreference = getSharedPreferences("seen", Context.MODE_PRIVATE);
+    }
+
     private void equilifyNotificationCount() {
         try {
             SharedPreferences finalsize = getSharedPreferences("finalNotificationCount", Context.MODE_PRIVATE);
-            SharedPreferences oldsize = getSharedPreferences("oldNotificationCount", Context.MODE_PRIVATE);
-            oldsize.edit().putInt("oldsize", finalsize.getInt("finalsize", 0)).apply();
+            finalsize.edit().putInt("finalsize", 0).apply();
         } catch (Exception e) {
         }
     }
@@ -183,6 +186,9 @@ public class NotificationSummery extends Activity {
             read.close();
         } catch (Exception e) {
         }
+        adaptate = new NotificationListAdapter(this, headings, dates, texts, seens, urls);
+        notificationList.setAdapter(adaptate);
+        adaptate.notifyDataSetChanged();
     }
 
     @Override
@@ -241,7 +247,8 @@ public class NotificationSummery extends Activity {
             arrayoutput.writeObject(seens);
             arrayoutput.close();
             write.close();
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     private void setFont() {
@@ -298,8 +305,8 @@ public class NotificationSummery extends Activity {
     private void setListView() {
         adapter = new MyAdapter(NotificationSummery.this, missedNotifications, falseurls);
         m = getLayoutInflater().inflate(R.layout.listview, null);
-        notificationList = (ListView) m.findViewById(R.id.ListView);
-        notificationList.setAdapter(adapter);
+        missedList = (ListView) m.findViewById(R.id.ListView);
+        missedList.setAdapter(adapter);
         progressBar = (ProgressBar) m.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
     }

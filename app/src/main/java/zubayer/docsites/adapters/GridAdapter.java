@@ -57,9 +57,9 @@ public class GridAdapter extends ArrayAdapter<String> {
         title.setText(heading.get(position));
 
         if (density < DisplayMetrics.DENSITY_HIGH) {
-            title.setTextSize(25);
-            elaborate.setTextSize(8);
-            hint.setTextSize(6);
+            title.setTextSize(20);
+            elaborate.setTextSize(12);
+            hint.setTextSize(10);
         }
 
         elaborate.setText(description.get(position));

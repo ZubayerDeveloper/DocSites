@@ -20,8 +20,7 @@
                 android:id="@+id/background"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                tools:src="@drawable/stetho" />
+                android:layout_centerHorizontal="true"/>
 
             <TextView
                 android:id="@+id/bsmmu1"

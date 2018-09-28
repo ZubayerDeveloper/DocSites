@@ -966,7 +966,7 @@ public class MyFirebseJobDidpatcher extends JobService {
             if (pm != null) {
                 wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
                         | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                        | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+                        | PowerManager.ON_AFTER_RELEASE, "docsites:wakeLock");
             }
             if (wakeLock != null) {
                 wakeLock.acquire(100);
@@ -1007,7 +1007,7 @@ public class MyFirebseJobDidpatcher extends JobService {
         if (pm != null) {
             wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
                     | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                    | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+                    | PowerManager.ON_AFTER_RELEASE, "docsites:wakeLock");
         }
         if (wakeLock != null) {
             wakeLock.acquire(100);

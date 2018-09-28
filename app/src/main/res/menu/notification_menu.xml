@@ -12,4 +12,10 @@
         android:icon="@drawable/off"
         android:title="Check for turned off notifications"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/off"
+        android:title="Refresh"
+        app:showAsAction="never" />
 </menu>
