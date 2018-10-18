@@ -74,5 +74,5 @@
             android:layout_centerHorizontal="true"
             android:gravity="center"
             ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/banner_id_seniorvice" />
+            ads:adUnitId="@string/banner_id_gazette" />
 </RelativeLayout>

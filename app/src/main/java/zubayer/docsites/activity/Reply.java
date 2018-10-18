@@ -123,10 +123,8 @@ public class Reply extends Activity {
 
         getIntentvalue();
         initialize();
-        checkFacebookOginStatus();
+        setValueToMainPost();
         loadBlocklist();
-        chooser_cardview.setVisibility(View.GONE);
-        replyProgressbar.setVisibility(View.VISIBLE);
         replyReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -275,15 +273,6 @@ public class Reply extends Activity {
             }
         });
 
-    }
-
-    private void checkFacebookOginStatus() {
-        boolean logged = myIdPreference.getBoolean("islogged", false);
-        if (!logged) {
-            facebookLigin();
-        }else {
-            setValueToMainPost();
-        }
     }
 
     private void turnOffNotification() {
@@ -529,6 +518,7 @@ public class Reply extends Activity {
     }
 
     private void initialize() {
+        callbackManager = CallbackManager.Factory.create();
         alertBuilder = new AlertDialog.Builder(Reply.this);
         alert = alertBuilder.create();
         alert.setCancelable(false);
@@ -537,6 +527,7 @@ public class Reply extends Activity {
         imageChooser = (TextView) findViewById(R.id.imageChooser);
         del_chooser = (TextView) findViewById(R.id.del_chooser);
         chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
+        chooser_cardview.setVisibility(View.GONE);
         reply_post_name = (TextView) findViewById(R.id.reply_post_name);
         reply_post_text = (TextView) findViewById(R.id.reply_post_text);
         post_time = (TextView) findViewById(R.id.post_time);
@@ -545,7 +536,7 @@ public class Reply extends Activity {
         notify = (ImageView) findViewById(R.id.notify);
         notifyOff = (ImageView) findViewById(R.id.notifyOff);
         replyProgressbar = (ProgressBar) findViewById(R.id.replyProgressbar);
-
+        replyProgressbar.setVisibility(View.VISIBLE);
         replyName = new ArrayList<>();
         replyTexts = new ArrayList<>();
         replyUserId = new ArrayList<>();
@@ -830,34 +821,6 @@ public class Reply extends Activity {
         startActivityForResult(intent, 11);
     }
 
-    private void facebookLigin() {
-        myIdPreference.edit().putBoolean("islogged", true).apply();
-        if (dataconnected()) {
-            callbackManager = CallbackManager.Factory.create();
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
-            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    graphRequest();
-                }
-
-                @Override
-                public void onCancel() {
-                    replyProgressbar.setVisibility(View.VISIBLE);
-                    alertMessage("You need to log in first", "Try again", "Exit");
-                }
-
-                @Override
-                public void onError(FacebookException error) {
-                    replyProgressbar.setVisibility(View.VISIBLE);
-                    alertMessage("Log in failed", "Try again", "Exit");
-                    LoginManager.getInstance().logOut();
-                }
-            });
-        } else {
-            alertMessage("Turn on data", "Try again", "Exit");
-        }
-    }
 
     private boolean dataconnected() {
         boolean dataConnected = false;

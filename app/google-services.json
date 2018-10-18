@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "399890254913-4rc7hdg4290gtlg258pm88dq08oq8fa3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "zubayer.docsites",
+            "certificate_hash": "1c1e12bcb1ed5ec8aeade72283e9999884f1c774"
+          }
+        },
+        {
           "client_id": "399890254913-m5ltm1sq1rh4vvsruoutd8bkad24h2vv.apps.googleusercontent.com",
           "client_type": 3
         }

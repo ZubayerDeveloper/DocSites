@@ -42,6 +42,7 @@ import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -74,7 +75,6 @@ import static android.widget.Toast.makeText;
 public class MainActivity extends Activity {
     AlertDialog Dialog, checkinternet;
     AlertDialog.Builder builder;
-    AdView mAdView;
     View m;
     ProgressBar progressBar;
     ListView list;
@@ -213,7 +213,7 @@ public class MainActivity extends Activity {
                     preferences.edit().putString("query", queryID.get(0)).apply();
                 }
                 startActivity(new Intent(MainActivity.this, Forum.class));
-//                startActivity(new Intent(MainActivity.this, Reply.class).putExtra("postID","1537808231617"));
+//                startActivity(new Intent(MainActivity.this, Forum.class).putExtra("postID","1538061004237"));
             }
         });
         forumhelpNotify.setOnClickListener(new View.OnClickListener() {
@@ -268,7 +268,7 @@ public class MainActivity extends Activity {
         if (intent != null && intent.getExtras() != null) {
             String postID = intent.getExtras().getString("postID");
             if (postID != null) {
-                startActivity(new Intent(MainActivity.this, Reply.class).putExtra("postID", postID));
+                startActivity(new Intent(MainActivity.this, Forum.class).putExtra("postID", postID));
             }
         }
     }
@@ -720,7 +720,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -795,7 +795,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -1056,7 +1056,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -1132,7 +1132,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -1208,7 +1208,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -1283,7 +1283,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -1413,7 +1413,7 @@ public class MainActivity extends Activity {
                     checkinternet = builder.create();
                     checkinternet.setCancelable(false);
                     checkinternet.setMessage("Check your network connection");
-                    checkinternet.setButton("Close", new DialogInterface.OnClickListener() {
+                    checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Close", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
                             buttonTexts.clear();
                             urls.clear();
@@ -1471,16 +1471,31 @@ public class MainActivity extends Activity {
         boolean pressed = false;
         if (!pressed) {
             checkinternet = builder.create();
-            checkinternet.setButton("Send mail", new DialogInterface.OnClickListener() {
+            checkinternet.setButton(DialogInterface.BUTTON_POSITIVE,"Get Help", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
-                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + "zubayer.developer@gmail.com"));
-                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ": ");
-                    i.putExtra(Intent.EXTRA_TEXT, "Write here:" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "Sent from: " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
-                    startActivity(i);
+//                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + "zubayer.developer@gmail.com"));
+//                    i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + ": ");
+//                    i.putExtra(Intent.EXTRA_TEXT, "Write here:" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "\n" + "Sent from: " + Build.MANUFACTURER + " " + Build.MODEL + " " + "(" + Build.VERSION.RELEASE + ")");
+//                    startActivity(i);
+                    startActivity(new Intent(MainActivity.this,Forum.class));
                 }
             });
-            checkinternet.setButton3("Exit", new DialogInterface.OnClickListener() {
+            checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE,"Exit", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
+                    try {
+                        back.cancel(true);
+                        parsebsmmu.cancel(true);
+                        parsebsmmu2.cancel(true);
+                        bcps.cancel(true);
+                        bpscParser.cancel(true);
+                        dghsParser.cancel(true);
+                        dghsParser2.cancel(true);
+                        dghsParser3.cancel(true);
+                        serviceParser.cancel(true);
+                        ccdParser.cancel(true);
+                        ccdParser2.cancel(true);
+                    } catch (Exception e) {
+                    }
                     finish();
                 }
             });
@@ -1497,6 +1512,20 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
+        try {
+            back.cancel(true);
+            parsebsmmu.cancel(true);
+            parsebsmmu2.cancel(true);
+            bcps.cancel(true);
+            bpscParser.cancel(true);
+            dghsParser.cancel(true);
+            dghsParser2.cancel(true);
+            dghsParser3.cancel(true);
+            serviceParser.cancel(true);
+            ccdParser.cancel(true);
+            ccdParser2.cancel(true);
+        } catch (Exception e) {
+        }
         super.onPause();
         readNotificationCount();
     }
@@ -1719,7 +1748,7 @@ public class MainActivity extends Activity {
         paramTagForText = "a";
         paramTagForLink = "a";
         paramLink = "abs:href";
-        textMin =15;
+        textMin = 15;
         textMax = 20;
         back.execute();
         progressBar.setVisibility(View.VISIBLE);
@@ -1779,7 +1808,7 @@ public class MainActivity extends Activity {
     }
 
     private void weeklyGazette() {
-        startActivity(new Intent(MainActivity.this,GazetteActivity.class).putExtra("examname", getString(R.string.weeklyGazetteHeading)));
+        startActivity(new Intent(MainActivity.this, GazetteActivity.class).putExtra("examname", getString(R.string.weeklyGazetteHeading)));
     }
 
     private void serviceConfirmGazette() {
@@ -1812,12 +1841,12 @@ public class MainActivity extends Activity {
     }
 
     private void bdsResult() {
-        pdfFilter = "http://volume.dghs.gov.bd/bds/";
+        pdfFilter = "http://result.dghs.gov.bd/bds/";
         browser(pdfFilter);
     }
 
     private void mbbsResult() {
-        pdfFilter = "http://volume.dghs.gov.bd/mbbs/";
+        pdfFilter = "http://result.dghs.gov.bd/mbbs/";
         browser(pdfFilter);
     }
 
@@ -1902,22 +1931,22 @@ public class MainActivity extends Activity {
         selectDeselect("noticeChecked");
         selectDeselect("dghsChecked");
         selectDeselect("reultBcsChecked");
-        selectDeselect( "resultDeptChecked");
-        selectDeselect( "resultSeniorChecked");
+        selectDeselect("resultDeptChecked");
+        selectDeselect("resultSeniorChecked");
         selectDeselect("regiDeptChecked");
-        selectDeselect( "regiSeniorChecked");
+        selectDeselect("regiSeniorChecked");
         selectDeselect("assistantSurgeonChecked");
         selectDeselect("juniorConsultantChecked");
         selectDeselect("seniorConsultantChecked");
         selectDeselect("assistantProfessorChecked");
         selectDeselect("associateProfessorChecked");
-        selectDeselect( "professorChecked");
+        selectDeselect("professorChecked");
         selectDeselect("civilSurgeonChecked");
         selectDeselect("adhocChecked");
         selectDeselect("mohfwChecked");
         selectDeselect("deputationChecked");
-        selectDeselect( "dgfpChecked");
-        selectDeselect( "ccdChecked");
+        selectDeselect("dgfpChecked");
+        selectDeselect("ccdChecked");
         selectDeselect("leaveChecked");
         selectDeselect("appLaunchedchecked");
     }
@@ -2091,7 +2120,8 @@ public class MainActivity extends Activity {
     }
 
     private void createAdView() {
-        mAdView = (AdView) findViewById(R.id.adViewCard);
+//        MobileAds.initialize(this, getString(R.string.app_id));
+        AdView mAdView = (AdView) findViewById(R.id.adViewCard);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }

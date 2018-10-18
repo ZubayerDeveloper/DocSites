@@ -155,7 +155,6 @@ public class Forum extends Activity {
         initialize();
         getreportSize();
         setFont(this, this);
-        chooser_cardview.setVisibility(View.GONE);
         genetatekeyHash();
         facebookLigin();
         loadADD();
@@ -216,7 +215,7 @@ public class Forum extends Activity {
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (facebook_id!=null&&facebook_id.equals("1335608633238560")) {
+                if (facebook_id != null && facebook_id.equals("1335608633238560")) {
                     showBlocklist();
                     clicked = true;
                 }
@@ -444,45 +443,45 @@ public class Forum extends Activity {
         forumNotificationAdapter = new ForumNotificationAdapter(Forum.this, notificationID, userSource, notifyText, notifytime, mainPostID, seenUnseen);
         final DatabaseReference notificationReference = database.getReference().child("notifications");
         if (facebook_id != null) {
-        notificationReference.child(facebook_id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                notifytime.clear();
-                notifyText.clear();
-                userSource.clear();
-                mainPostID.clear();
-                seenUnseen.clear();
-                notificationID.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    notificationID.add(0, snapshot.getKey());
-                    notifytime.add(0, elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
-                    notifyText.add(0, snapshot.child("notificationText").getValue(String.class));
-                    userSource.add(0, snapshot.child("myid").getValue(String.class));
-                    mainPostID.add(0, snapshot.child("mainPostID").getValue(String.class));
-                    seenUnseen.add(0, snapshot.child("seenUnseen").getValue(String.class));
-                }
-
-                post_image.setVisibility(View.GONE);
-                edit_text.setVisibility(View.GONE);
-                send.setVisibility(View.GONE);
-                imageChooser.setVisibility(View.GONE);
-                forum_subscription.setVisibility(View.GONE);
-                for (int i = 0; i < notificationID.size(); i++) {
-                    if (notificationExpiry(notificationID.get(i)) > 1000 * 60 * 60 * 24 * 7) {
-                        notificationReference.child(facebook_id).child(notificationID.get(i)).setValue(null);
+            notificationReference.child(facebook_id).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    notifytime.clear();
+                    notifyText.clear();
+                    userSource.clear();
+                    mainPostID.clear();
+                    seenUnseen.clear();
+                    notificationID.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        notificationID.add(0, snapshot.getKey());
+                        notifytime.add(0, elapsedTime(snapshot.getKey(), snapshot.child("time").getValue(String.class)));
+                        notifyText.add(0, snapshot.child("notificationText").getValue(String.class));
+                        userSource.add(0, snapshot.child("myid").getValue(String.class));
+                        mainPostID.add(0, snapshot.child("mainPostID").getValue(String.class));
+                        seenUnseen.add(0, snapshot.child("seenUnseen").getValue(String.class));
                     }
 
+                    post_image.setVisibility(View.GONE);
+                    edit_text.setVisibility(View.GONE);
+                    send.setVisibility(View.GONE);
+                    imageChooser.setVisibility(View.GONE);
+                    forum_subscription.setVisibility(View.GONE);
+                    for (int i = 0; i < notificationID.size(); i++) {
+                        if (notificationExpiry(notificationID.get(i)) > 1000 * 60 * 60 * 24 * 7) {
+                            notificationReference.child(facebook_id).child(notificationID.get(i)).setValue(null);
+                        }
+
+                    }
+                    recyclerView.setAdapter(forumNotificationAdapter);
+                    forumNotificationAdapter.notifyDataSetChanged();
                 }
-                recyclerView.setAdapter(forumNotificationAdapter);
-                forumNotificationAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-    }
+                }
+            });
+        }
     }
 
     private void showBlocklist() {
@@ -799,7 +798,7 @@ public class Forum extends Activity {
             @Override
             public void onCompleted(final JSONObject object, GraphResponse response) {
                 try {
-                    if(object!=null){
+                    if (object != null) {
                         facebook_id = object.getString("id");
                         subscribeTopic(facebook_id);
                         myIDpreference.edit().putString("myID", facebook_id).apply();
@@ -811,9 +810,10 @@ public class Forum extends Activity {
                         Glide.with(Forum.this).load("https://graph.facebook.com/" + facebook_id + "/picture?width=800").into(post_image);
                         loadForumPost();
                         loadAdminButton();
-                    }else {
+                        getFCMdataPlayLoad();
+                    } else {
                         progressBar.setVisibility(View.GONE);
-                        alertMessage("Server error","Try again","Exit");
+                        alertMessage("Server error", "Try again", "Exit");
                     }
 
                 } catch (JSONException e) {
@@ -838,13 +838,13 @@ public class Forum extends Activity {
 
     private void facebookLigin() {
         if (dataconnected()) {
-            boolean logged = myIDpreference.getBoolean("islogged", false);
+            boolean logged = myIDpreference.getBoolean("isFacebooklogged", false);
             if (!logged) {
                 LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
                 LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        myIDpreference.edit().putBoolean("islogged", true).apply();
+                        myIDpreference.edit().putBoolean("isFacebooklogged", true).apply();
                         graphRequest();
 
                     }
@@ -895,10 +895,11 @@ public class Forum extends Activity {
 
     private void initialize() {
         callbackManager = CallbackManager.Factory.create();
-        progressBar=(ProgressBar)findViewById(R.id.forumProgressbar);
+        progressBar = (ProgressBar) findViewById(R.id.forumProgressbar);
         alertBuilder = new AlertDialog.Builder(Forum.this);
         alert = alertBuilder.create();
         chooser_cardview = (CardView) findViewById(R.id.chooser_cardview);
+        chooser_cardview.setVisibility(View.GONE);
         forum_subscription = (FabSpeedDial) findViewById(R.id.forum_subscription);
         imageChooser = (TextView) findViewById(R.id.imageChooser);
         del_chooser = (TextView) findViewById(R.id.del_chooser);
@@ -1296,6 +1297,16 @@ public class Forum extends Activity {
             }
         });
 
+    }
+
+    private void getFCMdataPlayLoad() {
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            String postID = intent.getExtras().getString("postID");
+            if (postID != null) {
+                startActivity(new Intent(Forum.this, Reply.class).putExtra("postID", postID));
+            }
+        }
     }
 
 }

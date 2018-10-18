@@ -260,11 +260,11 @@ public class NotificationSummery extends Activity {
         builder = new AlertDialog.Builder(NotificationSummery.this);
         Dialog = builder.create();
         Dialog.setCancelable(true);
-        Dialog.setButton("close", new DialogInterface.OnClickListener() {
+        Dialog.setButton(DialogInterface.BUTTON_NEGATIVE,"close", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
             }
         });
-        Dialog.setButton3("Check Notificatins again", new DialogInterface.OnClickListener() {
+        Dialog.setButton(DialogInterface.BUTTON_POSITIVE,"Check Notificatins again", new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, int id) {
                 try {
                     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

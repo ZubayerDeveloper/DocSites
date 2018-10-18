@@ -15,6 +15,11 @@ import android.app.DownloadManager;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.util.ArrayList;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
@@ -29,7 +34,8 @@ public class Browser extends Activity {
     WebView website;
     ProgressBar progressbar;
     AlertDialog checkinternet;
-    String driveViewer, pdfurl;
+    String driveViewer, pdfurl,paramTagForText, paramLink,btxt,url;
+    int textMin,linkBegin;
     AlertDialog Dialog;
     AlertDialog.Builder builder;
     SharedPreferences preferences;
@@ -41,6 +47,8 @@ public class Browser extends Activity {
     ArrayList<String> buttonTexts, urlss;
     Button downloadButton;
     boolean downloadButtonVisible=true,errorConnection=false;
+    GazetteParser gazetteParser;
+    ArrayList<String> monthUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,12 +304,13 @@ public class Browser extends Activity {
     }
 
     private void filterUrlPDF() {
-        if (urls.contains("pdf")) {
+
+        if (urls!=null&&urls.contains("pdf")) {
             downloadButton.setVisibility(View.VISIBLE);
             downloadButtonVisible=true;
             website.loadUrl(driveViewer + urls);
             loadProgressBar();
-        } else if (urls.contains("download")) {
+        } else if (urls!=null&&urls.contains("download")) {
             if (Build.VERSION.SDK_INT >23) {
                 CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
                 builder.setToolbarColor(Color.parseColor("#305168"));
@@ -325,10 +334,17 @@ public class Browser extends Activity {
     }
 
     private void initializeWebViewAndUrls() {
+        monthUrls=new ArrayList<>();
         website = (WebView) findViewById(R.id.WebView);
         driveViewer = "https://docs.google.com/viewer?url=";
         pdfurl = "https://docs.google.com/gview?embedded=true&url=";
-        urls = getIntent().getExtras().getString("value");
+        if(getIntent().getExtras().getString("value")!=null){
+            urls = getIntent().getExtras().getString("value");
+        }else {
+            urls = getIntent().getExtras().getString("async");
+            executeGazette();
+        }
+
     }
 
     private void buildAlertDialogue() {
@@ -349,5 +365,101 @@ public class Browser extends Activity {
         list.setAdapter(adapter);
         progressBar = (ProgressBar) m.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
+    }
+    class GazetteParser extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            gazetteExecutableTag(paramTagForText, paramLink, textMin);
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            gazetteParser.cancel(true);
+            super.onCancelled();
+        }
+
+        @Override
+        protected void onPostExecute(Void b) {
+            super.onPostExecute(b);
+            if (!dataconnected()) {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Check your network connection");
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        executeGazette();
+                    }
+                });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+
+                    }
+                });
+                try {
+                    checkinternet.show();
+                } catch (Exception e) {
+                }
+            } else if (btxt != null) {
+                website.loadUrl(monthUrls.get(0));
+            } else {
+                checkinternet = builder.create();
+                checkinternet.setCancelable(false);
+                checkinternet.setMessage("Website is not responding");
+                checkinternet.setButton(DialogInterface.BUTTON_POSITIVE, "Try again", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+                        executeGazette();
+                    }
+                });
+                checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Close", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, int id) {
+
+                    }
+                });
+
+                try {
+                    checkinternet.show();
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
+    public void gazetteExecutableTag(String TagForText, String Attr, int begin) {
+        try {
+            Document doc = Jsoup.connect(urls).get();
+            Elements links = doc.select(TagForText);
+            for (int i = begin; i < links.size(); i++) {
+                Element link = links.get(i);
+                btxt = link.text();
+                url = link.attr(Attr);
+                if (btxt.contains(getString(R.string.filterGazette))) {
+                    monthUrls.add(url);
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
+    public void executeGazette() {
+        gazetteParser = new GazetteParser();
+        paramTagForText = "tr a";
+        paramLink = "abs:href";
+        textMin = 0;
+        linkBegin = 0;
+        gazetteParser.execute();
+    }
+    private boolean dataconnected() {
+        boolean dataConnected = false;
+        boolean wifiIsAvailable, mobileDataIsAvailable;
+        try {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            wifiIsAvailable = networkInfo.isConnected();
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            mobileDataIsAvailable = networkInfo.isConnected();
+            dataConnected = wifiIsAvailable || mobileDataIsAvailable;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return dataConnected;
     }
 }

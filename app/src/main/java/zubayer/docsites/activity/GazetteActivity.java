@@ -22,6 +22,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -84,6 +88,11 @@ public class GazetteActivity extends Activity {
                     });
                     checkinternet.setButton(DialogInterface.BUTTON_NEGATIVE, "Exit", new DialogInterface.OnClickListener() {
                         public void onClick(final DialogInterface dialog, int id) {
+                            pareseYear.cancel(true);
+                            yearNextParser.cancel(true);
+                            monthParser.cancel(true);
+                            resultParser.cancel(true);
+                            dismissProgressDialog();
                             finish();
                         }
                     });
@@ -137,12 +146,13 @@ public class GazetteActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 if (filterContent.equals(getString(R.string.weeklyGazetteHeading))) {
                     parentUrl = listUrls.get(position);
-                    btxt = null;
-                    executeGazette();
+                    browser("async",parentUrl);
+//                    btxt = null;
+//                    executeGazette();
                 } else {
                     try {
                         pdfFilter = listUrls.get(position);
-                        browser(pdfFilter);
+                        browser("value",pdfFilter);
                     } catch (Exception e) {
                         checkinternet = builder.create();
                         checkinternet.setMessage("Something went wrong, try again");
@@ -220,7 +230,7 @@ public class GazetteActivity extends Activity {
                 btxt = link.text();
                 url = link.select("a").attr(Attr);
                 if (btxt.contains("Vol")) {
-                    resultArray.add("\n" + btxt + "\n");
+                    resultArray.add(btxt);
                     listUrls.add(url);
                 }
 
@@ -639,6 +649,7 @@ public class GazetteActivity extends Activity {
         protected void onPostExecute(Void b) {
             super.onPostExecute(b);
             dismissProgressDialog();
+//            saveResults();
             if (!dataconnected()) {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -722,7 +733,7 @@ public class GazetteActivity extends Activity {
                 } catch (Exception e) {
                 }
             } else if (btxt != null) {
-                browser(monthUrls.get(0));
+                browser("value",monthUrls.get(0));
             } else {
                 checkinternet = builder.create();
                 checkinternet.setCancelable(false);
@@ -758,7 +769,9 @@ public class GazetteActivity extends Activity {
 
     public void executeYearNext() {
         dismissProgressDialog();
-        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Wait a few more moment..", true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Wait a few more moment..", true, true);
+        }
         yearUrlNext = yearUrl + "/publication_date/12";
         yearNextParser = new YearNextParser();
         paramTagForText = "#MyResult tr";
@@ -769,7 +782,9 @@ public class GazetteActivity extends Activity {
 
     private void executeMonth() {
         monthParser = new MonthParser();
-        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "This may take some time, please wait..", true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(GazetteActivity.this, "", "This may take some time, please wait..", true, true);
+        }
         paramTagForText = "#MyResult tr";
         paramLink = "abs:href";
         textMin = 0;
@@ -783,8 +798,9 @@ public class GazetteActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Searching " + monthName, true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Searching " + monthName, true, true);
+        }
         resultParser = new ResultParser();
         paramTagForText = "#MyResult tr";
         paramLink = "href";
@@ -797,12 +813,16 @@ public class GazetteActivity extends Activity {
         progressDialog.dismiss();
         yearUrls.clear();
         yearArray.clear();
-        progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading gazette years...", true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(GazetteActivity.this, "", "Loading gazette years...", true, true);
+        }
         executeYear();
     }
 
     public void executeVolume() {
-        progressDialog = ProgressDialog.show(this, "", "Loading volumes...", true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(this, "", "Loading volumes...", true, true);
+        }
         volumeParser = new VolumrParser();
         paramTagForText = "#MyResult tr";
         paramLink = "abs:href";
@@ -811,7 +831,9 @@ public class GazetteActivity extends Activity {
     }
 
     public void executeNavigation() {
-        progressDialog = ProgressDialog.show(this, "", "Loading next pages...", true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(this, "", "Loading next pages...", true, true);
+        }
         navigationParser = new NavigationParser();
         paramTagForText = "#pagination-bar a";
         paramLink = "abs:href";
@@ -827,17 +849,22 @@ public class GazetteActivity extends Activity {
         textMin = 0;
         linkBegin = 0;
         gazetteParser.execute();
-        progressDialog = ProgressDialog.show(this, "", "Loading Gazettes...", true, true);
+        if (!GazetteActivity.this.isFinishing()) {
+            progressDialog = ProgressDialog.show(this, "", "Loading Gazettes...", true, true);
+        }
     }
 
-    private void browser(String inurl) {
-        startActivity(new Intent(GazetteActivity.this, Browser.class).putExtra("value", inurl));
+    private void browser(String key,String inurl) {
+        startActivity(new Intent(GazetteActivity.this, Browser.class).putExtra(key, inurl));
     }
 
     @Override
     public void onBackPressed() {
 
         try {
+            volumeParser.cancel(true);
+            navigationParser.cancel(true);
+            gazetteParser.cancel(true);
             pareseYear.cancel(true);
             yearNextParser.cancel(true);
             monthParser.cancel(true);
@@ -851,6 +878,9 @@ public class GazetteActivity extends Activity {
     @Override
     protected void onPause() {
         try {
+            volumeParser.cancel(true);
+            navigationParser.cancel(true);
+            gazetteParser.cancel(true);
             pareseYear.cancel(true);
             yearNextParser.cancel(true);
             monthParser.cancel(true);
@@ -864,6 +894,7 @@ public class GazetteActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+//        readResult();
         resultAdapter.notifyDataSetChanged();
         yearAdapter.notifyDataSetChanged();
     }
@@ -989,4 +1020,77 @@ public class GazetteActivity extends Activity {
             progressDialog.dismiss();
         }
     }
+
+//    private void saveResults() {
+//        try {
+//            FileOutputStream write = openFileOutput("resultarray", Context.MODE_PRIVATE);
+//            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+//            arrayoutput.writeObject(resultArray);
+//            arrayoutput.close();
+//            write.close();
+//
+//        } catch (Exception e) {
+//        }
+//        try {
+//            FileOutputStream write = openFileOutput("listurls", Context.MODE_PRIVATE);
+//            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+//            arrayoutput.writeObject(listUrls);
+//            arrayoutput.close();
+//            write.close();
+//        } catch (Exception e) {
+//        }
+//        try {
+//            FileOutputStream write = openFileOutput("yeararray", Context.MODE_PRIVATE);
+//            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+//            arrayoutput.writeObject(yearArray);
+//            arrayoutput.close();
+//            write.close();
+//        } catch (Exception e) {
+//        }
+//        try {
+//            FileOutputStream write = openFileOutput("yearurls", Context.MODE_PRIVATE);
+//            ObjectOutputStream arrayoutput = new ObjectOutputStream(write);
+//            arrayoutput.writeObject(yearUrls);
+//            arrayoutput.close();
+//            write.close();
+//        } catch (Exception e) {
+//        }
+//    }
+//
+//    private void readResult() {
+//        try {
+//            FileInputStream read = openFileInput("resultarray");
+//            ObjectInputStream readarray = new ObjectInputStream(read);
+//            resultArray = (ArrayList<String>) readarray.readObject();
+//            readarray.close();
+//            read.close();
+//        } catch (Exception e) {
+//        }
+//        try {
+//            FileInputStream read = openFileInput("listurls");
+//            ObjectInputStream readarray = new ObjectInputStream(read);
+//            listUrls = (ArrayList<String>) readarray.readObject();
+//            readarray.close();
+//            read.close();
+//        } catch (Exception e) {
+//        }
+//        try {
+//            FileInputStream read = openFileInput("yeararray");
+//            ObjectInputStream readarray = new ObjectInputStream(read);
+//            yearArray = (ArrayList<String>) readarray.readObject();
+//            readarray.close();
+//            read.close();
+//        } catch (Exception e) {
+//        }
+//        try {
+//            FileInputStream read = openFileInput("yearurls");
+//            ObjectInputStream readarray = new ObjectInputStream(read);
+//            yearUrls = (ArrayList<String>) readarray.readObject();
+//            readarray.close();
+//            read.close();
+//        } catch (Exception e) {
+//        }
+//        resultList.setAdapter(resultAdapter);
+//        yearList.setAdapter(yearAdapter);
+//    }
 }

@@ -8,17 +8,23 @@ android {
         applicationId "zubayer.docsites"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 53
-        versionName "4.0.7"
+        versionCode 58
+        versionName "4.10"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-//            shrinkResources true
-//            minifyEnabled true
-//            useProguard true
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
+            useProguard true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            shrinkResources true
+            minifyEnabled true
+            useProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -29,14 +35,13 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
-    implementation 'com.google.firebase:firebase-database:16.0.2'
-    implementation 'com.google.firebase:firebase-core:16.0.3'
-    implementation 'com.google.firebase:firebase-firestore:17.1.0'
-    implementation 'com.google.firebase:firebase-messaging:17.3.2'
+    implementation 'com.google.firebase:firebase-database:16.0.3'
+    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-messaging:17.3.3'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.5'
-    implementation 'com.google.firebase:firebase-ads:15.0.1'
-    implementation 'com.google.firebase:firebase-storage:16.0.2'
+    implementation 'com.google.android.gms:play-services-ads:17.0.0'
+    implementation 'com.google.firebase:firebase-storage:16.0.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
